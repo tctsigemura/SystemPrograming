@@ -10,14 +10,15 @@
 %\usepackage{color}
 \usepackage{multicol}
 \usepackage{listings,jlisting}
+\usepackage{ascmac}
 %----------------------------------------------------------------------
-\setlength{\topmargin}{-0.5in}
+%\setlength{\topmargin}{-0.5in}
 %\addtolength{\headheight}{1cm}
 %%\setlength{\headsep}{0mm}
 %\setlength{\oddsidemargin}{-0.5in}
 %%\setlength{\evensidemargin}{-0.5in}
 %\addtolength{\textwidth}{1.5in}
-\addtolength{\textheight}{1in}
+%\addtolength{\textheight}{1in}
 %----------------------------------------------------------------------
 %\setlength{\columnsep}{2zw}
 %\setlength{\columnseprule}{0.4pt}
@@ -50,12 +51,11 @@
 今回は、環境変数について学ぶ。
 環境変数はシェルが管理する変数である。
 変数とはいえC言語の変数とは全く別の仕組みである。
-プログラムは実行時に環境変数にアクセスし値により動作を変えたりする。
-例えば\verb/LANG/と言う名前の環境変数の値により
-メッセージの言語を変更したりする。
+プログラムは実行時に環境変数の値を調べることができる。
 
 \begin{enumerate}
-\item 環境変数の例 \\
+\item 環境変数の例
+
 MacやUNIX(Linux,FreeBSD)でよく使用される環境変数の「名前」と「値」の例を示す。
 \begin{lstlisting}[numbers=none]
 SHELL=/bin/bash                 # 使用中のシェル
@@ -70,194 +70,401 @@ TZ=Japan                        # どの地域の時刻を使用するか(日本
 CLICOLOR=1                      # ls コマンド等がカラー出力する(yes)
 \end{lstlisting}
 
-\item 環境変数を変更した例 \\
+\item 環境変数を変更した例
+
 例えば\verb/LC_TIME/環境変数は日時の表示に使用する言語を決める。
-\verb/date/コマンドや、\verb/ls/コマンド等がこの環境変数の値により
+また、\verb/TZ/環境変数はどの地域の時刻を表示するかを決める。
+\verb/date/コマンド(現在時刻表示)、\verb/cal/コマンド(カレンダー表示)、
+\verb/ls/コマンド(ファイルの最終変更時刻表示)等がこれらの環境変数の値により
 日時の表示を変化させる。
 \begin{lstlisting}[numbers=none]
 $ printenv LC_TIME              # 環境変数 LC_TIME の値を確認する
-C
+C                               # C言語標準(米国英語表記)を使用する
 $ date
-Sun Jun 26 11:04:27 JST 2016
+Sun Jun 26 11:04:27 JST 2016    # 英語表示で日本時間
 $ ls -l
 -rw-r--r--  1 sigemura  staff    319 Jun 26 10:30 Makefile
-$ LC_TIME=ja_JP.UTF-8            # 環境変数 LC_TIME に日本語を表す値をセットする
+$ LC_TIME=ja_JP.UTF-8           # LC_TIME に日本語を表す値をセットして試す
 $ date
 2016年 6月26日 日曜日 11時03分21秒 JST
 $ ls -l
 rw-r--r--  1 sigemura  staff    319  6 26 10:30 Makefile
-$ LC_TIME=ru_RU.UTF-8            # 環境変数 LC_TIME にロシア語を表す値をセットする
+$ export TZ=Cuba                # TZ 環境変数を作ってキューバを示す値をセット
 $ date
-воскресенье, 26 июня 2016 г. 11:03:33 (JST)
-$ ls -l
--rw-r--r--  1 sigemura  staff    319 26 июн 10:30 Makefile
+2016年 6月25日 土曜日 22時03分26秒 JST      # 日本語表示でキューバ時間
+$
 \end{lstlisting}
 このようにプログラムの振る舞いを環境変数でコントロールすることができる。
 
-\item ディレクトリの削除（{\tt rmdir}システムコール）\\
-{\tt rmdir}コマンドは、このシステムコールを利用している。
-空ではないディレクトリを削除することはできない。
-\begin{lstlisting}[numbers=none]
-書式：
-         #include <unistd.h>
-         int rmdir(char *path);
-           path：削除するディレクトリ
-           返り値：正常=0、エラー=-1
+\item 環境変数は誰が決めるか
 
-使用例：
-         // ディレクトリの削除
-         if (rmdir("newdir")<0) {  // "newdir" 削除
-           perror("newdir");       // エラー原因表示
-           exit(1);                // エラー終了
-         }
+\begin{enumerate}
+\item システム管理者
 
-\end{lstlisting}
+システム管理者はユーザがログインした時の初期状態を決める。
+UNIXやMacでは、\verb;/etc/profile;ファイル等に書かれたスクリプトが
+全ユーザのシェル起動時に実行される。
+システム管理者は全ユーザに共通の初期化処理をここに書いておく。
 
-\newpage
+\item ユーザの設定ファイル
 
-\item リンクの作成（{\tt link}システムコール）\\
-{\tt ln}コマンドは、ハードリンクを作るとき、このシステムコールを利用している。
+ユーザは自分のホームディレクトリの\verb;.bash_profile;ファイルに
+自分専用の初期化処理を書くことができる。
+ここに、「環境変数の操作」で説明するコマンドで処理を書いておく。
+次は\verb;.bash_profile;ファイルの例である。
 
 \begin{lstlisting}[numbers=none]
-書式：
-         #include <unistd.h>
-         int link(char *oldpath, char *newpath);
-           oldpath：もとの名前
-           newpath：新しい名前
-           返り値：正常=0、エラー=-1
-
-使用例：
-         // ハードリンクの作成
-         if (link("a.txt", "b.txt")<0) { // リンク"b.txt"を作る
-           perror("link");               // "a.txt"と"b.txt"のどちらが原因か不明なので
-           exit(1);                      // エラー終了
-         }
-
+PATH="/usr/local/bin:$PATH:$HOME/bin:."
+export LC_TIME=C
+export CLICOLOR=1
 \end{lstlisting}
 
-ファイルの移動（ファイル名の変更）に応用できる。
-\begin{lstlisting}[numbers=none]
-         unlink("b.txt");                // 念のため"b.txt"を消す（エラーは無視）
-         if (link("a.txt", "b.txt")<0) { // リンク"b.txt"を作る
-           ... エラー処理 ... 
-         if (unlink("a.txt")<0) {        // リンク"a.txt"を消す。
-           ... エラー処理 ... 
+\item ユーザによるコマンド操作
 
-\end{lstlisting}
+シェルのコマンド操作で環境変数を操作することができる。
+但し、影響範囲は操作したウインドのシェルのみである。
+次回ログイン時には操作結果の影響は残らない。
 
-\item シンボリックリンクの作成（{\tt symlink}システムコール）\\
-{\tt ln}コマンドは、シンボリックリンクを作るとき（{\tt -s}オプション使用時）、
-このシステムコールを利用している。
+\end{enumerate}
+
+\item 環境変数の操作
+
+シェルのコマンド操作で環境変数を操作する。
+\begin{enumerate}
+\item 環境変数の表示
 
 \begin{lstlisting}[numbers=none]
-書式：
-         #include <unistd.h>
-         int symlink(char *path, char *newpath);
-           path：シンボリックリンクに書き込む内容
-           newpath：新しい名前（シンボリックリンクの名前）
-           返り値：正常=0、エラー=-1
+$ printenv             # 全ての環境変数の名前と値を表示する
+$ printenv 名前        # 名前の環境変数の値だけを表示する
 
-使用例：
-         // シンボリックリンクの作成
-         if (symlink("a.txt", "b.txt")<0) { // リンク"b.txt"を作る
-           perror("b.txt");                 // エラー原因は必ず"b.txt"
-           exit(1);                         // エラー終了
-         }
-
+実行例
+$ printenv
+SHELL=/bin/bash
+TERM=xterm-256color
+USER=sigemura
+...
+$ printenv SHELL
+/bin/bash
+$
 \end{lstlisting}
 
-\item ファイルの移動（ファイル名の変更）（{\tt rename}システムコール）\\
-{\tt mv}コマンドは、このシステムコールを利用している。
+\item 環境変数の操作
+
+\begin{enumerate}
+\item 新規作成(その１）
+
+UNIXの標準シェル(sh)では次の２ステップで環境変数を作る。
 
 \begin{lstlisting}[numbers=none]
-書式：
-         #include <stdio.h>
-         int rename(char *from, char *to);
-           from：もとのファイル名（パス）
-           to：移動後のファイル名（パス）
-           返り値：正常=0、エラー=-1
+$ 変数名=値             # 一旦、シェル変数として作る
+$ export 変数名         # シェル変数を環境変数に変更する
 
-使用例：
-         // ファイルの移動
-         if (rename("a.txt", "b.txt")<0) { // "a.txt" を "b.txt" に変更
-           perror("rename");               // エラー原因がどっちのパスか不明
-           exit(1);                        // エラー終了
-         }
-
+実行例
+$ printenv MYNAME       # MYNAME環境変数を確認 => 存在しない(何も表示されない)
+$ MYNAME=sigemura
+$ export MYNAME
+$ printenv MYNAME       # MYNAME環境変数を確認 => 値が "sigemura" だとわかる
+sigemura
+$
 \end{lstlisting}
 
-\newpage
-\item ファイルモードの変更（{\tt chmod}、{\tt lchmod}システムコール）\\
-{\tt chmod}コマンドは、このシステムコールを利用している。
+\item 新規作成(その２）
+
+MacやLinuxで使用されるシェル(bash)では、
+次のように１行の操作で環境変数を作ることができる。
 
 \begin{lstlisting}[numbers=none]
-書式：
-         #include <sys/stat.h>
-         int chmod(char *path, int mode);
-         int lchmod(char *path, int mode);
-           path：ファイル名（パス）
-           mode：モード
-           返り値：正常=0、エラー=-1
-          （lchmodはシンボリックリンクを辿らない）
+$ export 変数名=値
 
-使用例：
-         // ファイルモードの変更
-         if (chmod("a.txt", 0644)<0) { // ファイル"a.txt"のモードを"rw-r--r--"に変更
-           perror("a.txt");            // エラー原因を表示
-           exit(1);                    // エラー終了
-         }
-
+実行例
+$ printenv MYNAME       # MYNAME環境変数を確認 => 存在しない(何も表示されない)
+$ export MYNAME=sigemura
+$ printenv MYNAME       # MYNAME環境変数を確認 => 値が "sigemura" だとわかる
+sigemura
+$
 \end{lstlisting}
 
-\item シンボリックリンクの内容を読む（{\tt readlink}システムコール）\\
-{\tt ls}コマンドは、このシステムコールを利用している。
+\item 値の変更
+
+既に存在する環境変数の値を変更する操作は次の通り。
+変数名を間違った場合、
+間違った名前で新しいシェル変数が作成されエラーにならないので注意が必要である。
 
 \begin{lstlisting}[numbers=none]
-書式：
-         #include <unistd.h>
-         int readlink(char *path, char *buf, int size);
-           path：シンボリックリンクのパス
-           buf：内容を読み出す領域（バッファ）
-           size：領域（バッファ）のバイト単位のサイズ
-           返り値：読みだした文字数、エラー=-1
+$ 変数名=値
 
-使用例：
-         // シンボリックリンクの読み出し
-         char *name = "b.txt";
-         char buf[100];
-         int n = readlink(name, buf, 99); // シンボリックリンクの内容をbufに読み出す
-         if (n<0) {                       // エラーチェック
-           perror(name);                  // エラー原因を表示
-           exit(1);                       // エラー終了
-         }
-         buf[n]='\0';                     // C言語型の文字列として完成させる
-         printf("%s -> %s\n", name, buf); // ls -s 表示をまねて出力
-
+実行例
+$ MYNAME=yosinaga        # MYNAME環境変数の値を変更
+$ printenv MYNAME        # MYNAME環境変数の値が変更されている
+yosinaga
+$
 \end{lstlisting}
+
+\item 値の参照
+
+「\verb/$変数名/」と書くことにより
+環境変数やシェル変数の値をコマンド入力時に参照できる。
+例えば、すでにある\verb/PATH/環境変数の値に新規ディレクトリを追加する例を示す。
+\begin{lstlisting}[numbers=none]
+$ printenv PATH                    # 初期状態を確認する
+/usr/local/bin:/bin:/usr/bin
+$ PATH=$PATH:.                     # カレントディレクトリを追加する
+$ printenv PATH
+/usr/local/bin:/bin:/usr/bin:.
+$ PATH=$PATH:$HOME/bin             # ホームのbinディレクトリを追加する
+$ printenv PATH
+/usr/local/bin:/bin:/usr/bin:./User/sigemura/bin
+$
+\end{lstlisting}
+
+\item 変数の削除
+
+環境変数、シェル変数のどちらも次の操作で削除できる。
+存在しない変数を\verb/unset/してもエラーにならない。
+変数名を間違ってもエラーにならないので注意が必要である。
+
+\begin{lstlisting}[numbers=none]
+$ unset 変数名
+
+実行例
+$ unset MYNAME
+$ printenv MYNAME       # MYNAME環境変数を確認 => 存在しない(何も表示されない)
+$
+\end{lstlisting}
+
+\item 値を一時的に変更
+
+変数の値を一時的(今回のコマンド実行の期間だけ)に
+変更してコマンド(プログラム)を実行する。
+
+\begin{lstlisting}[numbers=none]
+$ env 変数名=値 ...  コマンド
+
+実行例
+$ date
+Sun Jul  3 08:35:42 JST 2016
+$ env LC_TIME=ja_JP.UTF-8 TZ=Cuba date    # 日本語表示、キューバ時間でdate実行
+2016年 7月 2日 土曜日 19時36分01秒 CDT
+$ date
+Sun Jul  3 08:36:05 JST 2016
+$
+\end{lstlisting}
+
+\end{enumerate}
+
+\end{enumerate}
+
+\item 環境変数の仕組み
+
+図\ref{fig1}に環境変数の仕組みを示す。
+
+\begin{figure}[hbtp]
+  \begin{center} %センタリングする
+    \includegraphics[scale=0.8]{fig1-crop.pdf}
+    \caption{プログラム起動時の環境変数コピー}
+    \label{fig1}
+  \end{center}
+\end{figure}
+
+シェルプロセス(shellプロセス)は
+環境変数を自プロセスのメモリ空間で記憶・管理している。
+上記の「環境変数の操作」で紹介したコマンド等は、
+シェルのメモリ空間の環境変数・シェル変数を操作するものである。
+このようにシェル自身が処理するコマンドを{\bf 内部コマンド}と呼ぶ。
+
+シェルは入力されたコマンドが内部コマンド以外({\bf 外部コマンド})なら、
+コマンド名と同じ名前のプログラムを探し子プロセスとして起動する。
+この時シェルは、
+自身の環境変数を子プロセスにコピーするようにOSカーネルに依頼する。
+OSカーネルは子プロセスのメモリ空間のどこか（例えばスタックの底）に
+環境変数をコピーする。
+子プロセスはメモリ空間内の環境変数のコピーを参照・変更・削除できる。
+
+この仕組みはシェルに限らず全ての{\bf 他のプログラムを起動するプログラム}で
+用いられる仕組みである。
+実は上記の「環境変数の操作」で紹介した操作方法で
+\verb/env/コマンドだけは{\bf 外部コマンド}である。
+\verb/env/コマンドは{\bf 他のプログラムを起動するプログラム}として実装できる。
+
+図\ref{fig2}に\verb/env/コマンドの仕組みを示す。
+\verb/env/コマンドは自身の環境変数を変更した後、
+目的のコマンドを起動する。
+
+\begin{figure}[hbtp]
+  \begin{center} %センタリングする
+    \includegraphics[scale=0.8]{fig2-crop.pdf}
+    \caption{env プログラムの仕組み}
+    \label{fig2}
+  \end{center}
+\end{figure}
+
+\item C言語プログラムから環境変数を参照する方法
+
+C言語プログラムから環境変数を参照するために、
+以下に紹介する二つの方法が使用できる。
+
+\begin{enumerate}
+\item main関数の仮引数やグローバル変数environを使用する方法
+
+C言語の\verb/main/関数には実は第３引数が存在した。
+\verb/environ/という名前のC言語のグローバル変数が存在する。
+
+\begin{lstlisting}[numbers=none]
+extern char **environ;  // どこかで定義されているenviron変数を使用する準備
+int main(int argc, char *argv[], char *envp[]) { ...
+\end{lstlisting}
+
+図\ref{fig3}にプロセスのメモリ空間にコピーされた環境変数のデータ構造を示す。
+
+\begin{figure}[tbph]
+  \begin{center} %センタリングする
+    \includegraphics[scale=0.8]{fig3-crop.pdf}
+    \caption{環境変数のデータ構造}
+    \label{fig3}
+  \end{center}
+\end{figure}
+
+例えば全ての環境変数を表示するCプログラムは次のように書くことができる。
+
+\lstinputlisting[numbers=none]{envtest1.c}
+
+\item getenv関数を使用する方法
+
+C言語標準ライブラリの\verb/getenv/関数は次のような書式の関数である。
+
+\begin{lstlisting}[numbers=none]
+書式
+#include <stdlib.h>
+char *getenv(char *name);
+\end{lstlisting}
+
+\verb/name/には環境変数名を渡す。
+\verb/getenv/は環境変数の値を示す文字列を指すポインタを返す。
+\verb/name/の環境変数が見つからない場合は\verb/NULL/ポインタを返す。
+次のCプログラムは\verb/LANG/環境変数の値を表示するものである。
+
+\lstinputlisting[numbers=none]{envtest2.c}
+
+\end{enumerate}
+
+\item C言語プログラムから環境変数を操作する方法
+
+自プロセスのメモリ空間に置かれた環境変数のコピーを操作する
+三つのC言語標準ライブラリ関数を紹介する。
+
+\begin{enumerate}
+\item setenv関数
+
+環境変数を新規に作成したり、値を上書きしたりする関数である。
+\verb/overwrite/が\verb/0/の時は新規作成専用になる。
+
+\begin{lstlisting}[numbers=none]
+書式
+#include <stdlib.h>
+int setenv(char *name, char *val, int overwrite);
+
+使用例
+setenv("MYNAME", "sigemura", 1);
+\end{lstlisting}
+
+\verb/name/は環境変数の名前、
+\verb/val/は環境変数にセットする値である。
+\verb/overwrite/は、
+\verb/0/の時に上書き禁止、
+それ以外の時に上書き許可を意味する。
+\verb/setenv/の返す値が\verb/0/は正常、
+それ以外はエラーである。
+
+\item putenv関数
+
+環境変数を新規に作成したり、値を上書きしたりする関数である。
+
+\begin{lstlisting}[numbers=none]
+書式
+#include <stdlib.h>
+int putenv(char *string);
+
+使用例
+putenv("MYNAME=sigemura");
+\end{lstlisting}
+
+\verb/string/は\verb/NAME=VALUE/形式の文字列である
+(それ以外の形式の文字列を渡すとエラーになる)。
+\verb/putenv/の返す値は\verb/0/が正常、それ以外はエラーである。
+\verb/putenv("NAME=VALUE");/は、
+\verb/setenv("NAME","VALUE",1);/と同じ操作を行う。
+
+\item unsetenv関数
+
+環境変数を削除する関数である。
+
+\begin{lstlisting}[numbers=none]
+書式
+#include <stdlib.h>
+int unsetenv(char *name);
+
+使用例
+unsetenv("MYNAME");
+\end{lstlisting}
+
+\verb/name/は環境変数の値である。
+\verb/unsetenv/の返す値は\verb/0/が正常、それ以外はエラーである。
+
+\end{enumerate}
 
 \item 宿題
 
 \begin{enumerate}
-\item 簡易版UNIXコマンドの作成
+\item 上記の実行例を試してみる
 
-UNIXコマンド、{\tt rm}、{\tt mkdir}、{\tt rmdir}、
-{\tt ln}、{\tt mv}の中から３つ以上を選択する。
-各コマンドについて
-上記のシステムコールを使用して簡易版を作ってみる。
-但し、使用方法のエラーチェック、システムコールのエラーチェックは行うこと。
+環境変数を操作するシェルの{\bf 内部コマンド}、{\bf 外部コマンド}を使用してみる。
+下の囲み記事を参考に、
+\verb/LC_TIME/環境変数や\verb/TZ/環境変数を色々試すと面白い。
+例えば、「モスクワ時間、ロシア語表示」で時刻を表示するにはどうしたらよいか？
 
-また、自分が作った簡易版と本物の機能の違いを調べる。
+\item myprintenvプログラム
 
-(\verb/$ man 1 rm/ 等でマニュアルを参照できる）
+\verb/printenv/と同様な働きをする\verb/myprintenv/プログラムを作成する。
+作成したプログラムを印刷して提出する。
 
-\item {\tt rename}システムコールの必要性
+〆切：7月8日(金)
 
-UNIXは Simple is best の思想で作られてきた。
-そのため、専用の機能を用意しなくても既存の機能を組み合わせて実現できる場合は
-専用機能の追加はしないことが多い。
-{\tt rename}システムコールの機能は{\tt link}、{\tt unlink}システムコールの
-組み合わせでも実現できそうだが{\tt rename}システムコールが追加された。
-なぜ追加されたか考えなさい。
 \end{enumerate}
+
+\begin{itembox}[l]{ロケール}
+\verb/LANG/環境変数や\verb/LC_TIME/環境変数にセットする値をロケール名と呼ぶ。
+ロケール名は\verb/"言語コード_国名コード.エンコーディング"/の組み合わせで
+表現される。
+
+言語コードはISO639で定義された2文字コードである(日本語は"ja")。
+詳しくは\verb;https://ja.wikipedia.org/wiki/ISO_639-1;等を参照のこと。
+
+国名コードはISO3166で定義された2文字コードである(日本は"JP")。
+詳しくは\verb;https://ja.wikipedia.org/wiki/ISO_3166-1;等を参照のこと。
+
+エンコーディングは、使用する文字コードの符号化方式を示す。
+エンコーディング方式がターミナルエミュレータの
+テキストエンコーディングと一致していないと文字化けを起こす。
+使用可能なロケールの一覧は\verb/locale -a/コマンドで表示できる。
+\end{itembox}
+
+\begin{itembox}[l]{タイムゾーン}
+\verb/TZ/環境変数にタイムゾーンを表す値をセットする。
+MacOSやUNIXの内部では時刻は協定世界時(UTC)で管理されている。
+時刻を表示する時に現地時間に変換して表示する。
+
+時刻に関係するプログラムは
+協定世界時と現地時間の変換方法を\verb/TZ/環境変数から知ることができる。
+日本の場合はタイムゾーン名が\verb/JST/、協定世界時との時差が$-9$時間なので、
+\verb/TZ=JST-9/となる。
+
+この形式の他に\verb;/usr/share/zoneinfo/;に置いてあるファイル名で
+タイムゾーンを指定することもできる。
+\verb;/usr/share/zoneinfo/Cuba;ファイルが存在するので
+\verb;TZ=Cuba;と指定できる。
+\verb;/usr/share/zoneinfo/Asia/Tokyo;ファイルが存在するので
+\verb;TZ=Asia/Tokyo;と指定できる。
+\end{itembox}
+
 \end{enumerate}
 \end{document}
