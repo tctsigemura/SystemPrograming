@@ -24,10 +24,10 @@
 %\setlength{\columnseprule}{0.4pt}
 %----------------------------------------------------------------------
 \pagestyle{fancy}
-\lhead{2016/05/17}
+\lhead{2016/07/05}
 \rhead{配布資料(\thepage / \pageref{LastPage})}
 \cfoot{}
-\chead{\textgt{システムプログラミング２　第１１回}}
+\chead{\textgt{システムプログラミング２　第１２回}}
 %----------------------------------------------------------------------
 \begin{document}
 \def\lstlistingname{リスト}
@@ -81,17 +81,19 @@ CLICOLOR=1                      # ls コマンド等がカラー出力する(yes
 $ printenv LC_TIME              # 環境変数 LC_TIME の値を確認する
 C                               # C言語標準(米国英語表記)を使用する
 $ date
-Sun Jun 26 11:04:27 JST 2016    # 英語表示で日本時間
-$ ls -l
--rw-r--r--  1 sigemura  staff    319 Jun 26 10:30 Makefile
-$ LC_TIME=ja_JP.UTF-8           # LC_TIME に日本語を表す値をセットして試す
-$ date
-2016年 6月26日 日曜日 11時03分21秒 JST
-$ ls -l
-rw-r--r--  1 sigemura  staff    319  6 26 10:30 Makefile
-$ export TZ=Cuba                # TZ 環境変数を作ってキューバを示す値をセット
-$ date
-2016年 6月25日 土曜日 22時03分26秒 JST      # 日本語表示でキューバ時間
+Tue Jul  5 08:33:53 JST 2016    # 英語表記、日本時間の現在時刻
+$ ls -l Makefile 
+-rw-r--r--  1 sigemura  staff  355 Jun 26 23:02 Makefile
+$ LC_TIME=ja_JP.UTF-8           # LC_TIMEに日本語標記を表す値をセットして試す
+$ date                          # 日本語表記、日本時間の現在時刻を表示する
+2016年 7月 5日 火曜日 08時34分13秒 JST
+$ ls -l Makefile 
+-rw-r--r--  1 sigemura  staff  355  6 26 23:02 Makefile
+$ export TZ=Cuba                # TZ環境変数を作ってキューバ時間を表す値をセット
+$ date                          # 日本語表記、キューバ時間の現在時刻
+2016年 7月 4日 月曜日 19時34分29秒 CDT
+$ ls -l Makefile 
+-rw-r--r--  1 sigemura  staff  355  6 26 10:02 Makefile
 $
 \end{lstlisting}
 このようにプログラムの振る舞いを環境変数でコントロールすることができる。
@@ -213,7 +215,7 @@ $ printenv PATH
 /usr/local/bin:/bin:/usr/bin:.
 $ PATH=$PATH:$HOME/bin             # ホームのbinディレクトリを追加する
 $ printenv PATH
-/usr/local/bin:/bin:/usr/bin:./User/sigemura/bin
+/usr/local/bin:/bin:/usr/bin:.:/User/sigemura/bin
 $
 \end{lstlisting}
 
@@ -232,20 +234,21 @@ $ printenv MYNAME       # MYNAME環境変数を確認 => 存在しない(何も�
 $
 \end{lstlisting}
 
-\item 値を一時的に変更
+\item 環境変数の一時的な作成と値の変更
 
 変数の値を一時的(今回のコマンド実行の期間だけ)に
-変更してコマンド(プログラム)を実行する。
+変更してコマンド(プログラム)を実行したり、
+一時的に環境変数を作ってコマンドを実行したりする。
 
 \begin{lstlisting}[numbers=none]
-$ env 変数名=値 ...  コマンド
+$ env 変数名１=値１ 変数名２=値２ ...  コマンド
 
 実行例
 $ date
 Sun Jul  3 08:35:42 JST 2016
 $ env LC_TIME=ja_JP.UTF-8 TZ=Cuba date    # 日本語表示、キューバ時間でdate実行
 2016年 7月 2日 土曜日 19時36分01秒 CDT
-$ date
+$ date                                    # 環境変数は元通り
 Sun Jul  3 08:36:05 JST 2016
 $
 \end{lstlisting}
@@ -267,9 +270,9 @@ $
 \end{figure}
 
 シェルプロセス(shellプロセス)は
-環境変数を自プロセスのメモリ空間で記憶・管理している。
+環境変数を自プロセスのメモリ空間で記憶・管理する。
 上記の「環境変数の操作」で紹介したコマンド等は、
-シェルのメモリ空間の環境変数・シェル変数を操作するものである。
+シェルのメモリ空間の環境変数を操作するものである。
 このようにシェル自身が処理するコマンドを{\bf 内部コマンド}と呼ぶ。
 
 シェルは入力されたコマンドが内部コマンド以外({\bf 外部コマンド})なら、
@@ -282,13 +285,14 @@ OSカーネルは子プロセスのメモリ空間のどこか（例えばスタ
 
 この仕組みはシェルに限らず全ての{\bf 他のプログラムを起動するプログラム}で
 用いられる仕組みである。
-実は上記の「環境変数の操作」で紹介した操作方法で
+実は上記の「環境変数の操作」で紹介した
 \verb/env/コマンドだけは{\bf 外部コマンド}である。
 \verb/env/コマンドは{\bf 他のプログラムを起動するプログラム}として実装できる。
 
 図\ref{fig2}に\verb/env/コマンドの仕組みを示す。
 \verb/env/コマンドは自身の環境変数を変更した後、
 目的のコマンドを起動する。
+(本当はもう少し効率的な実装が可能である。詳しくは後日、紹介する。)
 
 \begin{figure}[hbtp]
   \begin{center} %センタリングする
@@ -304,10 +308,11 @@ C言語プログラムから環境変数を参照するために、
 以下に紹介する二つの方法が使用できる。
 
 \begin{enumerate}
-\item main関数の仮引数やグローバル変数environを使用する方法
+\item main関数の仮引数envpやグローバル変数environを使用する方法
 
-C言語の\verb/main/関数には実は第３引数が存在した。
-\verb/environ/という名前のC言語のグローバル変数が存在する。
+C言語の\verb/main/関数には実は第３引数\verb/envp/が存在した。
+また、\verb/environ/という名前のC言語のグローバル変数も存在する。
+これらは環境変数の配列を指すポインタである。
 
 \begin{lstlisting}[numbers=none]
 extern char **environ;  // どこかで定義されているenviron変数を使用する準備
@@ -351,6 +356,9 @@ char *getenv(char *name);
 
 自プロセスのメモリ空間に置かれた環境変数のコピーを操作する
 三つのC言語標準ライブラリ関数を紹介する。
+なお、一旦、環境変数の操作を行うと
+\verb/main/の仮引数\verb/envp/は使用できなくなる(値がデタラメになる)。
+グローバル変数\verb/environ/を常に使用するとトラブルが少ない。
 
 \begin{enumerate}
 \item setenv関数
@@ -412,7 +420,7 @@ unsetenv("MYNAME");
 
 \end{enumerate}
 
-\item 宿題
+\item 宿題（＃６）
 
 \begin{enumerate}
 \item 上記の実行例を試してみる
@@ -420,16 +428,18 @@ unsetenv("MYNAME");
 環境変数を操作するシェルの{\bf 内部コマンド}、{\bf 外部コマンド}を使用してみる。
 下の囲み記事を参考に、
 \verb/LC_TIME/環境変数や\verb/TZ/環境変数を色々試すと面白い。
-例えば、「モスクワ時間、ロシア語表示」で時刻を表示するにはどうしたらよいか？
+例えば、「モスクワ時間、ロシア語表記」で現在時刻を表示するにはどうしたらよいか？
 
 \item myprintenvプログラム
 
 \verb/printenv/と同様な働きをする\verb/myprintenv/プログラムを作成する。
-作成したプログラムを印刷して提出する。
-
-〆切：7月8日(金)
 
 \end{enumerate}
+
+「モスクワ時間、ロシア語表記」で現在時刻を表示する手順と、
+作成した\verb/myprintenv/プログラムのソースコードを印刷して提出する。
+
+〆切：7月8日(金)
 
 \begin{itembox}[l]{ロケール}
 \verb/LANG/環境変数や\verb/LC_TIME/環境変数にセットする値をロケール名と呼ぶ。
@@ -445,13 +455,14 @@ unsetenv("MYNAME");
 エンコーディングは、使用する文字コードの符号化方式を示す。
 エンコーディング方式がターミナルエミュレータの
 テキストエンコーディングと一致していないと文字化けを起こす。
+
 使用可能なロケールの一覧は\verb/locale -a/コマンドで表示できる。
 \end{itembox}
 
 \begin{itembox}[l]{タイムゾーン}
 \verb/TZ/環境変数にタイムゾーンを表す値をセットする。
-MacOSやUNIXの内部では時刻は協定世界時(UTC)で管理されている。
-時刻を表示する時に現地時間に変換して表示する。
+MacOSやUNIXの内部では時刻は協定世界時(UTC)で管理されており、
+時刻を表示する時に現地時間に変換して表示している。
 
 時刻に関係するプログラムは
 協定世界時と現地時間の変換方法を\verb/TZ/環境変数から知ることができる。
@@ -464,6 +475,9 @@ MacOSやUNIXの内部では時刻は協定世界時(UTC)で管理されている
 \verb;TZ=Cuba;と指定できる。
 \verb;/usr/share/zoneinfo/Asia/Tokyo;ファイルが存在するので
 \verb;TZ=Asia/Tokyo;と指定できる。
+
+なお、\verb/TZ/環境変数が定義されていない時は、
+OSインストール時などに選択したタイムゾーンが用いられる。
 \end{itembox}
 
 \end{enumerate}
