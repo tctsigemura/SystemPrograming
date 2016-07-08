@@ -1,0 +1,97 @@
+IE4 システムプログラミング資料
+
+1. ターミナルを２つ開いて片方で emacs を起動した状態で ps を実行した例
+
+(1) ２つのターミナル内で実行されている自分のプロセスを表示
+$ ps
+  PID TTY           TIME CMD
+26442 ttys000    0:00.10 -bash
+26662 ttys000    0:01.68 /Applications/Emacs.app/Contents/MacOS/Emacs /Users/si
+26665 ttys001    0:00.01 -bash
+
+(2) ２つのターミナル内で実行されている自分と他人のプロセスを表示
+$ ps a
+  PID   TT  STAT      TIME COMMAND
+26441 s000  Ss     0:00.35 login -pf sigemura
+26442 s000  S      0:00.10 -bash
+26662 s000  S+     0:01.43 /Applications/Emacs.app/Contents/MacOS/Emacs /Users/
+26664 s001  Us     0:00.03 login -pf sigemura
+26665 s001  S      0:00.01 -bash
+26679 s001  R+     0:00.00 ps a
+
+(3) (2)を詳細表示
+$ ps au
+USER       PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+sigemura 26662   0.1  0.3  2728528  56460 s000  S+   11:38AM   0:03.51 /Applica
+root     26708   0.0  0.0  2432960    816 s001  R+   11:43AM   0:00.00 ps au
+sigemura 26665   0.0  0.0  2461020   1288 s001  S    11:39AM   0:00.01 -bash
+root     26664   0.0  0.0  2469632   2904 s001  Us   11:39AM   0:00.03 login -p
+sigemura 26442   0.0  0.0  2461020   1360 s000  S    11:07AM   0:00.10 -bash
+root     26441   0.0  0.0  2469108   2872 s000  Ss   11:07AM   0:00.35 login -p
+
+(4) ターミナルに属していないプロセスも表示（１００以上のプロセスが表示される）
+$ ps x
+  PID   TT  STAT      TIME COMMAND
+  234   ??  S      0:12.99 /usr/libexec/UserEventAgent (Aqua)
+  236   ??  U      1:10.70 /usr/sbin/distnoted agent
+  238   ??  S      1:45.25 /usr/sbin/cfprefsd agent
+  241   ??  S      0:06.09 /usr/sbin/usernoted
+  242   ??  S      0:16.75 /System/Library/PrivateFrameworks/CalendarAgent.fram
+  243   ??  U      0:02.84 /usr/libexec/secinitd
+...
+26553   ??  S      0:14.80 /Applications/Preview.app/Contents/MacOS/Preview
+26558   ??  Ss     0:00.02 /Applications/Preview.app/Contents/XPCServices/com.a
+26559   ??  Ss     0:00.02 /System/Library/Frameworks/ApplicationServices.frame
+26692   ??  S      0:00.03 /System/Library/Frameworks/CoreServices.framework/Fr
+26441 s000  Ss     0:00.35 login -pf sigemura
+26442 s000  S      0:00.10 -bash
+26662 s000  U+     0:07.12 /Applications/Emacs.app/Contents/MacOS/Emacs /Users/
+26664 s001  Us     0:00.03 login -pf sigemura
+26665 s001  S      0:00.02 -bash
+26721 s001  R+     0:00.00 ps x
+
+(5) (4)を他人のプロセスも含めて詳細表示（２００以上のプロセスが表示される）
+$ ps aux
+USER              PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+_windowserver     175   0.6  1.0  4375248 175932   ??  Rs    9May15  56:07.73 /
+sigemura        26662   0.2  0.4  2738332  59756 s000  S+   11:38AM   0:10.39 /
+sigemura          295   0.2  0.3  2880324  51232   ??  S     9May15   1:33.35 /
+root              100   0.2  0.0  2471096   2944   ??  Ss    9May15   5:15.62 /
+sigemura          377   0.1  0.2  2971508  31464   ??  S    10May15  14:07.74 /
+root              194   0.1  0.1  2587752  23016   ??  Ss    9May15   9:37.17 S
+...
+root            26664   0.0  0.0  2469632   2904 s001  Us   11:39AM   0:00.03 l
+sigemura        26559   0.0  0.0  2469040   5376   ??  Ss   11:25AM   0:00.02 /
+sigemura        26558   0.0  0.0  2461364   2544   ??  Ss   11:25AM   0:00.02 /
+
+2. 宿題 No.5
+
+(1) ps コマンドの動作確認をする
+
+   a. オプションが無い場合
+
+   b. x オプションの場合
+
+   c. au オプションの場合
+
+   d. aux または、 auxw オプションの場合
+
+   どのようなプロセスが見えるか観察する
+
+
+(2) kill コマンドを用いてプロセスを終了・一時停止・再開などさせてみる
+
+
+(3) job 制御
+
+   a. ^C や ^Z で何が起こるか、ps コマンドや jobs コマンドで確認する。
+
+   b. フォアグランド、バックグランドの切換え
+
+      ・フォアグランド job をバックグランドに切換える操作はどうやればよいか？
+
+      ・バックグランド job をフォアグランドに切換える操作はどうやればよいか？
+
+
+動作確認には「xclock -update 1」を利用すると分かりやすい。
+
