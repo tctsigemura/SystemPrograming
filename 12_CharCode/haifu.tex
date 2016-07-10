@@ -1,4 +1,12 @@
-\documentclass[a4j,dvipdfmx]{jarticle}
+\ifdefined\kanjiskip
+  \documentclass[uplatex]{jsarticle}
+  \usepackage[uplatex,jis2004]{otf}
+\else
+  \documentclass{ltjsarticle}
+  \usepackage{luatexja-otf}
+  \usepackage[noembed,jis2004]{luatexja-preset}
+\fi
+%\documentclass[a4j,dvipdfmx]{jarticle}
 %----------------------------------------------------------------------
 \usepackage{graphicx}
 %\usepackage{amsmath}
@@ -85,7 +93,7 @@ ASCIIコード表は英字、数字、記号しか含んでいなかったので
 \end{enumerate}
 
 どのコンピュータでも同じ文字データが扱えるように、
-符号化文字集合、符号化方式はISO\footnote{
+符号化文字集合、文字符号化方式はISO\footnote{
 ISO : International Organization for Standardization(国際標準化機構)
 }、JIS\footnote{
 JIS : Japan Industorial Standards(日本工業規格)
@@ -114,7 +122,8 @@ Webブラウザが文字符号化方式の自動判定に成功した例と失�
 \begin{enumerate}
 \item ASCII(American Standard Code for Infomation Interchange)コード表
 
-図\ref{fig2}に示す文字コード表、1963年にアメリカ規格協会(ASCII)が定めた。
+図\ref{fig2}に示す符号化文字集合(character set)のこと。
+1963年にアメリカ規格協会(ASCII)が定めた。
 7ビットで、制御文字、記号、数字、英字大文字、英字小文字を表現できる。
 制御文字と印刷可能文字あわせて128文字が含まれる。
 
@@ -128,7 +137,8 @@ Webブラウザが文字符号化方式の自動判定に成功した例と失�
 
 \item JIS X 0201(通称JIS 8ビットコード)
 
-図\ref{fig3}に示す文字コード表、1969年に日本工業規格(JIS)に定められた。
+図\ref{fig3}に示す符号化文字集合のこと。
+1969年に日本工業規格(JIS)に定められた。
 7ビットで、制御文字、記号、数字、英字大文字、英字小文字、カタカナを表現できる。
 制御文字と印刷可能文字あわせて191文字が含まれる。
 制御文字、記号、数字、英字大文字、英字小文字の範囲は、
@@ -146,7 +156,7 @@ ASCIIと、ほぼ、同じになている。
 
 \item JIS X 0208(通称JIS漢字)
 
-図\ref{fig4}に示す符号化文字のこと。
+図\ref{fig4}に示す符号化文字集合のこと。
 1978年に日本工業規格(JIS)に定められた。
 16ビットで、記号、英数字、かな、漢字などを表現できる。
 {\bf 全角文字}6879文字が登録されている。
@@ -161,7 +171,7 @@ ASCIIと、ほぼ、同じになている。
 
 \item JIS X 0213(通称JIS拡張漢字)
 
-図\ref{fig5}に示す符号化文字集合(character set)のこと。
+図\ref{fig5}に示す符号化文字集合のこと。
 2000年に日本工業規格(JIS)に定められた。
 その後、2004年、2012年に改正されている。
 コード表を２枚にすることで、より多くの文字を格納する。
@@ -199,7 +209,7 @@ JIS X 0208 を包含する上位規格(superset,上位集合)である。
 {\tt
 \begin{tabular}{l c l}
 \fbox{ESC} \fbox{(}  \fbox{B}          & : & ASCII に切換える。 \\
-\fbox{ESC} \fbox{(}  \fbox{J}          & : & JIS X 0201 半角英数に切換える。 \\
+\fbox{ESC} \fbox{(}  \fbox{J}          & : & JIS X 0201 の半角英数に切換える。 \\
 \fbox{ESC} \fbox{\$} \fbox{B}          & : & JIS X 0208 に切換える。 \\
 \fbox{ESC} \fbox{\$} \fbox{(} \fbox{Q} & : & JIS X 0213 の第１面に切換える。 \\
 \fbox{ESC} \fbox{\$} \fbox{(} \fbox{P} & : & JIS X 0213 の第２面に切換える。 \\
@@ -213,9 +223,10 @@ JIS X 0208 を包含する上位規格(superset,上位集合)である。
 \end{center}
 %\end{table}
 
-\hspace{-6mm}{\bf 例：} ``\verb/A亜a\¥/''をISO-2022-JPにエンコーディングした状態
+\hspace{-6mm}{\bf 例：}
+``\verb/A亜a\¥/''をISO-2022-JPにエンコーディングした状態
 
-{\hspace{-4mm}\small\tt\tabcolsep=0mm
+{\hspace{-5mm}\small\tt\tabcolsep=0mm
 \begin{tabular}{c ccc cc ccc cc ccc c ccc}
 \fbox{41H}&                                % A
 \fbox{1BH}&\fbox{24H}&\fbox{42H}&          % ESC $ B
@@ -243,7 +254,7 @@ ESC&'('&'B'\\                               % ESC ( B
 \multicolumn{3}{c}{<ASCIIへ>}&             % ESC ( B
 &                                          % a
 &                                          % \
-\multicolumn{3}{c}{<ローマ字へ>}&          % ESC ( J
+\multicolumn{3}{c}{<JIS X0201へ>}&         % ESC ( J
 &                                          % ¥
 \multicolumn{3}{c}{<ASCIIへ>}              % ESC ( B
 \\
@@ -330,12 +341,14 @@ JIS X 0208 の文字は、JIS漢字コードを
 当初、中国・日本・韓国の漢字を統一(CJK統合漢字)することで、
 16bitで全ての文字にコードを割り振る計画だったが、
 世界中の文字は予想以上に多かったため途中で21bitに変更された。
+CJK統合漢字になっているのでJIS漢字コードとの変換には変換表が必要になる。
 
 \begin{enumerate}
 \item 歴史
 
 1980年代後半から検討され1990年代前半に実用化された。
-現在も世界各地の文字、古い文字、新しい絵文字等が追加され続けている。
+現在も世界各地の文字、古い文字(古代文字)、
+新しい文字(絵文字)等が追加され続けている。
 
 \begin{tabular}{l l l r l }
 Unicode1.0.1 & 1992 & 16bit &  28,359文字 & JIS X 0201,0208,0212の文字収録 \\
@@ -351,8 +364,8 @@ Unicode9.0.0 & 2016 & 21bit & 128,172文字 & \\
 
 \item 符号化文字集合
 
-図\ref{fig6}に示すように現在のUnicodeは、
-文字コード表を17面✕(5bit)、256区(8bit)、256点(8bit)で構成している。
+図\ref{fig6}に示すように
+Unicodeの文字コード表は17面(5bit)、256区(8bit)、256点(8bit)で構成される。
 この表に最大111万文字を収容可能である。
 半角ASCII文字から始まり、半角文字も全角文字もこの表に収録されている。
 
@@ -373,7 +386,7 @@ Unicodeスカラ値は、\verb/"U+1234"/のように
 当初はBMPだけで全ての文字を格納する予定であった。
 U+0000〜U+007FはASCIIコードと同じ配列になっている。
 Java言語の\verb/char/型が16bitなのも、
-16bitのUnicodeを納することを前提に設計されたためである。
+16bitのUnicodeを格納することを前提に設計されたためである。
 
 {\bf なお、完全なコード一覧は、
 \url{https://ja.wikipedia.org/wiki/Unicode}
@@ -382,7 +395,7 @@ Java言語の\verb/char/型が16bitなのも、
 
 \item 文字符号化方式
 
-ユニコード用の文字符号化方式(UTF:Unicode Transformation Format)が
+Unicode用の文字符号化方式(UTF:Unicode Transformation Format)が
 定められている。
 多くの方式が定められているが、代表的な方式は以下の３つである。
 
@@ -403,23 +416,47 @@ UTF-32 & : & Unicodeの上位に0を付加し32bitに符号化する。\\
 符号化の結果は1〜4バイトになる。
 
 {\tt%\small%\tabcolsep=1mm
-\begin{tabular}{|l|l|c|}
+\begin{tabular}{|l|cccc|c|}
 \hline
 \multicolumn{1}{|c}{Unicode} &
-\multicolumn{1}{|c}{UTF-8(ビット列で表記)} &
+\multicolumn{4}{|c}{UTF-8(ビット列で表記)} &
 \multicolumn{1}{|c|}{バイト数} \\
 \hline
-U+0000〜U+007F        & 0xxxxxxx                                         & 1 \\
-U+0080〜U+07FF        & 110yyyyx 10xxxxxx                                & 2 \\
-U+0800〜U+FFFF        & 1110yyyy 10yxxxxx 10xxxxxx                       & 3 \\
-U+10000〜U+1FFFFF     & 11110yyy 10yyxxxx 10xxxxxx 10xxxxxx              & 4 \\
-%U+200000〜U+3FFFFFF   & 111110yy 10yyyxxx 10xxxxxx 10xxxxxx 10xxxxxx     & 5 \\
-%U+4000000〜U+7FFFFFFF & 1111110y 10yyyyxx 10xxxxxx 10xxxxxx 10xxxxxx     & 6 \\
-%                      & 10xxxxxx & \\
+U+0000〜U+007F    & 0xxxxxxx &          &          &          & 1 \\
+例                &          &          &          &          &   \\
+　U+0000          & 00000000 & \multicolumn{3}{l|}{(00H)}     &   \\
+　U+007F          & 01111111 & \multicolumn{3}{l|}{(7FH)}     &   \\
+\hline
+U+0080〜U+07FF    & 110yyyyx & 10xxxxxx &          &          & 2 \\
+例                &          &          &          &          &   \\
+　U+0080          & 11000010 & 10000000 & \multicolumn{2}{l|}{(C2H 80H)} & \\
+　U+07FF          & 11011111 & 10111111 & \multicolumn{2}{l|}{(DFH BFH)} & \\
+\hline
+U+0800〜U+FFFF    & 1110yyyy & 10yxxxxx & 10xxxxxx &          & 3 \\
+例                &          &          &          &          &   \\
+　U+0800          & 11100000 & 10100000 & 10000000 &          &   \\
+                  & (E0H)    & (A0H)    & (80H)    &          &   \\
+　U+FFFF          & 11101111 & 10111111 & 10111111 &          &   \\
+                  & (EFH)    & (BFH)    & (BFH)    &          &   \\
+\hline
+U+10000〜U+1FFFFF & 11110yyy & 10yyxxxx & 10xxxxxx & 10xxxxxx & 4 \\
+例                &          &          &          &          &   \\
+　U+10000         & 11110000 & 10010000 & 10000000 & 10000000 &   \\
+　                & (F0H)    & (90H)    & (80H)    & (80H)    &   \\
+　U+1FFFFF        & 11110111 & 10111111 & 10111111 & 10111111 &   \\
+                  & (F7H)    & (BFH)    & (BFH)    & (BFH)    &   \\
 \hline
 \end{tabular}}
 
 \end{enumerate}
+
+\item 実行例
+
+\lstinputlisting[numbers=none]{example.txt}
+
+森\UTF{9DD7}外と内田百\UTF{9592}とが\UTF{9AD9}島屋に行くところを想像した。
+
+\CID{7652}飾区の\CID{13706}野家
 
 \end{enumerate}
 \end{document}
