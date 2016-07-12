@@ -1,0 +1,249 @@
+\documentclass[a4j,dvipdfmx]{jarticle}
+%----------------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{fancybox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{color}
+\usepackage{multicol}
+\usepackage{listings,jlisting}
+%----------------------------------------------------------------------
+\setlength{\topmargin}{-0.5in}
+%\addtolength{\headheight}{1cm}
+%%\setlength{\headsep}{0mm}
+%\setlength{\oddsidemargin}{-0.5in}
+%%\setlength{\evensidemargin}{-0.5in}
+%\addtolength{\textwidth}{1.5in}
+\addtolength{\textheight}{1in}
+%----------------------------------------------------------------------
+%\setlength{\columnsep}{2zw}
+%\setlength{\columnseprule}{0.4pt}
+%----------------------------------------------------------------------
+\pagestyle{fancy}
+\lhead{2016/04/12}
+\rhead{(\thepage / \pageref{LastPage})}
+\cfoot{}
+\chead{\textgt{システムプログラミン２グ　課題１解答}}
+%----------------------------------------------------------------------
+\begin{document}
+\def\lstlistingname{リスト}
+\lstset{language=C,
+%  numbers=left,
+  basicstyle={\small\ttfamily},
+%  basicstyle={\ttfamily},
+  columns=[l]{fullflexible},
+  keepspaces=true,
+%  showspaces=true,
+  frame=shadowbox
+}
+\lstinputlisting[caption=mycp（解答例１：真っ先に思いつく方法）]{mycp1.c}
+
+\begin{lstlisting}[caption=実行例]
+$ mycp                                     <-- コマンド行引数がない場合
+Usage: mycp <srcfile> <dstfile>
+$ mycp a.txt                               <-- コマンド行引数が一つしかない場合
+Usage: mycp <srcfile> <dstfile>
+$ mycp z.txt a.txt                         <-- コピー元が存在しない場合
+z.txt: No such file or directory
+$ mycp a.txt /a.txt                        <-- コピー先が書き込み禁止の場合
+/a.txt: Permission denied
+$ echo aaa bbb > a.txt                     <-- a.txt を作って
+$ mycp a.txt b.txt                         <-- b.txt にコピーしてみる
+$ cat b.txt                                <-- b.txt の内容を確認
+aaa bbb
+$ echo ccc ddd > c.txt                     <-- c.txt を作って
+$ mycp c.txt b.txt                         <-- b.txt に上書きしてみる
+$ cat b.txt                                <-- b.txt の内容を確認
+ccc ddd
+$
+\end{lstlisting}
+
+\newpage
+
+\lstinputlisting[caption=mycp（解答例２：エラー処理を関数化）]{mycp2.c}
+
+\begin{multicols}{2}
+\begin{lstlisting}[caption=解答例２の改悪バージョン１）]
+// インデントが余計に深くなる
+int main(int argc, char *argv[]) {
+  if (argc != 3) usage();
+  else {
+    FILE *fps = eOpen(argv[1], "rb");
+    FILE *fpd = eOpen(argv[2], "wb");
+
+    fileCopy(fps, fpd);
+
+    fclose(fps);
+    fclose(fpd);
+  }
+  
+  return 0;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption=解答例２の改悪バージョン２]
+// その上、エラー処理の存在に気付き難い
+int main(int argc, char *argv[]) {
+  if (argc == 3) {
+    FILE *fps = eOpen(argv[1], "rb");
+    FILE *fpd = eOpen(argv[2], "wb");
+
+    fileCopy(fps, fpd);
+
+    fclose(fps);
+    fclose(fpd);
+  }
+  else usage();     // この行が目立たない
+
+  return 0;
+}
+\end{lstlisting}
+\end{multicols}
+
+\newpage
+
+%\lstinputlisting[caption=mydiff の解答例（その１）]{mydiff2.c}
+\begin{lstlisting}[caption=mydiff の解答例（その１）]
+// mydiff.c : 異なる最初の行を表示する
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAXLINE 100
+
+// 使用方法を表示して終了する関数
+void usage(char *cmd) { ... }
+
+// エラーチェック付きの拡張 fopen
+FILE *eOpen(char *fname, char *mode) { ... }
+
+// 異なる行を表示する
+void printDiffLine(int l, char *line1, char *line2) {
+  printf("%d行\n", l);
+  printf("> %s", line1);
+  printf("---\n");
+  printf("> %s", line2);
+  exit(1);
+}
+
+int main(int argc, char *argv[]) {
+  char buf1[MAXLINE];
+  char buf2[MAXLINE];
+
+  if (argc!=3) usage(argv[0]);         // エラーになる場合を早めに判断して排除
+
+  FILE *fp1 = eOpen(argv[1], "r");
+  FILE *fp2 = eOpen(argv[2], "r");
+
+  for (int ln=1; fgets(buf1, MAXLINE, fp1)!=NULL && 
+                 fgets(buf2, MAXLINE, fp2)!=NULL;   ln++) {
+
+    if (strcmp(buf1, buf2)!=0)
+      printDiffLine(ln, buf1, buf2);
+  }
+
+  // ファイルは自動的にクローズされる
+  return 0;
+}
+\end{lstlisting}
+
+
+\begin{multicols}{2}
+\begin{lstlisting}[caption=実行例]
+$ cat a.txt
+hello
+world
+!!
+$ cat b.txt
+hello
+World
+!!
+$ cat c.txt
+hello
+world
+!
+$ cat d.txt
+hello
+world
+$ cat e.txt
+hello
+world
+!!
+$ mydiff a.txt
+Usage: mydiff <file1> <file2>
+$ mydiff a.txt b.txt
+2行
+> world
+---
+> World
+$ mydiff a.txt c.txt
+3行
+> !!
+---
+> !
+$ mydiff2 a.txt d.txt
+$
+\end{lstlisting}
+\end{multicols}
+
+\newpage
+
+%\lstinputlisting[caption=mydiff の解答例（その２）]{mydiff.c}
+\begin{lstlisting}[caption=mydiff の解答例（その２）]
+// mydiff.c : 異なる最初の行を表示する
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAXLINE 100
+
+// 使用方法を表示して終了する関数
+void usage(char *cmd) { ... }
+
+// エラーチェック付きの拡張 fopen
+FILE *eOpen(char *fname, char *mode) { ... }
+
+// 異なる行を表示する
+void printDiffLine(int l, char *line1, char *line2) { ... }
+
+// 短いファイルを表示する
+void shortFile(char *fname) {
+  printf("%s が短い\n", fname);
+  exit(1);
+}
+
+int main(int argc, char *argv[]) {
+  if (argc!=3) usage(argv[0]);
+
+  FILE *fp1 = eOpen(argv[1], "r");
+  FILE *fp2 = eOpen(argv[2], "r");
+
+  for (int ln=1; ; ln++) {
+    char buf1[MAXLINE];                      // 変数の有効範囲は
+    char buf2[MAXLINE];                      //   なるべく狭くする
+
+    char *r1 = fgets(buf1, MAXLINE, fp1);
+    char *r2 = fgets(buf2, MAXLINE, fp2);
+
+    if (r1==NULL && r2==NULL) break;
+    if (r1==NULL) shortFile(argv[1]);
+    if (r2==NULL) shortFile(argv[2]);
+
+    if (strcmp(buf1, buf2)!=0)
+      printDiffLine(ln, buf1, buf2);
+  }
+
+  return 0;
+}
+
+/* 実行例
+$ mydiff a.txt d.txt
+d.txt が短い
+$ mydiff a.txt e.txt
+$
+*/
+\end{lstlisting}
+
+\end{document}
+
