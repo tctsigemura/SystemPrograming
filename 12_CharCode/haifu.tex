@@ -1,7 +1,7 @@
-%\documentclass[a4j,dvipdfmx]{jarticle}
-\documentclass[uplatex,a4j,dvipdfmx]{ujarticle}
+\documentclass[a4j,dvipdfmx]{jarticle}
+%\documentclass[uplatex,a4j,dvipdfmx]{ujarticle}
 %\documentclass[uplatex,a4j,dvipdfmx]{jsarticle}
-\usepackage[uplatex,jis2004]{otf}
+%\usepackage[uplatex,jis2004]{otf}
 %----------------------------------------------------------------------
 \usepackage{graphicx}
 %\usepackage{amsmath}
@@ -61,9 +61,8 @@
 文字をコンピュータで表現するためには、
 １年生で学んだASCIIコード表のような表を用いる。
 ASCIIコード表は英字、数字、記号しか含んでいなかったので、
-日本語や世界各国の文字を全て表すには不十分である。
-そこで、ASCIIコード表の他に様々な文字コード表が用いられてきた。
-
+日本語や世界各国の文字を表すには不十分である。
+そこで、ASCIIコード表の他に様々な文字コード表が用いられる。
 次の手順で文字コード表を決める。
 
 \begin{enumerate}
@@ -75,7 +74,7 @@ ASCIIコード表は英字、数字、記号しか含んでいなかったので
 \item 文字に番号を付ける
 
 文字集合に含まれる全ての文字に番号を付ける。
-番号付けされた文字の集合を{\bf 符号化文字集合}と呼ぶ。
+番号付けされた文字の集合を{\bf 符号化文字集合(coded character set)}と呼ぶ。
 
 \item 番号をビット列に変換する方法を決める。
 
@@ -104,8 +103,11 @@ Webブラウザが文字符号化方式の自動判定に成功した例と失�
 
 \begin{figure}[hbtp]
 \begin{center}
-\fbox{\includegraphics[scale=0.4]{screen1.png}}
-~~\fbox{\includegraphics[scale=0.4]{screen2.png}}
+\begin{tabular}{c c}
+\fbox{\includegraphics[scale=0.4]{screen1.png}} &
+\fbox{\includegraphics[scale=0.4]{screen2.png}} \\
+(a) 正しく判定できた & (b) 正しく判定できなかった \\
+\end{tabular}
 \caption{文字化けの例}
 \label{fig1}
 \end{center}
@@ -116,9 +118,9 @@ Webブラウザが文字符号化方式の自動判定に成功した例と失�
 \item 日本で使用される符号化文字集合
 
 \begin{enumerate}
-\item ASCII(American Standard Code for Infomation Interchange)コード表
+\item ASCII(American Standard Code for Infomation Interchange)文字コード表
 
-図\ref{fig2}に示す符号化文字集合(character set)のこと。
+図\ref{fig2}に示す符号化文字集合(coded character set)のこと。
 1963年にアメリカ規格協会(ASCII)が定めた。
 7ビットで、制御文字、記号、数字、英字大文字、英字小文字を表現できる。
 制御文字と印刷可能文字あわせて128文字が含まれる。
@@ -135,7 +137,7 @@ Webブラウザが文字符号化方式の自動判定に成功した例と失�
 
 図\ref{fig3}に示す符号化文字集合のこと。
 1969年に日本工業規格(JIS)に定められた。
-7ビットで、制御文字、記号、数字、英字大文字、英字小文字、カタカナを表現できる。
+8ビットで、制御文字、記号、数字、英字大文字、英字小文字、カタカナを表現できる。
 制御文字と印刷可能文字あわせて191文字が含まれる。
 制御文字、記号、数字、英字大文字、英字小文字の範囲は、
 ASCIIと、ほぼ、同じになている。
@@ -188,7 +190,7 @@ JIS X 0208 を包含する上位規格(super set,上位集合)である。
 
 \item 日本で使用される文字符号化方式(character encoding scheme)
 
-文字データをファイルに格納したり通信路に送信したりスルとき、
+文字データをファイルに格納したり通信路に送信したりするとき、
 どんなバイト列に対応付けるか考える必要がある。
 
 \begin{enumerate}
@@ -303,7 +305,7 @@ JIS X 0208 の文字は、JIS漢字コードを
 計算で変換できるが若干複雑である。
 
 「ISO-2022-JPより短くエンコーディングできる」、
-「半角カナを表現できる」等のメリットがある。
+「半角カナを1バイトで表現できる」等のメリットがある。
 
 {\bf 例：} ``\verb/A亜a¥¥/''をShift\_JISにエンコーディングした状態
 
@@ -396,8 +398,8 @@ Unicode用の文字符号化方式(UTF:Unicode Transformation Format)が
 多くの方式が定められているが、代表的な方式は以下の３つである。
 
 \begin{tabular}{l c l }
-UTF-8  & : & 半角英数字が小さく符号化できる。\\
-       &   & 最もよく使用される方式である。\\
+UTF-8  & : & 符号化結果は8bit,16bit,24bit,32bitのどれかになる。\\
+       &   & 最もよく使用される方式である。半角英数字が小さく符号化できる。\\
 UTF-16 & : & 00面を16bitに、その他は32bitに符号化する。\\
        &   & Unicodeが21bitになってから、Javaのchar型に使用されている。\\
 UTF-32 & : & Unicodeの上位に0を付加し32bitに符号化する。\\
@@ -444,10 +446,73 @@ U+10000〜U+1FFFFF & 11110yyy & 10yyxxxx & 10xxxxxx & 10xxxxxx & 4 \\
 
 \newpage
 
+\item 文字コード変換コマンド(iconv)
+
+UNIXやMacでは、iconv\footnote{
+International Codeset Conversion Library に付属する
+文字コード変換プログラムである。
+}%コマンドや、nkf\footnote{Network Kanji Filter}
+コマンドを
+使用して文字符号化方式（文字コード）を変換することができる。
+次に、iconvコマンドの使い方を簡単に説明する。
+
+\begin{lstlisting}[numbers=none]
+書式１： iconv [-f ENCODE] [-t ENCODE] [テキストファイル ...]
+
+書式２： iconv -l
+
+説明： ENCODE は文字符号化方式を表す文字列である。
+
+       書式１の場合、-f ENCODE で指定される符号化方式のデータを入力し、
+       -t ENCODE で指定される符号化方式に変換し、標準出力に出力する。
+       テキストファイルが指定されない場合は標準入力からデータを入力する。
+
+       書式２は、iconvが扱うことができる文字符号化方式の一覧を表示する。
+
+実行例：
+$ emacs utf8.txt                                   # 何かテキストファイルを作る
+$ iconv -f UTF-8 -t ISO-2022-JP utf8.txt > iso.txt # ISO-2022-JPに変換する
+\end{lstlisting}
+
+\item 16進ダンプコマンド(hexdump)
+
+hexdumpコマンドはファイルか標準入力のバイト列を16進数に変換して表示する。
+次に簡単な説明と実行例を示す。
+
+\begin{lstlisting}[numbers=none]
+書式： hexdump [オプション] [ファイル ...]
+
+説明： hexdump は、ファイルの内容を16進数に変換して標準出力に出力する。
+       [ファイル ...] が省略された場合はファイルの代わりに標準入力を使用する。
+
+実行例：
+$ cat ascii.txt 
+ABCDEFG
+$ hexdump ascii.txt 
+0000000 41 42 43 44 45 46 47 0a                        
+0000008
+$ iconv -f UTF-8 -t UTF-32BE ascii.txt  | hexdump
+0000000 00 00 00 41 00 00 00 42 00 00 00 43 00 00 00 44
+0000010 00 00 00 45 00 00 00 46 00 00 00 47 00 00 00 0a
+0000020
+$ iconv -f UTF-8 -t UTF-32LE ascii.txt  | hexdump 
+0000000 41 00 00 00 42 00 00 00 43 00 00 00 44 00 00 00
+0000010 45 00 00 00 46 00 00 00 47 00 00 00 0a 00 00 00
+0000020
+$
+
+# UTF-32BE : ビッグエンディアン(上位桁からのバイト順)
+# UTF-32LE : リトルエンディアン(下位桁からのバイト順)
+\end{lstlisting}
+
+\newpage
+
 \item 宿題
 
-半角英数字、半角カナ、全角カナ、漢字、バックスラッシュ、
-円記号等を色々な文字を含むテキストファイルを観察する。
+半角英数字、
+%半角カナ、
+全角カナ、全角漢字、半角バックスラッシュ(ASCII)、
+半角円記号(JIS X 0201)等、色々な文字を含むテキストファイルを観察する。
 
 \begin{enumerate}
 \item ファイルの作成
@@ -457,14 +522,65 @@ U+10000〜U+1FFFFF & 11110yyy & 10yyxxxx & 10xxxxxx & 10xxxxxx & 4 \\
 C言語やJava言語を入力するとき、
 バックスラッシュ、円記号の間違えをおこさないように、
 IE電算のMacのemacsでは円マークが入力できないようにカスタマイズしてある。
-}、
-半角カナが表示できないかも知れない\footnote{
-動作確認していない。
-}等の問題がある。
+}ので、
+%半角カナが表示できないかも知れない\footnote{
+%動作確認していない。
+%}等の問題がある。
 Mac標準の「テキストエディット」、または、「vi(vim)」を使用して
 色々な文字を含むテキストファイルを作成する。
+テキストエディット（[ランチャー]→[その他]→[テキストエディット]）では、
+[¥]で'¥'が、[Option]+[¥]で'$\backslash$'が入力できる。
 
+\begin{lstlisting}[numbers=none]
+$ cat x0208UTF8.txt
+0Aa!
+あア亜院
+a\¥A
+$
+\end{lstlisting}
 
+\item 様々な文字符号化方式に変換し結果を16進数ダンプして確認する。
+
+\begin{lstlisting}[numbers=none]
+$ iconv -f UTF-8 -t UTF-32BE x0208UTF8.txt | hexdump
+0000000 00 00 00 30 00 00 00 41 00 00 00 61 00 00 00 21
+0000010 00 00 00 0a 00 00 30 42 00 00 30 a2 00 00 4e 9c
+0000020 00 00 96 62 00 00 00 0a 00 00 00 61 00 00 00 5c
+0000030 00 00 00 a5 00 00 00 41 00 00 00 0a            
+000003c
+$
+\end{lstlisting}
+
+\item 16進数ダンプの内容を解析する。
+
+\begin{lstlisting}[numbers=none]
+// UTF-32 に変換した結果（Unicodeのコードポイントと対応がわかりやすい）
+00 00 00 30 : 0  (U+0030) : BMP（ASCII領域）
+00 00 00 41 : A  (U+0041) : BMP（ASCII領域）
+00 00 00 61 : a  (U+0061) : BMP（ASCII領域）
+00 00 00 21 : !  (U+0021) : BMP（ASCII領域）
+00 00 00 0a : LF (U+000a) : BMP（ASCII領域）
+00 00 30 42 : あ (U+3042) : BMP（かな領域）
+00 00 30 a2 : ア (U+30a2) : BMP（かな領域）
+00 00 4e 9c : 亜 (U+4e9c) : BMP（CJK統合漢字領域）
+00 00 96 62 : 院（U+9662) : BMP（CJK統合漢字領域）
+00 00 00 0a : LF (U+000a) : BMP（ASCII領域）
+00 00 00 61 : a  (U+0061) : BMP（ASCII領域）
+00 00 00 5c : \  (U+005c) : BMP（ASCII領域）
+00 00 00 a5 : ¥  (U+00a5) : BMP（全角・半角領域）
+00 00 00 41 : A  (U+0041) : BMP（ASCII領域）
+00 00 00 0a : LF (U+000a) : BMP（ASCII領域）
+\end{lstlisting}
+
+\item 上記の変換と解析を幾つかの文字符号化方式について確認する。
+（UTF-8、ISO-2022-JP、SJIS、 EUC-JP、...）
+
+\item EUC-JP に変換した後 UTF-8 に戻すとどうなるか確認する。
+
+\begin{lstlisting}[numbers=none]
+$ iconv -f UTF-8 -t EUC-JP x0208UTF8.txt | iconv -f EUC-JP -t UTF-8 | hexdump
+$ iconv -f UTF-8 -t EUC-JP x0208UTF8.txt | iconv -f EUC-JP -t UTF-8
+\end{lstlisting}
 
 \end{enumerate}
 
