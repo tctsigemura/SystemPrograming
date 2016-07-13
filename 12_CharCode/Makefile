@@ -9,7 +9,7 @@ haifu.pdf: haifu.tex Makefile ascii.pdf jisx0201.pdf jisx0208.pdf jisx0213.pdf u
 	dvipdfmx haifu.dvi
 #	open haifu.pdf
 
-kaitou.pdf: kaitou.tex myprintenv.c
+kaitou.pdf: kaitou.tex
 	platex kaitou.tex
 	platex kaitou.tex
 	dvipdfmx kaitou.dvi
