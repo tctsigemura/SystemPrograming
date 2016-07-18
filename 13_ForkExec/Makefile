@@ -1,6 +1,8 @@
 all:	haifu.pdf kaitou.pdf
 
-haifu.pdf: haifu.tex forktest.c fork-crop.pdf
+haifu.pdf: haifu.tex exectest1.c exectest2.c exectest3.c exectest4.c \
+           exectest5.c forktest.c forkexec1.c forkexec2.c forkexec3.c \
+           exec-crop.pdf fork-crop.pdf fork-exec-crop.pdf
 	platex haifu.tex
 	platex haifu.tex
 	dvipdfmx haifu.dvi
