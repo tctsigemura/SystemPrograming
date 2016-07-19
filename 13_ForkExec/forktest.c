@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <unistd.h>
+#include <stdio.h>         // printf, fprintf のために必要
+#include <unistd.h>        // fork のために必要
 
 int main() {
   int x = 10;

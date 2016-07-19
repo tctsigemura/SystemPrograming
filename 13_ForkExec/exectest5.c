@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>    // open のために必要
+#include <stdio.h>         // perror のために必要
+#include <unistd.h>        // execve のために必要
+#include <fcntl.h>         // open のために必要
 
 extern char **environ;
 char *args[] = { "echo", "aaa", "bbb", NULL };    // "$ echo aaa bbb" に相当

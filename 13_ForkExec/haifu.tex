@@ -66,18 +66,18 @@ fork-exec方式を実現するためには、
 メモリ再配置のためのハードウェア機構をCPUが持っている必要がある。
 そのため組込用の小さなコンピュータ等ではspawn方式しか選択肢がない場合がある。
 
-最近のUNIX系のOSではspawn方式も使用できるようになっている。
+最近は、UNIX系OSでもspawn方式も使用できるようになっている。
 次にMacの\verb/posix_spawn/システムコールを紹介する。
 
 \begin{lstlisting}[numbers=none]
 書式： #include <spawn.h>
        int posix_spawn(int * pid, char *path,
          posix_spawn_file_actions_t *file_actions,  posix_spawnattr_t *attrp,
-         char * argv[restrict], char * envp[restrict]);
+         char * argv[], char * envp[]);
 
 解説： 新しいプロセスを作り path で指定したプログラムを実行する。
        pid は新しいプロセスのプロセス番号を格納する変数を指すポインタ。
-       file_action, attrp はプロセスの初期化を指示するデータ構造へのポインタ。
+       file_actions, attrp はプロセスの初期化を指示するデータ構造へのポインタ。
        argv, envp は実行されるプログラムの main 関数の argv, envp に渡すデータ。
 \end{lstlisting}
 

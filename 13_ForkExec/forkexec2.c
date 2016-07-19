@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h>                    // perror のために必要
 #include <stdlib.h>                   // exit のために必要
 #include <unistd.h>                   // fork, execve のために必要
 #include <sys/wait.h>                 // wait のために必要
