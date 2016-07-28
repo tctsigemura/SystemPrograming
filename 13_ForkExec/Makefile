@@ -8,7 +8,7 @@ haifu.pdf: haifu.tex exectest1.c exectest2.c exectest3.c exectest4.c \
 	dvipdfmx haifu.dvi
 #	open haifu.pdf
 
-kaitou.pdf: kaitou.tex
+kaitou.pdf: kaitou.tex kadai.c kadai2.c
 	platex kaitou.tex
 	platex kaitou.tex
 	dvipdfmx kaitou.dvi
@@ -21,4 +21,4 @@ test.pdf: test.tex
 #	open test.pdf
 
 clean:
-	rm -f *.dvi *.log *.aux *~
+	rm -f *.dvi *.log *.aux *~ kadai kadai2

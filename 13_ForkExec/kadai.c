@@ -9,44 +9,36 @@ char *args[] = { "date", NULL };                  // date プログラムの arg
 extern char **environ;                            // 自分の環境変数
 
 int main(int argc, char *argv[], char *envp[]) {
-  // 各コマンド行引数の組について
-  for (int i=1; i<argc; i=i+2) {
-    // 分身をつくる
-    int pid = fork();
-    if (pid < 0) {
-      perror(argv[0]);
-      return 1;
+  for (int i=1; i<argc; i=i+2) {                  // コマンド行引数の各組について
+    int pid = fork();                             // 分身(子プロセス)をつくる
+    if (pid < 0) {                                // fork に失敗した場合は
+      perror(argv[0]);                            //   fork のエラーメッセージ
+      return 1;                                   //   エラー終了する
     }
-    
-    // 親子プロセスで動きを変える
     if (pid != 0) {                               // 親プロセスなら
-      int status;
+      int status;                                 //   子プロセスの終了を待つ
       wait(&status);
     } else {                                      // 子プロセスなら
-      // 環境変数を変更する
-      if (putenv(argv[i]) < 0) {
-	perror(argv[i]);                          // putenv が失敗した場合
-	return 1;
+      if (putenv(argv[i]) < 0) {                  //   環境変数を変更する
+	perror(argv[i]);                          //   putenv が失敗した場合
+	return 1;                                 //   エラー終了する
       }
-
-      // ファイル名がある場合のみリダイレクトする
-      if (argv[i+1]!=NULL) {
-	close(1);
-	int fd = open(argv[i+1],
+      if (argv[i+1]!=NULL) {                      //   ファイル名あればリダイレクト処理
+	close(1);                                 //     標準出力をクローズし
+	int fd = open(argv[i+1],                  //     ファイルをオープンする
 		      O_WRONLY|O_CREAT|O_TRUNC, 0644);
-	if (fd < 0) {
-	  perror(argv[i+1]);                      // open のエラーメッセージ
-	  return 1;
+	if (fd < 0) {                             //     open がエラーなら
+	  perror(argv[i+1]);                      //       エラーメッセージを出力し
+	  return 1;                               //       エラー終了する
 	} else if (fd != 1) {
-	  fprintf(stderr, "リダイレクト失敗\n");  // エラー原因不明の場合
-	  return 1;
+	  fprintf(stderr, "リダイレクト失敗\n");   //     原因不明のエラーなら
+	  return 1;                               //       エラー終了する
 	}
       }
-
-      // date プログラムを実行する
-      execve(execpath, args, environ);
-      perror(execpath);
-      return 1;
+      execve(execpath, args, environ);            // date プログラムに変身する
+      // ここが実行されるなら execve でエラーが発生（変身に失敗）
+      perror(execpath);                           // エラーメッセージを出力して
+      return 1;                                   // エラー終了する
     }
   }
   return 0;
