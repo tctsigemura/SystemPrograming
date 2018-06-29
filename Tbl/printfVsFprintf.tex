@@ -1,0 +1,20 @@
+\RequirePackage{luatex85}
+\documentclass{standalone}
+\usepackage{luatexja}                              % lualatex の場合
+\usepackage[hiragino-pron]{luatexja-preset}        % ヒラギノフォント
+\def\|{\verb|} %|
+\begin{document}
+\begin{tabular}{l|l|l}
+\hline\hline
+\multicolumn{1}{c}{\emph{標準ストリーム}} &
+\multicolumn{1}{|c}{\emph{同じ意味の呼出し}} &
+\multicolumn{1}{|c}{\emph{役割り}} \\
+\hline
+\|scanf(...)|   & \|fscanf(stdin, ...)|   & 書式付きの入力  \\
+\|getchar()|    & \|fgetc(stdin)|         & 1文字入力       \\
+\|-|            & \|fgets(stdin, ...)|    & 1行入力         \\
+\|printf(...)|  & \|fprintf(stdout, ...)| & 書式付きの出力  \\
+\|putchar(c)|   & \|fputc(c, stdout)|     & 1文字出力       \\
+\|puts(buf)|    & \|fputs(buf, stdout)|   & 1行出力       \\
+\end{tabular}
+\end{document}

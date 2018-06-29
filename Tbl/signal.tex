@@ -1,0 +1,28 @@
+\RequirePackage{luatex85}
+\documentclass[border=1mm]{standalone}
+\usepackage{luatexja}                              % lualatex の場合
+\usepackage[hiragino-pron]{luatexja-preset}        % ヒラギノフォント
+\newcommand{\bs}{\texttt{\char'134}}  % バックスラッシュを表示するコマンド
+\def\|{\verb|} %|
+\begin{document}
+\begin{tabular}{r | l | l | l}\hline\hline
+\multicolumn{1}{c|}{番号} &
+\multicolumn{1}{c|}{記号名} &
+\multicolumn{1}{c|}{デフォルト} &
+\multicolumn{1}{c}{説明} \\\hline
+1  & \|SIGHUP|  & 終了       & プロセスが終了していないときログアウトした． \\
+2  & \|SIGINT|  & 終了       & ターミナルでCtrl-Cが押された． \\
+3  & \|SIGQUIT| & コアダンプ & ターミナルでCtrl-{\bs}が押された． \\
+4  & \|SIGILL|  & コアダンプ & 不正な機械語命令を実行した． \\
+8  & \|SIGFPE|  & コアダンプ & 演算でエラーが発生した． \\
+9  & \|SIGKILL| & 終了   & 強制終了（\emph{ハンドリングの変更ができない}）． \\
+10 & \|SIGBUS|  & コアダンプ & 不正なアドレスをアクセスした場合など．\\
+11 & \|SIGSEG|  & コアダンプ & 不正なアドレスをアクセスした場合など．\\
+14 & \|SIGALRM| & 終了       & \|alarm()|で指定した時間が経過した． \\
+15 & \|SIGTERM| & 終了       & 終了． \\
+17 & \|SIGSTOP| & 停止   & 一時停止（\emph{ハンドリングの変更ができない}）． \\
+18 & \|SIGTSTP| & 停止       & ターミナルでCtrl-Zが押された． \\
+19 & \|SIGCONT| & 無視       & 一時停止中なら再開する． \\
+20 & \|SIGCHLD| & 無視       & 子プロセスの状態が変化した． \\
+\end{tabular}
+\end{document}

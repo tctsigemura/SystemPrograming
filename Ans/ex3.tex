@@ -1,0 +1,383 @@
+\documentclass[a4j,twcolumn,11pt,nomag]{ltjarticle}      % lualatex の場合
+\usepackage{myAns}
+\chead{\textgt{システムプログラミング２　課題 No.3 解答}}
+
+\begin{document}
+\onecolumn
+
+\section*{課題 No.3 の解答例}
+
+\begin{enumerate}
+\item パスとハードリンク
+
+\begin{enumerate}
+\item 自分のホームディレクトリのパスを調べる．
+
+使用開始時のカレントディレクトリはホームディレクトリなので，
+\texttt{pwd}コマンドで確認できる．
+
+\begin{lstlisting}[numbers=none]
+$ pwd
+/Network/Servers/iemac.ie.tokuyama.ac.jp/Volumes/Users/i0/sigemura
+\end{lstlisting}
+
+\item \texttt{/tmp}にカレントディレクトリを移動させる．
+
+cd コマンドで移動し，結果を pwd コマンドで確認する．
+
+\begin{lstlisting}[numbers=none]
+$ cd /tmp
+$ pwd
+/tmp
+\end{lstlisting}
+
+\item \texttt{/tmp} 以下に，図のディレクトリやファイルを作る．
+\item \texttt{ls -l} を用いてファイルの種類やリンク数を確認する．
+
+\fig{scale=1.0}{Link-crop.pdf}
+
+\begin{lstlisting}[numbers=none]
+$ mkdir mura
+$ cd mura
+$ emacs hello.c
+$ cat hello.c
+#include <stdio.h>
+int main() { printf("hello\n"); }
+$ ln hello.c h1.c
+$ mkdir SysPro
+$ ls -l
+total 16
+drwxr-xr-x  2 sigemura  wheel  68 May  2 16:24 SysPro
+-rw-r--r--  2 sigemura  wheel  53 May  2 16:24 h1.c
+-rw-r--r--  2 sigemura  wheel  53 May  2 16:24 hello.c
+$ ln hello.c SysPro/ex1.c
+$ ls -l SysPro/
+total 8
+-rw-r--r--  3 sigemura  wheel  53 May  2 16:24 ex1.c
+\end{lstlisting}
+
+\item 相対パスを用いて\texttt{hello.c}の内容を表示する．
+
+\texttt{hello.c} はカレントディレクトリにあるので簡単だ．
+
+\begin{lstlisting}[numbers=none]
+$ cat hello.c
+#include <stdio.h>
+int main() { printf("hello\n"); }
+\end{lstlisting}
+
+\item 絶対パスを用いて\texttt{hello.c}の内容を表示する．
+
+\texttt{hello.c} はカレントディレクトリにあるので，
+カレントディレクトリの絶対パスを確認して，
+それに付け加えると簡単にできる．
+
+\begin{lstlisting}[numbers=none]
+$ pwd
+/tmp/mura
+$ cat /tmp/mura/hello.c
+#include <stdio.h>
+int main() { printf("hello\n"); }
+\end{lstlisting}
+
+\item \texttt{h1.c}を利用した相対パスを用いて
+\texttt{hello.c}の内容を表示する．
+
+\texttt{h1.c}は\texttt{hello.c}のリンクなので，
+単に次のようにすれば良い．
+
+\begin{lstlisting}[numbers=none]
+$ cat h1.c
+#include <stdio.h>
+int main() { printf("hello\n"); }
+\end{lstlisting}
+
+\item \texttt{ex1.c}を利用した相対パスを用いて
+\texttt{hello.c}の内容を表示する．
+
+\texttt{ex1.c}は\texttt{SysPro}ディレクトリにある
+\texttt{hello.c}のリンクなので，次のようにすれば良い．
+
+\begin{lstlisting}[numbers=none]
+$ cat SysPro/ex1.c
+#include <stdio.h>
+int main() { printf("hello\n"); }
+\end{lstlisting}
+
+\item カレントディレクトリを\texttt{SysPro}に変更する．
+
+\texttt{cd}コマンドで移動し，結果を\texttt{pwd}コマンドで確認する．
+
+\begin{lstlisting}[numbers=none]
+$ cd SysPro
+$ pwd
+/tmp/mura/SysPro
+\end{lstlisting}
+
+\item \texttt{ex1.c}を利用した相対パスを用いて
+\texttt{hello.c}の内容を表示する．
+
+\texttt{ex1.c}はカレントディレクトリにあるので簡単だ．
+
+\begin{lstlisting}[numbers=none]
+$ cat ex1.c
+#include <stdio.h>
+int main() { printf("hello\n"); }
+\end{lstlisting}
+
+\item \texttt{hello.c}を利用した相対パスを用いて
+\texttt{hello.c}の内容を表示する．
+
+カレントディレクトリは\texttt{/tmp/mura/SysPro}なので，
+\texttt{/tmp/mura/hello.c}を特定する相対パスは\texttt{../hello.c}になる．
+
+\begin{lstlisting}[numbers=none]
+$ cat ../hello.c
+#include <stdio.h>
+int main() { printf("hello\n"); }
+\end{lstlisting}
+
+\item 課題のために作成したファイルやディレクトリを全て削除する．
+
+\begin{lstlisting}[numbers=none]
+$ cd ../..
+$ rm mura/SysPro/ex1.c
+$ rmdir mura/SysPro
+$ rm mura/hello.c
+$ rm mura/h1.c
+$ rmdir mura
+\end{lstlisting}
+
+\item ディレクトリのハードリンクができるか試す．
+
+試すとエラーが発生しリンクできないことが分かる．\\
+（実は，ファイル木が複雑になりすぎるので禁止されている．）
+
+\begin{lstlisting}[numbers=none]
+$ mkdir DIR
+$ ln DIR dir
+ln: DIR: Is a directory
+\end{lstlisting}
+
+\end{enumerate}
+
+\item シンボリックリンク
+
+%\fig{scale=1.0}{SymLink-crop.pdf}
+
+\begin{enumerate}
+\item シンボリックリンクを作ってみる．
+\item シンボリックリンクを{\tt ls -l}を用いて確認する．
+\item シンボリックリンクを用いてファイルをアクセスできることを確認する．
+
+以下の作業は{\tt mura}ディレクトリで行うものとする．
+{\tt hello.c}は予め{\tt mura}ディレクトリに作ってあるとする．
+
+\begin{lstlisting}[numbers=none]
+$ cat hello.c
+#include <stdio.h>
+int main() { printf("hello\n"); }
+$ ln -s hello.c h1.c                        <--シンボリックリンクを作る
+$ ls -l
+total 16
+lrwxr-xr-x 1 sigemura  staff   7 May 12 15:53 h1.c -> hello.c
+-rw-r--r-- 1 sigemura  staff  55 May 12 15:52 hello.c
+$ cat h1.c                                                <--使用できる
+#include <stdio.h>
+int main() { printf("hello\n"); }
+\end{lstlisting}
+
+\item リンク切れのシンボリックリンクを使用するとどうなるか確認する．
+
+\begin{lstlisting}[numbers=none]
+$ ln -s helllo.c h2.c                           <--ファイル名を間違った
+$ ls -l                                          （エラーにはならない）
+total 24
+lrwxr-xr-x 1 sigemura  staff   7 May 12 15:53 h1.c -> hello.c
+lrwxr-xr-x 1 sigemura  staff   8 May 12 15:59 h2.c -> helllo.c   <--!!
+-rw-r--r-- 1 sigemura  staff  55 May 12 15:52 hello.c
+$ cat h2.c
+cat: h2.c: No such file or directory           <--使用した時点でエラー
+\end{lstlisting}
+
+\item ディレクトリに対するリンクを作って使用できることを確認する．
+
+\begin{lstlisting}[numbers=none]
+$ rm h1.c h2.c                    <--もう使用しないので消す
+$ mkdir ../sige                   <--muraディレクトリの隣にsigeを作る
+$ mv hello.c ../sige              <--hello.cを../sige/hello.c に移動
+$ ln -s ../sige sigeLink          <--sigeディレクトリへのリンクを作る
+$ ls -l                           <--リンクができたか確認する
+total 8
+lrwxr-xr-x 1 sigemura  staff  7 May 12 17:31 sigeLink -> ../sige
+$ ls ../sige
+hello.c
+$ ls sigeLink                     <--../sige の内容が見える
+hello.c
+\end{lstlisting}
+
+\item 他のディレクトリにあるファイルをリンクして使用できることを確認する．
+
+\begin{lstlisting}[numbers=none]
+$ ln -s ../sige/hello.c ex1.c     <--hello.cへのリンクを作る
+$ cat ex1.c                       <--リンクを使ってアクセスできる
+#include <stdio.h>
+int main() { printf("hello\n"); }
+$ cat sigeLink/hello.c            <--ディレクトリへのリンクを組合せても
+#include <stdio.h>                   アクセスできる
+int main() { printf("hello\n"); }
+\end{lstlisting}
+
+\item シンボリックリンクのループを作る．
+\begin{lstlisting}[numbers=none]
+$ ln -s b.txt a.txt
+$ ln -s a.txt b.txt
+$ ls -l
+total 16
+lrwxr-xr-x 1 sigemura  staff   5 May 12 20:21 a.txt -> b.txt
+lrwxr-xr-x 1 sigemura  staff   5 May 12 20:21 b.txt -> a.txt
+\end{lstlisting}
+
+\item ループしているシンボリックリンクを使用するとどうなるか確認する．
+
+\begin{lstlisting}[numbers=none]
+$ cat a.txt
+cat: a.txt: Too many levels of symbolic links  <--エラーになる
+\end{lstlisting}
+
+エラーメッセージ（{\tt Too many levels of symbolic links}）から，
+シンボリックリンクをたどる回数に制限を設けていることが想像できる．
+何回までなら大丈夫なのか確かめてみよう．
+（シンボリックリンクを作るために１行スクリプトを書いた）
+
+\begin{lstlisting}[numbers=none]
+$ j=0; i=0; while [ $i -ne 40 ]; do i=`expr $i + 1`; \
+  eval `printf "ln -s %02d.txt %02d.txt" $i $j`; j=$i; done
+$ ls -l
+total 320
+lrwxr-xr-x  1 sigemura  staff  6 May 12 20:33 00.txt -> 01.txt
+lrwxr-xr-x  1 sigemura  staff  6 May 12 20:33 01.txt -> 02.txt
+lrwxr-xr-x  1 sigemura  staff  6 May 12 20:33 02.txt -> 03.txt
+... 途中省略 ...
+lrwxr-xr-x  1 sigemura  staff  6 May 12 20:33 39.txt -> 40.txt
+$ echo 40 > 40.txt
+$ cat 00.txt
+cat: 00.txt: Too many levels of symbolic links
+$ cat 01.txt
+cat: 01.txt: Too many levels of symbolic links
+$ cat 02.txt
+cat: 02.txt: Too many levels of symbolic links
+... 途中省略 ...
+$ cat 07.txt
+cat: 07.txt: Too many levels of symbolic links
+$ cat 08.txt
+40                                 <--エラーが発生しない！！
+\end{lstlisting}
+
+{\tt 07.txt}から{\tt 39.txt}まで33回シンボリックリンクをたどる時は
+「たどる回数が多すぎて」エラーになる．
+しかし，{\tt 08.txt}から{\tt 39.txt}まで32回シンボリックリンクをたどる時は
+{\tt 40.txt}の内容が正常に表示された．
+macOSでは一度のパス解析中に，最高32回
+\footnote{macOSのバージョン毎に違うかもしれない．}
+シンボリックリンクをたどることができる\footnote{
+シンボリックリンクのループを検出することが難しいので，
+このような対策がされている．
+}．
+\end{enumerate}
+
+\item 保護モード
+
+\begin{enumerate}
+\item テキストファイル(hello.c)と実行可能ファイル(a.out)を準備する.
+
+{\tt hello.c}は予め作ってあるとする．
+
+\begin{lstlisting}[numbers=none]
+$ cc hello.c
+$ ls -l
+total 32
+-rwxr-xr-x 1 sigemura  staff  8432 May 12 21:13 a.out
+-rw-r--r-- 1 sigemura  staff    53 May 12 21:12 hello.c
+\end{lstlisting}
+
+\item chmod で保護モードを変化してみる\footnote{
+OSのバージョンによって細部が異なる可能性がある．}．
+
+\item \texttt{ls -l}で変化を確認する．
+
+\begin{lstlisting}[numbers=none]
+$ chmod u-w hello.c
+$ ls -l hello.c
+-r--r--r--  1 sigemura  staff    53 May 12 21:12 hello.c
+$ chmod u+w hello.c
+$ ls -l hello.c
+-rw-r--r--  1 sigemura  staff    53 May 12 21:12 hello.c
+$ chmod 400 hello.c
+$ ls -l hello.c
+-r--------  1 sigemura  staff    53 May 12 21:12 hello.c
+$ chmod 644 hello.c
+$ ls -l hello.c
+-rw-r--r--  1 sigemura  staff    53 May 12 21:12 hello.c
+\end{lstlisting}
+
+\item 保護モードを変化させてファイルの読出しや実行ができるか確認する．
+
+\begin{lstlisting}[numbers=none]
+$ ./a.out                               <-- a.out は実行できる
+hello
+$ chmod u-x a.out                       <-- 所有者の x を消すと
+$ ./a.out
+-bash: ./a.out: Permission denied       <-- a.out は実行でなくなる
+$ chmod u+x a.out                       <-- 所有者の x を復活すると
+$ ./a.out
+hello                                   <-- a.out が実行できる
+$ cat hello.c
+#include <stdio.h>                      <-- hello.c を読出しできる
+int main() { printf("hello\n"); }
+$ chmod u-r hello.c                     <-- 所有者の r を消すと
+$ cat hello.c
+cat: hello.c: Permission denied         <-- hello.c を読出しできない
+$ chmod u+r hello.c                     <-- 所有者の r を復活すると
+$ cat hello.c
+#include <stdio.h>                      <-- hello.c を読出しできる
+int main() { printf("hello\n"); }
+\end{lstlisting}
+
+\item ディレクトリの保護モードは何の意味を持つか考える．
+
+ディレクトリ（{\tt dir}）の保護モードを変更しながら，
+ファイルの作成・表示・削除を試す．
+
+\begin{lstlisting}[numbers=none]
+$ mkdir dir                             <-- ディレクトリ dir を作る
+$ ls -ld dir                            <-- dirの中ではなくdir自体
+drwxr-xr-x 2 sigemura  staff   68 May  15 09:28 dir
+$ echo aaaa > dir/a.txt                 <-- dir にファイルを作る
+$ ls -l dir                             <-- dir の中を確認
+-rw-r--r-- 1 sigemura  staff    5 May  15 09:33 a.txt
+$ cat dir/a.txt                         <-- dir のファイルを表示
+aaaa
+$ rm dir/a.txt                          <-- dir のファイルを消す
+\end{lstlisting}
+
+保護モードの意味は以下の通りだと分かるはず．
+
+\begin{tabular}{c | l}
+\hline\hline
+保護モード & \multicolumn{1}{|c}{意味} \\\hline
+r & ディレクトリからリンク名一覧を読み出せる \\
+w & ディレクトリに変更ができる               \\
+x & ディレクトリ以下に入って行ける           \\
+  & （ディレクトリにcdできる，ディレクトリ以下のファイルが \\
+  & 　開ける，ディレクトリ以下のファイルの属性情報が読める等） \\
+\end{tabular}
+
+\end{enumerate}
+\end{enumerate}
+\end{document}
+
+\end{enumerate}
+
+\end{document}
+

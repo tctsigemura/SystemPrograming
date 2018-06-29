@@ -1,0 +1,363 @@
+%\documentclass[dvipdfmx]{beamer}      % platex の場合
+\documentclass{beamer}                 % lualatex の場合
+\usepackage{mySld}
+
+\begin{document}
+\title{オペレーティングシステムの機能を使ってみよう\\
+第５章 ファイル操作システムコール}
+\date{}
+
+%===============================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%===============================================================
+%\begin{frame}[fragile]
+%  \frametitle{}
+%\end{frame}
+
+\section{ファイル操作システムコール}
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{ファイル操作システムコール}
+  \begin{itemize}
+    \item ユーティリティコマンド（ln，rm，mkdir，rmdir，chmod …）等が
+      使用しているシステムコール．
+    \item この章では主要な８種類だけ紹介する．
+    \item 以下の内容はmacOS 10.13を基準にしているが，
+      一部では分かり易さのために簡単化して説明している場合もある．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{unlink システムコール}
+  \begin{itemize}
+    \item ファイル（リンク）を削除するシステムコール．
+    \item ディレクトリの削除には使用できない．
+    \item rmコマンドは，このシステムコールを使用．
+  \end{itemize}
+
+\begin{description}
+\item[書式] \|path|引数でリンクのパスを一つ指定する．
+
+\begin{verbatim}
+#include <unistd.h>
+int unlink(char *path);
+\end{verbatim}
+
+\item[解説] \|unistd.h|をインクルードする．\\
+正常時には 0 をエラーが発生時には -1 を返す．\\
+エラー原因は\|perror()|関数で表示できる．
+
+\item[使用例] \|"a.txt"|ファイルを削除する例を示す．
+
+\begin{verbatim}
+if (unlink("a.txt")<0) {   // "a.txt" 削除
+  perror("a.txt");         // エラー原因表示
+  exit(1);                 // エラー終了
+}
+\end{verbatim}
+
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{mkdir システムコール}
+  \begin{itemize}
+  \item ディレクトリ（フォルダ）作成するシステムコール．
+  \item mkdirコマンドは，このシステムコールを使用．
+  \end{itemize}
+
+  \begin{description}
+  \item[書式] \|path|，\|mode|でパスと保護モードを指定する．
+\begin{verbatim}
+#include <sys/stat.h>
+int mkdir(char *path, int mode);
+\end{verbatim}
+
+  \item[解説] \|sys/stat.h|をインクルードする必要がある．\\
+    正常時には 0 をエラーが発生時には -1 を返す．\\
+    エラー原因は\|perror()|関数で表示できる．\\
+    パスに含まれる途中のディレクトリは作らない．
+
+  \item[使用例] \|"newdir"|ディレクトリをrwxr-xr-x で作成する例．
+\begin{verbatim}
+if (mkdir("newdir", 0755)<0) { // "newdir"作成
+  perror("newdir");            // エラー原因
+  exit(1);                     // エラー終了
+}
+\end{verbatim}
+
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{rmdir システムコール}
+  \begin{itemize}
+  \item ディレクトリを削除するシステムコールである．
+  \item rmdir コマンドは，このシステムコールを利用．
+  \item \emph{空でないディレクトリを削除することはできない．}
+  \end{itemize}
+
+  \begin{description}
+  \item[書式] \|path|引数でディレクトリのパスを一つ指定する．
+\begin{verbatim}
+#include <unistd.h>
+int rmdir(char *path);
+\end{verbatim}
+
+  \item[解説] \|unistd.h|をインクルードする必要がある．\\
+    正常時には 0 をエラー発生時には -1 を返す．\\
+    エラー原因は\|perror()|関数で表示できる．
+
+  \item[使用例] \|"newdir"|と名付けられたディレクトリを削除する例．
+\begin{verbatim}
+if (rmdir("newdir")<0) {  // "newdir" 削除
+  perror("newdir");       // エラー原因表示
+  exit(1);                  // エラー終了
+}
+\end{verbatim}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{link システムコール（1/2）}
+  \begin{itemize}
+  \item リンク（ハードリンク）を作るシステムコール．
+  \item ln コマンドは，このシステムコールを利用．
+  \end{itemize}
+
+  \begin{description}
+  \item[書式]  存在するパスと新しいパスを指定する．
+\begin{verbatim}
+#include <unistd.h>
+int link(char *oldpath, char *newpath);
+\end{verbatim}
+
+  \item[解説] \|unistd.h|をインクルードする必要がある．\\
+  正常時に 0 をエラー発生時には -1 を返す．\\
+  エラー原因は\|perror()|関数で表示できる．
+
+  \item[使用例１] ファイルにリンク\|"b.txt"|を追加する例．
+\begin{verbatim}
+if (link("a.txt", "b.txt")<0) { // "b.txt"作成
+  perror("link");               // 原因は？
+  exit(1);                      // エラー終了
+}
+\end{verbatim}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{link システムコール（2/2）}
+  \begin{description}
+  \item[使用例２] ファイルの移動に応用した例．
+\begin{verbatim}
+unlink("b.txt");                // 念のため
+if (link("a.txt", "b.txt")<0) { // リンクを作る
+  ... エラー処理 ...
+}
+if (unlink("a.txt")<0) {        // リンクを消す
+    ... エラー処理 ...
+}
+\end{verbatim}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{symlink システムコール}
+  \begin{itemize}
+  \item シンボリックリンクを作るシステムコール．
+  \item \|ln -s| コマンドは，このシステムコールを利用．
+  \end{itemize}
+
+  \begin{description}
+  \item[書式] シンボリックリンク自身のパスと内容を指定する．
+\begin{verbatim}
+#include <unistd.h>
+int symlink(char *path1, char *path2);
+\end{verbatim}
+
+  \item[解説] \|unistd.h|をインクルードする必要がある．\\
+    正常時に 0 をエラー発生時には-1を返す．\\
+    エラー原因は\|perror()|関数で表示できる．
+
+  \item[使用例] 内容が\|"a.txt"|のシンボリックリンク\|"b.txt"|を作る．
+\begin{verbatim}
+if (symlink("a.txt", "b.txt")<0) { // リンクを作る
+  perror("b.txt");                 // エラー表示
+  exit(1);                         // エラー終了
+}
+\end{verbatim}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{rename システムコール}
+  \begin{itemize}
+  \item ファイルの移動（ファイル名の変更）を行うシステムコール．
+  \item mv コマンドは，このシステムコールを利用．
+  \end{itemize}
+
+  \begin{description}
+  \item[書式] 新旧二つのパスを指定する．
+\begin{verbatim}
+#include <stdio.h>
+int rename(char *from, char *to);
+\end{verbatim}
+
+  \item[解説] \|stdio.h|をインクルードする必要がある．\\
+    正常時に 0 をエラー発生時には-1を返す．\\
+    エラー原因は\|perror()|関数で表示できる．
+
+  \item[引数] \|from|は古いパス\|to|は移動後の新しいパス．
+
+\item[使用例] \|"a.txt"|のパスを\|"b.txt"|に変更する例．
+\begin{verbatim}
+if (rename("a.txt", "b.txt")<0) { // パス名を変更
+  perror("rename");               // エラー表示
+  exit(1);                        // エラー終了
+}
+\end{verbatim}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{chmod（lchmod）システムコール（1/2）}
+  \begin{itemize}
+  \item ファイルの保護モードを変更するシステムコール．
+  \item chmod コマンドは，このシステムコールを利用．
+  \end{itemize}
+
+  \begin{description}
+  \item[書式] パスと保護モード（\texttt{rwxrwxrws}）を指定する．
+\begin{verbatim}
+#include <sys/stat.h>
+int chmod(char *path, int mode);
+int lchmod(char *path, int mode);
+\end{verbatim}
+
+  \item[解説] \|sys/stat.h|をインクルードする必要がある．\\
+    シンボリックリンクが指定された場合，
+    lchmod はシンボリックリンクの保護モードを変更する．\\
+    正常時に0をエラー発生時には-1を返す．\\
+    エラー原因は\|perror()|関数で表示できる．
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{chmod（lchmod）システムコール（2/2）}
+  \begin{description}
+  \item[使用例] \|"a.txt"|の保護モードを\|"rw-r--r--"|に変更する．
+\begin{verbatim}
+if (chmod("a.txt", 0644)<0) { // "rw-r--r--"
+  perror("a.txt");            // エラー表示
+  exit(1);                    // エラー終了
+}
+\end{verbatim}
+
+  \item[参考] strtol関数
+
+    8進数を表現する文字列から整数値（int型）に変換する．
+\begin{verbatim}
+char *ptr;
+char *ostr = argv[1];            // 8進数文字列
+int mod;
+mod = strtol(ostr, &ptr, 8);     // int に変換
+if (*ostr=='\0' || *ptr!='\0') { // エラーチェック
+  fprintf(stderr, 
+          "\'%s\' : 8進数の形式が不正\n", ostr);
+  return 1;
+}
+\end{verbatim}
+
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{readlink システムコール（1/2）}
+  \begin{itemize}
+  \item シンボリックリンクの内容を読出すシステムコール．
+  \item \texttt{ls -l}コマンドは，このシステムコールを利用．
+  \end{itemize}
+
+  \begin{description}
+  \item[書式] シンボリックリンクとバッファを指定する．
+\begin{verbatim}
+  #include <unistd.h>
+  int readlink(char *path, char *buf, int size);
+\end{verbatim}
+
+  \item[解説] \|unistd.h|をインクルードする必要がある．\\
+    \|path|で指定されるシンボリックの内容を\|buf|に読み出す．\\
+    正常時には読み出した文字数をエラー発生時には-1を返す．
+    エラー原因は\|perror()|関数で表示できる．\\
+    読み出した文字列は\verb;'\0';で終端\emph{されない}．
+
+  \item[引数] \|path|は目的のシンボリックリンクのパス．\\
+    \|buf|は内容を読み出す領域（バッファ）のポインタ．\\
+    \|size|は領域のサイズ．
+
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{readlink システムコール（2/2）}
+  \begin{description}
+  \item[使用例] シンボリックリンク\|"b.txt"|の内容を読み出し表示する例．
+\begin{verbatim}
+  char *name = "b.txt";
+  char buf[100];                   // 100バイト
+  int n = readlink(name, buf, 99); // 99バイト！
+  if (n<0) {                       // エラー？
+    perror(name);                  // エラー表示
+    exit(1);                       // エラー終了
+  }
+  buf[n]='\0';                     // 文字列完成
+  printf("%s -> %s\n", name, buf); // ls -l 風に
+\end{verbatim}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.4}
+  \begin{enumerate}
+  \item[1.] 簡易版のUNIXコマンドを作成しなさい．
+
+    UNIXコマンド，rm，mkdir，rmdir，ln，mv，chmodの中から３つ以上を選択し，
+    上記のシステムコールを使用して簡易版を作ってみる．
+    使用方法のエラーチェック，システムコールのエラーチェックは行うこと．
+
+  \item[2.] 自分が作った簡易版と本物の機能の違いを調べる．
+
+    「\|$ man 1 rm|」 等で本物のマニュアルを参照し比較してみる．
+
+  \item[3.] rename システムコールの必要性を考察する．
+
+    UNIXは Simple is best の思想で作られてきた．
+    既存の機能を組み合わせて実現できる場合は専用機能の追加はしないことが多い．
+    rename システムコールの機能は
+    link，unlink システムコールの組み合わせでも実現できるが，
+    なぜ追加されたか考えなさい．
+
+  \item[4.] stat システムコール，readdir 関数について調べてみる．
+
+    これらは何コマンドを作る時に必要になるか？
+\end{enumerate}
+\end{frame}
+
+%===============================================================
+\end{document}

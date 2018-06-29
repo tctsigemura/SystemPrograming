@@ -1,0 +1,40 @@
+% 自分のスタイルファイル
+\ProvidesPackage{myAns}
+\usepackage{luatexja}                              % lualatex の場合
+\usepackage[hiragino-pron]{luatexja-preset}        % ヒラギノフォント
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{fancybox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{color}
+%\usepackage{multicol}
+
+%----------------------------------------------------------------------
+\pagestyle{fancy}
+\lhead{}
+\rhead{(\thepage / \pageref{LastPage})}
+\cfoot{}
+
+%----------------------------------------------------------------------
+\usepackage{listings}
+\def\lstlistingname{リスト}
+\lstset{language=C,
+%  numbers=left,
+  basicstyle={\small\ttfamily},
+%  basicstyle={\ttfamily},
+  columns=[l]{fullflexible},
+  keepspaces=true,
+%  showspaces=true,
+  frame=shadowbox
+}
+
+%----------------------------------------------------------------------
+\newcommand{\fig}[2]{\begin{center}\includegraphics[#1]{../Fig/#2}\end{center}}
+\newcommand{\tbl}[2]{\begin{center}\includegraphics[#1]{../Tbl/#2}\end{center}}
+\newcommand{\gant}[2]{\begin{center}\includegraphics[#1]{../GanntChart/#2}\end{center}}
+\newcommand{\lst}[2]{\lstinputlisting[#1]{../Lst/#2}}
+\def\|{\verb|} %|

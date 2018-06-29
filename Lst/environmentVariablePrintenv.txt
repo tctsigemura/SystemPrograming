@@ -1,0 +1,9 @@
+$ printenv
+SHELL=/bin/bash                 <--- 「名前=値」形式で表示
+TERM=xterm-256color
+USER=sigemura
+...
+$ printenv SHELL                <--- SHELL環境変数を表示する
+/bin/bash                            （「値」だけ表示される）
+$ printenv NEVER
+$                               <--- 何も表示されない

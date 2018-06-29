@@ -1,0 +1,190 @@
+%\documentclass[dvipdfmx]{beamer}      % platex の場合
+\documentclass{beamer}                 % lualatex の場合
+\usepackage{mySld}
+
+\begin{document}
+\title{オペレーティングシステムの機能を使ってみよう\\
+第６章 プロセスとジョブ}
+\date{}
+
+%===============================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%===============================================================
+%\begin{frame}[fragile]
+%  \frametitle{}
+%\end{frame}
+
+\section{プロセス}
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセス}
+  \fig{scale=0.8}{pc-crop.pdf}
+
+  \begin{itemize}
+    \item プログラムは機械語の羅列のこと．
+    \item 同じプログラムが同時に複数実行されることもある．
+    \item 実行中のプログラムのインスタンスを\emph{プロセス}と呼ぶ．
+  \end{itemize}
+
+  \begin{center}
+    \emph{\Large プロセス ＝ 実行中のプログラム}
+  \end{center}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセスの構造}
+  \fig{scale=0.6}{proc-crop.pdf}
+
+  \begin{itemize}
+    \item プロセスの情報，CPUの状態（仮想CPU），メモリ空間（仮想メモリ）
+  \end{itemize}
+
+  \begin{center}
+    \emph{\Large プロセス ＝ 仮想コンピュータ}
+  \end{center}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセス関連のUNIXコマンド}
+  \emph{psコマンド}
+  \begin{itemize}
+  \item 実行中のプロセスの一覧表を表示するコマンドである．
+  \item 一方のターミナルでemacsを起動し，
+    もう一方のターミナルでpsコマンドを実行した例
+  \item \texttt{-bash} は入力されたコマンドを解釈して実行するシェルである．
+    \lst{numbers=none}{ps.txt}
+  \item \texttt{TTY}はttyコマンドで確認できる．
+    \lst{numbers=none}{tty.txt}
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセス関連のUNIXコマンド}
+  \emph{psコマンドの表示内容}
+  \tbl{scale=1.0}{psOut.pdf}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセス関連のUNIXコマンド}
+  \emph{psコマンドのオプション}
+  \tbl{scale=1.0}{psOptions.pdf}
+
+  \emph{psコマンドの実行例（uオプション）}
+  \lst{firstline=1,lastline=5,breaklines=true,breakindent=0pt}{psLong.txt}
+
+  \begin{itemize}
+  \item u オプションで詳しい表示がされた．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセス関連のUNIXコマンド}
+  \emph{psコマンドの実行例（auオプション）}
+  \lst{firstline=6,lastline=13,breaklines=true,breakindent=0pt}{psLong.txt}
+
+  \begin{itemize}
+  \item a オプションで他人のプロセスまで表示された．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセス関連のUNIXコマンド}
+  \emph{psコマンドの実行例（auxオプション）}
+  \lst{firstline=14,lastline=23,breaklines=true,breakindent=0pt}{psLong.txt}
+
+  \begin{itemize}
+  \item x オプションで制御端末を持たないプロセスまで表示された．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセス関連のUNIXコマンド}
+  \emph{psコマンド\texttt{STAT}表示の意}
+  \tbl{scale=0.9}{psStat.pdf}
+
+  \begin{itemize}
+  \item 前の実行例の\texttt{STAT}の意味
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセス関連のUNIXコマンド}
+  \emph{killコマンド}
+  \begin{itembox}[l]{killコマンドの書式}
+    \emph{書式}
+    \begin{lstlisting}[frame=none]
+    kill [-シグナル] PID ...
+    \end{lstlisting}
+    \emph{シグナル（省略時はTERMと同じ）}
+    \tbl{scale=0.9}{killOptions.pdf}
+  \end{itembox}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プロセス関連のUNIXコマンド}
+  \emph{killコマンドの使用例}
+  \lst{breaklines=true,breakindent=0pt}{kill.txt}
+\end{frame}
+
+\section{ジョブ}
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{ジョブ}
+  \lst{}{job.txt}
+  \begin{description}
+  \item[フォアグラウンド・ジョブ]
+    シェルがジョブの終了を待つ．
+    ジョブが終了したらプロンプトが表示される．
+
+  \item[バックグラウンド・ジョブ]
+    コマンドの最後に\texttt{\&}を付けて実行する．
+    シェルがジョブの終了を待たない．
+    ジョブが終了していなくてもプロンプトが表示される．
+    次のジョブと並列実行ができる．
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{ジョブ制御}
+  \lst{}{jobControl.txt}
+  \begin{description}
+  \item[Ctrl-C] フォアグラウンド・ジョブにINTシグナルを送る．
+  \item[Ctrl-Z] フォアグラウンド・ジョブにTSTPシグナルを送る．
+  \item[jobs] そのシェルが管理しているジョブの一覧を表示する．
+  \item[fg,bf] バックグラウンド・フォアグラウンドの切替え．
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.5}
+  \begin{enumerate}
+    \item[1.] 本文と照らし合わせながらプロセスの
+    実行例（リスト全部）を試し，内容をよく理解しなさい．
+    一時停止状態のGrapherを操作するとどうなるか等，よく観察すること．
+  \item[2.] 以下の操作方法を考えて手順を説明しなさい．
+    \begin{enumerate}
+    \item[(1)] フォアグラウンドで暴走してしまったジョブを強制終了する手順．
+      （Ctrl-Cではなく，KILLシグナルを使用すること）
+    \item[(2)] 間違ってフォアグラウンドで起動したemacsを
+      バックグラウンドに変更する手順．
+    \item[(3)] バックグラウンドで実行中のジョブを
+      フォアグラウンドに変更してCtrl-Cで終了する手順．
+    \end{enumerate}
+  \end{enumerate}
+\end{frame}
+
+\end{document}

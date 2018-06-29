@@ -1,0 +1,23 @@
+$ ps u
+USER       PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+sigemura  2964   0.0  0.0  2452852   1556 s001  S    10:47AM   0:00.01 -bash
+sigemura  2955   0.0  0.0  2461044   1592 s000  S+   10:46AM   0:00.02 -bash
+sigemura  2975   0.0  0.2  2616528  14636 s001  S+   10:47AM   0:00.34 emacs hello.c
+$ ps au
+USER       PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+sigemura  2975   0.0  0.2  2616528  14636 s001  S+   10:47AM   0:00.34 emacs hello.c
+sigemura  2964   0.0  0.0  2452852   1556 s001  S    10:47AM   0:00.01 -bash
+root      2963   0.0  0.0  2460388   2664 s001  Ss   10:47AM   0:00.02 login -pf sigemura
+sigemura  2955   0.0  0.0  2461044   1592 s000  S+   10:46AM   0:00.02 -bash
+root      2954   0.0  0.0  2469604   2788 s000  Ss   10:46AM   0:00.02 login -pf sigemura
+root      3790   0.0  0.0  2433188   1004 s000  R+   12:04PM   0:00.00 ps au
+$ ps aux
+USER              PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+_windowserver     175   6.3  1.3  3693100 106960   ??  Ss   Wed10PM  17:10.51 /System/Lib
+_hidd             121   1.1  0.0  2473636   4052   ??  Ss   Wed10PM   6:43.03 /usr/libexe
+sigemura         1124   0.4  0.1  2542556   7888   ??  S    Thu09AM   0:32.58 /Library/In
+sigemura          861   0.3  0.0  2521980   3328   ??  S    Wed10PM   0:09.41 /System/Lib
+root              253   0.3  0.1  2472892   5548   ??  Ss   Wed10PM   0:44.44 /usr/libexe
+sigemura          891   0.2  0.0  2470772   2160   ??  S    Wed10PM   0:06.82 /System/Lib
+...300行程度続く...
+$

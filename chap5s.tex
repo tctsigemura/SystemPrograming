@@ -1,0 +1,360 @@
+\chapter{ファイル操作システムコール}
+
+この章ではファイルを操作するシステムコールの中で重要なものについて学ぶ．
+前の章で使用したユーティリティコマンド（ln， rm， chmod 等）が
+内部で使用しているシステムコールである．
+
+%==============================================================================
+\section{unlink システムコール}
+ファイルを削除するシステムコールである．
+rm コマンドは，このシステムコールを利用している．
+「ファイルの削除」は正確にはリンク（名前）の削除の意味である．
+ファイルはリンクを一つも持たなくなった時に削除される．
+シンボリックリンク等の削除にも使用できるが，
+ディレクトリの削除には使用できない．
+
+\begin{description}
+\item[書式] \|path|引数でリンクのパスを一つ指定する．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int unlink(char *path);
+\end{lstlisting}
+
+\item[解説] uninkシステムコールを使用するプログラムは
+\|unistd.h|をインクルードする必要がある．
+unlink システムコールは正常時には 0 をエラーが発生時には -1 を返す．
+エラー原因は\|perror()|関数で表示できる．
+
+\item[引数] \|path|は削除するリンク（ファイル）のパスを表す文字列である．
+
+\item[使用例] \|"a.txt"|ファイルを削除する例を示す．
+\begin{lstlisting}[numbers=none]
+  // ファイルの削除
+  if (unlink("a.txt")<0) {   // "a.txt" 削除
+    perror("a.txt");         // エラー原因表示
+    exit(1);                 // エラー終了
+  }
+\end{lstlisting}
+\end{description}
+
+%==============================================================================
+\section{mkdirシステムコール}
+ディレクトリ（フォルダ）作成するシステムコールである．
+mkdirコマンドは，このシステムコールを使用している．
+
+\begin{description}
+\item[書式] \|path|，\|mode|の二つの引数で新規ディレクトリのパスと
+保護モードを指定する．
+\begin{lstlisting}[numbers=none]
+  #include <sys/stat.h>
+  int mkdir(char *path, int mode);
+\end{lstlisting}
+
+\item[解説] mkdirシステムコールを使用するプログラムは
+\|sys/stat.h|をインクルードする必要がある．
+mkdir システムコールは正常時には 0 をエラーが発生時には -1 を返す．
+エラー原因は\|perror()|関数で表示できる．
+mkdir システムコールはパスに含まれる途中のディレクトリは作らない．
+途中のディレクトリは予め作成しておく必要がある．
+
+\item[引数] \|path|は新規作成するディレクトリのパス，
+\|mode|は新しいディレクトリの保護モード（\|rwxrwxrwx|）である．
+
+\item[使用例] \|"newdir"|ディレクトリを作成する例である．
+\begin{lstlisting}[numbers=none]
+  // ディレクトリの作成
+  if (mkdir("newdir", 0755)<0) {   // "newdir" を rwxr-xr-x で作成
+    perror("newdir");              // エラー原因表示
+    exit(1);                       // エラー終了
+  }
+\end{lstlisting}
+\end{description}
+
+%==============================================================================
+\section{rmdir システムコール}
+ディレクトリを削除するシステムコールである．
+rmdir コマンドは，このシステムコールを利用している．
+\emph{空でないディレクトリを削除することはできない．}
+
+\begin{description}
+\item[書式] \|path|引数でディレクトリのパスを一つ指定する．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int rmdir(char *path);
+\end{lstlisting}
+
+\item[解説] rmdirシステムコールを使用するプログラムは
+\|unistd.h|をインクルードする必要がある．
+rmdirシステムコールは正常時には 0 をエラー発生時には -1 を返す．
+エラー原因は\|perror()|関数で表示できる．
+
+\item[引数] \|path|は削除するディレクトリのパスである．
+
+\item[使用例] \|"newdir"|と名付けられたディレクトリを削除する例である．
+\begin{lstlisting}[numbers=none]
+  // ディレクトリの削除
+  if (rmdir("newdir")<0) {  // "newdir" 削除
+    perror("newdir");       // エラー原因表示
+    exit(1);                // エラー終了
+  }
+\end{lstlisting}
+\end{description}
+
+%==============================================================================
+\section{link システムコール}
+リンク（ハードリンク）を作成するシステムコールである．
+ln コマンドは，ハードリンクを作るとき，このシステムコールを利用している．
+
+\begin{description}
+\item[書式] 既に存在するリンクのパスと
+新しく作るリンクのパスを指定する．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int link(char *oldpath, char *newpath);
+\end{lstlisting}
+
+\item[解説] link システムコールを使用するプログラムは
+\|unistd.h|をインクルードする必要がある．
+link システムコールは正常時に 0 をエラー発生時には -1 を返す．
+エラー原因は\|perror()|関数で表示できる．
+
+\item[引数] \|oldpath|はもともと存在するリンクを表すパス，
+  \|newpath|は新しく作るリンクのパスである．
+
+\item[使用例１] ファイルにリンク\|"b.txt"|を追加する例である．
+\begin{lstlisting}[numbers=none]
+  // ハードリンクの作成
+  if (link("a.txt", "b.txt")<0) { // リンク"b.txt"を作る
+    perror("link");               // "a.txt"と"b.txt"のどちらが原因か不明なので
+    exit(1);                      // エラー終了
+  }
+\end{lstlisting}
+
+\item[使用例２]unlinkシステムコールと組合せて
+ファイルの移動（ファイル名の変更）に応用した例である．
+リンク\|"a.txt"|で参照されていたファイルは，
+リンク\|"b.txt"|で参照されるように変更される．
+\begin{lstlisting}[numbers=none]
+  unlink("b.txt");                // 念のため"b.txt"を消す（エラーは無視）
+  if (link("a.txt", "b.txt")<0) { // リンク"b.txt"を作る
+    ... エラー処理 ... 
+  }
+  if (unlink("a.txt")<0) {        // リンク"a.txt"を消す．
+      ... エラー処理 ... 
+  }
+\end{lstlisting}
+\end{description}
+
+%==============================================================================
+\section{symlink システムコール}
+
+シンボリックリンクを作成するシステムコールである．
+ln コマンドは，シンボリックリンクを作るとき（\|-s|オプション使用時），
+このシステムコールを利用している．
+
+\begin{description}
+\item[書式] 新規作成するシンボリックリンクのパスと，
+シンボリックリンクに書き込むパスを指定する．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int symlink(char *path1, char *path2);
+\end{lstlisting}
+
+\item[解説] symlink システムコールを使用するプログラムは
+\|unistd.h|をインクルードする必要がある．
+symlink システムコールは正常時に 0 をエラー発生時には-1を返す．
+エラー原因は\|perror()|関数で表示できる．
+
+\item[引数] \|path1|はシンボリックリンクに書き込むパスである．
+\|path2|は新規に作成するシンボリックリンク自身のパスである．
+
+\item[使用例] 内容が\|"a.txt"|のシンボリックリンクを
+\|"b.txt"|という名前で作る．
+シンボリックリンク内容はチェックされない（リンク切れ状態でも良い）ので，
+エラーが発生した場合，原因は\|"b.txt"|である．
+エラーメッセージには\|"b.txt"|を含める．
+\begin{lstlisting}[numbers=none]
+  // シンボリックリンクの作成
+  if (symlink("a.txt", "b.txt")<0) { // リンク"b.txt"を作る
+    perror("b.txt");                 // エラー原因は必ず"b.txt"
+    exit(1);                         // エラー終了
+  }
+\end{lstlisting}
+\end{description}
+
+%==============================================================================
+\section{rename システムコール}
+ファイルの移動（ファイル名の変更）を行うシステムコールである．
+mv コマンドは，このシステムコールを利用している．
+
+\begin{description}
+\item[書式] 新旧二つのパスを指定する．
+\begin{lstlisting}[numbers=none]
+  #include <stdio.h>
+  int rename(char *from, char *to);
+\end{lstlisting}
+
+\item[解説] rename システムコールを使用するプログラムは
+\|stdio.h|をインクルードする必要がある．
+rename システムコールは正常時に 0 をエラー発生時には-1を返す．
+エラー原因は\|perror()|関数で表示できる．
+
+\item[引数] \|from|は古いパス\|to|は移動後の新しいパスである．
+\|from|で参照されていたファイルが\|to|で参照されるようになる．
+
+\item[使用例] \|"a.txt"|のパスを\|"b.txt"|に変更する例である．
+\begin{lstlisting}[numbers=none]
+  // ファイルの移動
+  if (rename("a.txt", "b.txt")<0) { // "a.txt" を "b.txt" に変更
+    perror("rename");               // エラー原因がどっちのパスか不明
+    exit(1);                        // エラー終了
+  }
+\end{lstlisting}
+\end{description}
+
+%==============================================================================
+\section{chmod（lchmod）システムコール}
+ファイルの保護モードを変更するシステムコールである．
+chmod コマンドは，このシステムコールを利用している．
+
+\begin{description}
+\item[書式] ファイルのパスと新しい保護モードを指定する．
+\begin{lstlisting}[numbers=none]
+  #include <sys/stat.h>
+  int chmod(char *path, int mode);
+  int lchmod(char *path, int mode);
+\end{lstlisting}
+
+\item[解説] chmodシステムコールを使用するプログラムは
+\|sys/stat.h|をインクルードする必要がある．
+chmod システムコールは
+\|path|で指定されるファイルの保護モードを変更する．
+シンボリックリンクが指定された場合，
+lchmod システムコールはシンボリックリンクが指すファイルではなく，
+シンボリックリンクの保護モードを変更する．
+chmod システムコールは正常時に0をエラー発生時には-1を返す．
+エラー原因は\|perror()|関数で表示できる．
+
+\item[引数] \|path|は対象となるファイルのパスである．
+\|mode|は新しい保護モード(\|rwxrwxrwx|）である．
+保護モードの意味はopenシステムコールの章に解説がある．
+
+\item[使用例] \|"a.txt"|の保護モードを\|rw-r--r--|に変更する例である．
+\begin{lstlisting}[numbers=none]
+  // ファイルモードの変更
+  if (chmod("a.txt", 0644)<0) { // ファイル"a.txt"のモードをrw-r--r--に変更
+    perror("a.txt");            // エラー原因を表示
+    exit(1);                    // エラー終了
+  }
+\end{lstlisting}
+\end{description}
+
+%==============================================================================
+\section{readlink システムコール}
+
+readlink システムコールは
+シンボリックリンクに書き込まれている内容（パス）を読み出す．
+ls コマンドはシンボリックリンクの内容を表示するために，
+このシステムコールを利用している．
+
+\begin{description}
+\item[書式] シンボリックリンクを示すパスと，内容を読み出すバッファを指定する．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int readlink(char *path, char *buf, int size);
+\end{lstlisting}
+
+\item[解説] readlinkシステムコールを使用するプログラムは
+\|unistd.h|をインクルードする必要がある．
+readlink システムコールは
+\|path|で指定されるシンボリックの内容を\|buf|に読み出す．
+\|path|はシンボリックリンクを示すものでなければならない．
+readlink システムコールは，
+正常時には読み出した文字数をエラー発生時には-1を返す．
+エラー原因は\|perror()|関数で表示できる．
+読み出した文字列は\verb;'\0';で終端\emph{されない}ので注意を要する．
+
+\item[引数] \|path|は目的のシンボリックリンクのパスである．
+\|buf|は内容を読み出す領域（バッファ）のポインタ，
+\|size|は領域のサイズである．
+
+\item[使用例] シンボリックリンク\|"b.txt"|の内容を読み出し表示する例である．
+読み出した文字列を\verb;'\0';で終端することを見越して，
+バッファの大きさ（100）より小さい領域サイズ（99）を指定している．
+\begin{lstlisting}[numbers=none]
+  // シンボリックリンクの読み出し
+  char *name = "b.txt";
+  char buf[100];
+  int n = readlink(name, buf, 99); // シンボリックリンクの内容をbufに読み出す
+  if (n<0) {                       // エラーチェック
+    perror(name);                  // エラー原因を表示
+    exit(1);                       // エラー終了
+  }
+  buf[n]='\0';                     // C言語型の文字列として完成させる
+  printf("%s -> %s\n", name, buf); // ls -l 風に表示
+\end{lstlisting}
+\end{description}
+
+\begin{figure}
+\begin{framed}
+\subsection*{参考：strtol 関数}
+chmod プログラムを作成するためには，
+保護モードをコマンド行引数から入力する必要がある．
+
+\centerline{書式： \texttt{chmod mode file ...}}
+
+\|mode|を8進数で指定する場合，
+8進数を表現する文字列から整数値（int 型）に変換しなければならない．
+strtol 関数は8進数を整数値に変換するために使用できる．
+簡易版の chmod プログラムを作るために必要な
+strtol 関数の使用例を以下に示す．
+
+（詳細はオンラインマニュアル「\|man 3 strtol|」で調べること．）
+
+\begin{lstlisting}[numbers=none, frame=none]
+#include <stdlib.h>
+  ...
+  char *ptr;
+  char *ostr = argv[1];               // 入力の8進数文字列
+  int mod;
+
+  mod = strtol(ostr, &ptr, 8);        // 8進数文字列の値を整数で求める
+  if (*ostr=='\0' || *ptr!='\0') {
+    fprintf(stderr, "\'%s\' : 8進数の形式が不正\n", ostr);
+    return 1;
+  }
+  printf("%d,%x,%o\n", mod, mod,mod); // 10進，16進，8進で表示
+  ...
+
+// 実行例
+$ a.out 777
+511,1ff,777
+\end{lstlisting}
+\end{framed}
+\end{figure}
+
+\subsection*{課題 No.4}
+
+\begin{enumerate}
+\item 簡易版のUNIXコマンドを作成しなさい．
+
+UNIXコマンド，rm，mkdir，rmdir，ln，mv，chmodの中から３つ以上を選択し，
+上記のシステムコールを使用して簡易版を作ってみる．
+使用方法のエラーチェック，システムコールのエラーチェックは行うこと．
+
+\item 自分が作った簡易版と本物の機能の違いを調べる．
+
+「\|$ man 1 rm|」 等で本物のマニュアルを参照し比較してみる．
+
+\item rename システムコールの必要性を考察する．
+
+UNIXは Simple is best の思想で作られてきた．
+既存の機能を組み合わせて実現できる場合は専用機能の追加はしないことが多い．
+rename システムコールの機能は
+link，unlink システムコールの組み合わせでも実現できるが，
+なぜ追加されたか考えなさい．
+
+\item stat システムコール，readdir 関数について調べてみる．
+
+これらは何コマンドを作る時に必要になるか？
+\end{enumerate}

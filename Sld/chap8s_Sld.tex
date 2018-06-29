@@ -1,0 +1,451 @@
+%\documentclass[dvipdfmx]{beamer}      % platex の場合
+\documentclass{beamer}                 % lualatex の場合
+\usepackage{mySld}
+
+\begin{document}
+\title{オペレーティングシステムの機能を使ってみよう\\
+第８章 環境変数}
+\date{}
+
+%===============================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{環境変数}
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数}
+  \fig{scale=0.56}{environmentVariableCopy-crop.pdf}
+  \begin{itemize}
+  \item シェルが管理する変数
+  \item シェルからプログラムにコピーされる．
+  \item プログラムは実行時に環境変数の値を調べることができる．
+  \item 同じプログラムで複数の言語に対応すること等ができる．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数と使用例（１）}
+  macOSやUNIXでよく使用される環境変数
+  \lst{numbers=none}{environmentVariableSample.txt}
+  \begin{itemize}
+  \item 本当はもっとたくさんの環境変数がある．
+  \item ここでは「名前＝値」形式で一覧を表示している．
+  \item 次頁は\texttt{LC\_TIME}環境変数と\texttt{TZ}環境変数を変更して
+    実行した例
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数と使用例（２）}
+  \lst{numbers=none}{environmentVariableLCTIME.txt}
+  \begin{itemize}
+  \item \texttt{LC\_TIME}環境変数は日時の表示形式を決める．
+  \item \texttt{TZ}環境変数はどの地域の時刻を表示するか決める．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数を誰が決めるか}
+  \begin{enumerate}
+  \item[(1)] システム管理者\\
+    システム管理者はユーザがログインした時の初期状態を決める．\\
+    UNIXやmacOSでは管理者が作成したスクリプトが初期化を行う．\\
+    管理者は全ユーザに共通の初期化処理をここに書いておく．
+  \item[(2)] ユーザの設定ファイル \\
+    ユーザは自分のホームディレクトリのファイルに初期化手順を書く．\\
+    初期化スクリプト（\|.bash_profile|）の例を示す．
+    \lst{numbers=none}{dotBashRc.txt}
+  \item[(3)] ユーザによるコマンド操作 \\
+    シェルのコマンド操作で環境変数を操作することができる．\\
+    影響範囲は操作したウインドのシェルのみである．\\
+    次回のログイン時には操作結果の影響は残らない．\\
+  \end{enumerate}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の操作（１）}
+  環境変数を\emph{表示}するコマンド（printenv）
+\begin{description}
+\item[書式] \texttt{name}は環境変数の名前である．
+\begin{lstlisting}[numbers=none]
+  printenv [name]
+\end{lstlisting}
+\item[解説]
+  \texttt{name} を省略した場合は，
+  全ての環境変数の名前と値を表示する．
+  \texttt{name} を書いた場合は該当のする環境変数の\emph{値だけ}表示する．
+  該当する環境変数が無い場合は何も表示しない．
+\item [実行例]  macOS 上での printenvコマンドの実行例を示す．
+  環境変数の名前を省略して実行した場合は，
+  全ての環境変数について「名前=値」形式で表示される．
+  \lst{numbers=none}{environmentVariablePrintenv.txt}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の操作（２）}
+  環境変数を\emph{新規作成}する手順（その１）-- shの場合 --
+\begin{description}
+\item[書式] 次の2ステップで操作を行う．
+\begin{lstlisting}
+  name=value
+  export name
+\end{lstlisting}
+\item[解説]
+  \emph{1行}で，一旦，シェル変数を作る．\\
+  \emph{2行}でシェル変数を環境変数に変更する．
+\item[実行例]
+  \emph{1行}は\texttt{MYNAME}環境変数が存在するか確認している．\\
+  （\texttt{MYNAME}環境変数は存在しないので何も表示されない．）\\
+  \emph{2，3行}で値が\texttt{sigemura}の\texttt{MYNAME}環境変数を作った．\\
+  \emph{4行}で\texttt{MYNAME}環境変数を確認する．\\
+  （値が\texttt{sigemura}になっていることが分かる．）
+  \lst{numbers=left}{environmentVariableSh.txt}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の操作（３）}
+  環境変数を\emph{新規作成}する手順（その２）-- bashの場合 --
+\begin{description}
+\item[書式]
+  次の1ステップで環境変数を作ることができる．
+\begin{lstlisting}[numbers=none]
+  export name=value
+\end{lstlisting}
+\item[解説]
+  一旦，シェル変数を作ることなく環境変数を作ることができる．
+\item[実行例]
+  次のように動作確認ができる．
+  \lst{numbers=none}{environmentVariableBash.txt}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の操作（４）}
+  環境変数の値を\emph{変更}する手順
+\begin{description}
+\item [書式]
+  \texttt{name}は環境変数の名前，\texttt{value}は新しい値である．
+\begin{lstlisting}[numbers=none]
+  name=value
+\end{lstlisting}
+\item [解説]
+  「環境変数の変更」と「シェル変数の作成」は書式だけでは区別が付かない．
+  変数名を間違った場合，
+  間違った名前で新しいシェル変数が作成されエラーにならないので
+  注意が必要である．
+\item [実行例]
+  \texttt{MYNAME}環境変数が既に存在している場合の実行例を示す．
+  \lst{numbers=none}{environmentVariableOverWrite.txt}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の操作（５）}
+  環境変数の値を\emph{参照}する手順（１）
+\begin{description}
+\item [書式]
+  \texttt{name}は環境変数の名前である．
+\begin{lstlisting}[numbers=none]
+  $name
+\end{lstlisting} %$
+\item [解説]
+  \texttt{\$name}は変数の値に置き換えられる．
+\item [実行例1]
+  \texttt{PATH}環境変数の値にディレクトリを追加する例．
+  \lst{numbers=none}{environmentVariableReference.txt}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の操作（６）}
+  環境変数の値を\emph{参照}する手順（２）
+\begin{description}
+\item [実行例2]
+  環境変数\texttt{i}の値をインクリメントする例．\\
+  \lst{numbers=none}{environmentVariableIncrement.txt}
+\end{description}
+  \begin{itemize}
+    \item  \texttt{expr}は式の計算結果を表示するコマンド．
+    \item バッククオートの内部は実行結果と置き換わる．
+    \item  \texttt{printenv i}の代わりに\texttt{echo \$i}でも値を表示できる．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の操作（７）}
+  環境変数を\emph{削除}する手順
+\begin{description}
+\item [書式]
+  \texttt{name}は変数の名前である．
+\begin{lstlisting}[numbers=none]
+  unset name
+\end{lstlisting}
+\item [解説]
+  存在しない変数を\texttt{unset}してもエラーにならない．\\
+  変数名を間違ってもエラーにならないので注意が必要である．
+\item [実行例]
+  \texttt{MYNAME}環境変数が既に存在している場合の実行例を示す．
+  \lst{numbers=none}{environmentVariableUnset.txt}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の操作（８）}
+  envコマンドを用いて環境変数を\emph{一時的に変更}する手順
+\begin{description}
+\item [書式]
+  変数へ値を代入が続いた後にコマンドが続く．
+\begin{lstlisting}[numbers=none]
+  env name1=value1 name2=value2 ... command
+\end{lstlisting}
+\item [解説]
+  最初の代入形式を環境変数の変更（作成）指示とみなす．\\
+  代入形式ではないもの以降を実行すべきコマンドとみなす．
+\item [実行例]
+  ロケールとタイムゾーンを変更してdateを実行する．\\
+  \texttt{LC\_TIME}環境変数は日時表示用のロケールを格納する．\\
+  \texttt{TZ}変数はタイムゾーンを格納する．
+  \lst{numbers=none}{environmentVariableEnv.txt}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{ロケール（ユーザの言語や地域を定義する）}
+  \texttt{LANG}環境変数や\texttt{LC\_TIME}環境変数に
+  セットする値をロケール名と呼ぶ．
+  ロケール名は次の組み合わせで表現される．
+  \centerline{「言語コード」，「国名コード」，「エンコーディング」}
+\vfill
+\begin{itemize}
+\item \emph{言語コード}はISO639で定義された2文字コードである．\\
+  （日本語は"ja"）
+\item \emph{国名コード}はISO3166で定義された2文字コードである．\\
+  （日本は"JP"）
+\item \emph{エンコーディング}は，使用する文字符号化方式を示す．\\
+  （macOSではUTF-8方式が使用される．）．
+\item 使用可能なロケールの一覧は\|locale -a|コマンドで表示できる．
+\end{itemize}
+\vfill
+macOSで日本語を使用する場合のロケール名は次の通り．
+\centerline{\texttt{ja\_JP.UTF-8 }（日本語\_日本.UTF-8）}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{タイムゾーン（時差が同じ地域）}
+  どの地域時間で時刻を表示するかを環境変数で制御できる．
+  \vfill
+  \begin{itemize}
+  \item 日本時間は協定世界時（UTC）と時差がマイナス９時間
+  \item \texttt{TZ}環境変数にタイムゾーンを表す値をセットする．
+  \item OSの内部の時刻は協定世界時(UTC)
+  \item 時刻を表示する時に\texttt{TZ}を参照して現地時間に変換する．
+  \item 日本時間は\|TZ=JST-9|となる．
+    \begin{itemize}
+      \item \|/usr/share/zoneinfo/|ディレクトリのファイル名でも指定できる．
+      \item \|Cuba|ファイルが存在するので\|TZ=Cuba|と指定できる．
+      \item \|Japan|ファイルも存在するので\|TZ=Japan|も指定できる．
+      \item \|Asia/Tokyo|ファイルが存在するので\|TZ=Asia/Tokyo|も可．
+    \end{itemize}
+  \end{itemize}
+  \vfill
+\texttt{TZ}環境変数が定義されていない時は，
+OSのインストール時に選択した標準のタイムゾーンが用いられる．
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.7}
+  \begin{enumerate}
+  \item[1.] ここまでの実行例を試してみなさい．
+    \vfill
+  \item[2.]  囲み記事を参考に，
+    \texttt{LC\_TIME}環境変数や\texttt{TZ}環境変数を色々試してみる．
+    例えば，
+    「モスクワ時間，ロシア語表記」で現在時刻を表示するにはどうしたらよいか？
+  \end{enumerate}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の仕組み（０）}
+  \emph{参考：プロセスの構造（６章で紹介したもの）}
+  \fig{scale=0.6}{proc-crop.pdf}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の仕組み（１）}
+  \emph{シェルによる管理}
+  \fig{scale=0.4}{environmentVariableShell-crop.pdf}
+  \begin{itemize}
+  \item 環境変数はシェルプロセスのメモリ空間に記憶されている．
+  \item コマンドが入力されるとシェルのインタプリタが意味を解釈する．
+  \item 環境変数を操作するコマンドならメモリ空間を操作する．
+  \item 環境変数を操作するコマンドは\emph{内部コマンド}
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の仕組み（２）}
+  \emph{プロセスへのコピー}
+  \fig{scale=0.6}{environmentVariableCopy-crop.pdf}
+  \begin{itemize}
+  \item シェルは子プロセスとして\emph{外部コマンド}を起動する．
+  \item 外部コマンドの起動時に子プロセスに環境変数をコピーする．
+  \item 子プロセスはコピーされた環境変数を参照・変更・削除できる．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{環境変数の仕組み（３）}
+  \emph{変更した上でのコピー}
+  \fig{scale=0.55}{environmentVariableEnv-crop.pdf}
+  \begin{itemize}
+  \item 他のプログラムを起動する時に環境変数をコピーする．
+  \item envコマンドは他のプログラムを起動するプログラムの例．
+    \begin{enumerate}
+    \item[1.] envコマンドは自身の環境変数を変更する．
+    \item[2.] envコマンドは指定されたプログラムを起動する．
+    \item[3.] envコマンドは，この際，環境変数をコピーする．
+    \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プログラムからの環境変数アクセス（１）}
+  \emph{読み出し（envp仮引数，environ変数を用いる）}
+  \begin{description}
+  \item[データ構造] メモリ内で環境変数は次のようなデータ構造
+    \fig{scale=0.60}{environmentVariableData-crop.pdf}
+  \item[プログラム例] 全ての環境変数を\|name=val|形式で印刷する．
+    \lst{numbers=left,lastline=8}{environmentVariablePrintAll.c}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プログラムからの環境変数アクセス（２）}
+  \emph{読み出し（getenv関数を用いる）}
+  \begin{description}
+  \item [書式] getenv関数に変数名を与えると値が返る．
+\begin{lstlisting}[numbers=none]
+  #include <stdlib.h>
+  char *getenv(char *name);
+\end{lstlisting}
+  \item [プログラム例] \texttt{LANG}環境変数の値を表示する．
+    \lst{numbers=left,lastline=15}{environmentVariablePrintLANG.c}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プログラムからの環境変数アクセス（３）}
+  \emph{作成と値の変更（setenv関数）}
+  \begin{description}
+  \item [書式] 変数名（\|name|），値（\|val|），
+    フラグ（\|overwrite|）を与える．
+\begin{lstlisting}[numbers=none]
+  #include <stdlib.h>
+  int setenv(char *name, char *val, int overwrite);
+\end{lstlisting}
+  \item [解説] \|overwrite=0|で上書き禁止になる．\\
+    返り値は，正常時\|0|，エラー時\|-1|である．\\
+    上書き禁止時，既に変数が存在するとエラーになる．
+  \item [使用例] \|MYNAME|環境変数の値を\|sigemura|にする．
+\begin{lstlisting}[numbers=none]
+  setenv("MYNAME", "sigemura", 1);
+\end{lstlisting}
+    この例は上書き許可の場合．
+  \end{description}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プログラムからの環境変数アクセス（４）}
+  \emph{作成と値の変更（putenv関数）}
+  \begin{description}
+  \item [書式] \|name=val|形式の文字列（\|string|）を与える．
+\begin{lstlisting}[numbers=none]
+  #include <stdlib.h>
+  int putenv(char *string);
+\end{lstlisting}
+  \item [解説] \|name=val|形式以外の文字列を与えるとエラーになる．\\
+    返り値は正常時\|0|，エラー時\|-1|である．\\
+    \|putenv|関数は常に上書き許可になる．
+  \item [使用例] \|MYNAME|環境変数の値を\|sigemura|にする．
+\begin{lstlisting}[numbers=none]
+  putenv("MYNAME=sigemura");
+\end{lstlisting}
+    次の\|setenv|と同じ．
+\begin{lstlisting}[numbers=none]
+  setenv("MYNAME", "sigemura", 1);
+\end{lstlisting}
+  \end{description}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プログラムからの環境変数アクセス（５）}
+  \emph{削除（unsetenv関数）}
+  \begin{description}
+  \item [書式] 削除する変数の名前（\|name|）を与える．
+\begin{lstlisting}[numbers=none]
+  #include <stdlib.h>
+  int unsetenv(char *name);
+\end{lstlisting}
+  \item [解説] 名前（\|name|）を指定して環境変数を削除する．\\
+    名前の変数が無いなどのエラー時\|-1|が返る．\\
+    正常時は\|0|が返る．
+  \item [使用例] \|MYNAME|環境変数を削除する．
+\begin{lstlisting}[numbers=none]
+  unsetenv("MYNAME);
+\end{lstlisting}
+  \end{description}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.8}
+  \begin{enumerate}
+  \item[1.] 外部コマンドprintenvの仕様を調べる \\
+    オンラインマニュアル（\|man 1 printenv|）を読んだり，
+    \|printenv|を実際に実行したりして，
+    printenvコマンドの仕様を調べなさい．
+    \vfill
+  \item[2.] myprintenvプログラム\\
+    外部コマンドprintenvと同様な働きをするmyprintenvプログラムを作成しなさい．
+    なるべく本物と同じ動作をするように作ること．
+  \end{enumerate}
+  \vfill
+\end{frame}
+
+%===============================================================
+%\begin{frame}[fragile]
+%  \frametitle{}
+%\end{frame}
+
+\end{document}

@@ -1,0 +1,20 @@
+\RequirePackage{luatex85}
+\documentclass{standalone}
+\usepackage{luatexja}                              % lualatex の場合
+\usepackage[hiragino-pron]{luatexja-preset}        % ヒラギノフォント
+\begin{document}
+\begin{tabular}{l|l|l|l}
+\hline\hline
+\multicolumn{1}{c}{\emph{名称}} &
+\multicolumn{1}{|c}{\emph{fd}} &
+\multicolumn{1}{|c}{\emph{fp}} &
+\multicolumn{1}{|c}{\emph{通常の接続先}} \\
+\hline
+標準入力ストリーム       & \texttt{0} & \texttt{stdin}  & キーボード   \\
+標準出力ストリーム       & \texttt{1} & \texttt{stdout} & ディスプレイ \\
+標準エラー出力ストリーム & \texttt{2} & \texttt{stderr} & ディスプレイ \\
+\hline
+\multicolumn{4}{l}{\footnotesize fd : ファイルディスクリプタ} \\
+\multicolumn{4}{l}{\footnotesize fp : ファイルポインタ}
+\end{tabular}
+\end{document}

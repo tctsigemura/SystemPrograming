@@ -1,0 +1,12 @@
+$ mykill                                  <-- 使い方が分からない
+Usage : mykill SIG PID                    <-- 使い方を表示してくれる
+$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
+[1] 13589                                 <-- Grapher が JOB=1, PID=13589 だと分かる
+$ mykill 2 13589                          <-- PID=13589のプロセスにSIGINTを送る
+$                                         <-- Enter をもう一度入力
+[1]+  Interrupt: 2   /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+$ mykill 100 13589
+mykill: Invalid argument                  <-- シグナル番号が不正
+$ mykill 2 13589
+mykill: No such process                   <-- プロセス番号が不正
+$
