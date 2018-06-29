@@ -1,0 +1,17 @@
+\RequirePackage{luatex85}
+\documentclass{standalone}
+\usepackage{luatexja}                              % lualatex の場合
+\usepackage[hiragino-pron]{luatexja-preset}        % ヒラギノフォント
+\begin{document}
+{\ttfamily
+\begin{tabular}{l|l|l}\hline\hline
+\multicolumn{1}{c}{番号} &
+\multicolumn{1}{|c}{名前} &
+\multicolumn{1}{|c}{意味} \\\hline
+2  & INT  & 終了（Ctrl-Cと同じ）         \\
+9  & KILL & 強制終了                     \\
+15 & TERM & 終了（オプション無しと同じ） \\
+18 & TSTP & 一時停止（Ctrl-Zと同じ）     \\
+19 & CONT & 一時停止後の再開             \\
+\end{tabular}}
+\end{document}

@@ -1,0 +1,5 @@
+$ printenv MYNAME             <--- MYNAME環境変数は存在しない
+$ export MYNAME=sigemura
+$ printenv MYNAME             <--- MYNAME環境変数ができていた
+sigemura
+$

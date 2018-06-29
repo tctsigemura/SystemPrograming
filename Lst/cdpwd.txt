@@ -1,0 +1,20 @@
+$ pwd                        # カレントディレクトリは
+/home/mura                   #   ホームディレクトリ
+$ ls                         # カレントディレクトリの
+a.out   hello.c              #   ファイルを確認
+$ ls .
+a.out   hello.c              # . を明示しても同じ結果
+$ cp hello.c h.c             # 相対パスだけ使用
+$ cp /home/mura/hello.c i.c  # 前半は絶対パス
+$ ls
+a.out    h.c                 # コピーできている
+i.c      hello.c 
+$ cd ..                      # 親ディレクトリに移動
+$ pwd
+/home                        # 移動できている
+$ cd ../bin                  # 隣のディレクトリに移動
+$ pwd
+/bin                         # 移動できている
+$ cd ~                       # ホームディレクトリに移動
+$ pwd
+/home/mura                   # 移動できている

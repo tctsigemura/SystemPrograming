@@ -1,0 +1,16 @@
+$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+^Z
+[1]+  Stopped     /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+$ bg
+[1]+ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
+$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
+[2] 34655
+$ jobs
+[1]-  Running     /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
+[2]+  Running     /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
+$ fg 2
+/Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+^C
+$ jobs
+[1]+  Running     /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
+$

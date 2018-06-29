@@ -1,0 +1,5 @@
+$ pwd
+/home/mura         # カレントディレクトリはここ
+$ rm h1.c          # リンク h1.c を削除
+$ rm SysPro/ex1.c  # リンク ex1.c を削除
+$ rmdir SysPro     # SysPro ディレクトリを削除

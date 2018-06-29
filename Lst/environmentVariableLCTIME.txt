@@ -1,0 +1,17 @@
+$ printenv LC_TIME              # 環境変数 LC_TIME の値を確認する
+C                               # C言語標準(米国英語表記)を使用する
+$ date
+Tue Jul  5 08:33:53 JST 2016    # 英語表記，日本時間の現在時刻
+$ ls -l Makefile 
+-rw-r--r--  1 sigemura  staff  355 Jun 26 23:02 Makefile
+$ LC_TIME=ja_JP.UTF-8           # LC_TIMEに日本語標記を表す値をセットして試す
+$ date                          # 日本語表記，日本時間の現在時刻を表示する
+2016年 7月 5日 火曜日 08時34分13秒 JST
+$ ls -l Makefile 
+-rw-r--r--  1 sigemura  staff  355  6 26 23:02 Makefile
+$ export TZ=Cuba                # TZ環境変数を作ってキューバ時間を表す値をセット
+$ date                          # 日本語表記，キューバ時間の現在時刻
+2016年 7月 4日 月曜日 19時34分29秒 CDT
+$ ls -l Makefile 
+-rw-r--r--  1 sigemura  staff  355  6 26 10:02 Makefile
+$

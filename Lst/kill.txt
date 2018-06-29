@@ -1,0 +1,18 @@
+$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
+[1] 34339
+$ ps
+  PID TTY           TIME CMD
+34306 ttys000    0:00.03 -bash
+34339 ttys000    0:01.08 /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+$ kill 34339
+$ 
+[1]+  Terminated: 15  /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
+[1] 34346
+$ kill -TSTP 34346
+[1]+  Stopped         /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+$ kill -CONT 34346
+$ kill -2 34346
+$ 
+[1]+  Interrupt: 2    /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+$

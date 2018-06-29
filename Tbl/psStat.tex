@@ -1,0 +1,24 @@
+\RequirePackage{luatex85}
+\documentclass[border=1mm]{standalone}
+\usepackage{luatexja}                              % lualatex の場合
+\usepackage[hiragino-pron]{luatexja-preset}        % ヒラギノフォント
+\begin{document}
+{\ttfamily
+\begin{tabular}{ | c | l| c | c | l |}
+\cline{1-2}\cline{4-5}
+\multicolumn{1}{|c}{一文字目} &
+\multicolumn{1}{|c|}{意味}    &
+&
+\multicolumn{1}{|c}{ニ文字目} &
+\multicolumn{1}{|c|}{意味} \\
+\cline{1-2}\cline{4-5}
+I   & 20秒以上sleepしている        &     &  +   & フォアグラウンド \\
+S   & 20秒未満のsleep              &     &  s   & セッションリーダ \\
+R   & 実行可能                     &  +  &  ... &                  \\  
+T   & 一時停止状態（stop，Ctrl-Z） &     &      &                  \\
+Z   & ゾンビ（Zombi）              &     &      &                  \\
+... &                              &     &      &                  \\
+\cline{1-2}\cline{4-5}
+\end{tabular}}
+\end{document}
+
