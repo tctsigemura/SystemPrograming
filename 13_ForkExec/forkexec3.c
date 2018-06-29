@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h>                    // perror のために必要
 #include <stdlib.h>                   // exit のために必要
 #include <unistd.h>                   // fork, execve のために必要
 #include <sys/wait.h>                 // wait のために必要
@@ -9,11 +9,11 @@ char *execpath="/bin/date";
 int main(int argc, char *argv[], char *envp[]) {
   int pid;
   for (int i=1; argv[i]!=NULL; i++) {
+    putenv(argv[i]);                    // 環境変数を変更する
     if ((pid=fork())<0) {               // 分身を作る
       perror(argv[0]);                  // fork がエラーなら
       exit(1);                          // 親プロセスをエラー終了
     }
-    putenv(argv[i]);                    //   環境変数を変更する
     if (pid!=0) {                       // pid が 0 以外なら自分は親プロセス
       int status;
       wait(&status);                    //   子プロセスが終了するのを待つ

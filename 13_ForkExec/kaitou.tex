@@ -1,0 +1,42 @@
+\documentclass[a4j,dvipdfmx]{jarticle}
+%----------------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{fancybox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{color}
+\usepackage{multicol}
+\usepackage{listings,jlisting}
+%----------------------------------------------------------------------
+\pagestyle{fancy}
+\lhead{2016/07/19}
+\rhead{(\thepage / \pageref{LastPage})}
+\cfoot{}
+\chead{\textgt{システムプログラミング２　課題８解答}}
+%----------------------------------------------------------------------
+\begin{document}
+\def\lstlistingname{リスト}
+\lstset{language=C,
+%  numbers=left,
+  basicstyle={\small\ttfamily},
+%  basicstyle={\ttfamily},
+  commentstyle=\slshape,
+  columns=[l]{fullflexible},
+  keepspaces=true,
+%  showspaces=true,
+  frame=shadowbox
+}
+
+問題：コマンド行引数で「環境変数とファイル名」の組を複数指定し、
+環境変数を変更した上で出力をファイルにリダイレクトしdateを実行する
+プログラムを作りなさい。
+
+\lstinputlisting[label=kadai1, caption=解答例１（基本的なバージョン）]{kadai.c}
+
+\lstinputlisting[label=kadai2, caption=解答例２（date実行を関数にしたバージョン）]{kadai2.c}
+
+\end{document}
+

@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <stdio.h>         // perror のために必要
+#include <unistd.h>        // execve のために必要
+#include <stdlib.h>        // putenv のために必要
 
 extern char **environ;
 char *args[] = { "date", NULL };

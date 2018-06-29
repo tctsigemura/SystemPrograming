@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <unistd.h>
+#include <stdio.h>         // perror のために必要
+#include <unistd.h>        // execve のために必要
 
 char *args[] = { "date", NULL };
 char *envs[] = { "LC_TIME=ja_JP.UTF-8", "TZ=Cuba", NULL};
