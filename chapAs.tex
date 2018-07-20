@@ -6,9 +6,10 @@
 これの内容を理解し，更に，改造したりすることで，
 これまでに学習した様々なシステムコール等の意味を深く理解する．
 
+%=============================================================================
 \section{UNIXのシェルとは}
 UNIXのシェルはCLI（Command Line Interface）方式の
-コマンド行インタプリタ\footnote{
+コマンドインタプリタ\footnote{
 macOSのFinderや，WindowsのExplorerはGUI版のシェルである．}である．
 ユーザが入力したコマンド行を解析し実行するインタプリタの一種である．
 
@@ -33,6 +34,7 @@ UNIXシェルは最低でも次の機能を持っている．
 \item スクリプトの実行機能
 \end{enumerate}
 
+%=============================================================================
 \section{簡易UNIXシェル（myshell）}
 myshellはC言語で70行以内で記述可能な簡易版UNIXシェルである．
 コマンド行は空白区切りの文字列とする．
@@ -43,10 +45,12 @@ myshellは以下の二つの機能しか持たない．
 \item カレントディレクトリを変更する機能
 \end{enumerate}
 
-本章はmyshellの構造を学び，
-「環境変数の管理機能」，
-「入出力のリダイレクト機能」等を
-myshellに追加できるようになることを目標とする．
+本章ではmyshellの構造を学び，
+「fork-exec方式」，
+「環境変数」，
+「リダイレクト」等の理解を深める．
+最後の課題で，
+myshellに幾つかの機能を追加できるようになることを目標とする．
 
 \subsection{基本構造（\texttt{main()}関数）}
 myshell は，コマンド行の「入力」，「解析」，「実行」を
@@ -55,7 +59,7 @@ myshell は，コマンド行の「入力」，「解析」，「実行」を
 \|main()|関数の動作は次の通りである．
 
 \lstinputlisting[label=myshellMain
-  ,caption=メインループ
+  ,caption=メインループ（\texttt{main()}）
   ,float=btp, numbers=left]{Lst/myshellMain.c}
 
 \begin{enumerate}
@@ -89,7 +93,7 @@ myshell は，コマンド行の「入力」，「解析」，「実行」を
 動作は次の通りである．
 
 \lstinputlisting[label=myshellParse
-  ,caption=コマンド行の解析ルーチン
+  ,caption=コマンド行の解析ルーチン（\texttt{parse()}）
   ,float=btp, numbers=left]{Lst/myshellParse.c}
 
 \begin{enumerate}
@@ -145,7 +149,7 @@ myshell は，コマンド行の「入力」，「解析」，「実行」を
 
 
 \lstinputlisting[label=myshellExecute
-  ,caption=コマンドの実行ルーチン
+  ,caption=コマンドの実行ルーチン（\texttt{execute()}）
   ,float=btp, numbers=left]{Lst/myshellExecute.c}
 
 2行ではコマンドの名前を調べている．
@@ -156,6 +160,9 @@ cd コマンドは内部コマンドなので，
 9行で子プロセスを作り，14行で子プロセスがコマンドを実行する．
 親プロセスは18行で子プロセスの終了を待つ．
 
+
+%=============================================================================
+\newpage
 \section*{課題 No.11}
 
 \begin{enumerate}
@@ -163,3 +170,16 @@ cd コマンドは内部コマンドなので，
   削除するコマンド unsetenv を追加しなさい．
 \item myshell にリダイレクト機能を追加しなさい．
 \end{enumerate}
+
+\subsection*{機能追加後のmyshellの実行例（参考）}
+  \begin{lstlisting}[numbers=none]
+Command: setenv A B
+Command: printenv A
+B
+Command: unsetenv A
+Command: printenv A
+Command: echo aaa > a.txt
+Command: cat a.txt
+aaa
+Command:
+  \end{lstlisting}

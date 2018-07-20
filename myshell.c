@@ -1,6 +1,6 @@
 #include <stdio.h>                              // perror() のため
 #include <stdlib.h>                             // eixt() のため
-#include <string.h>                             // strcmp(), index() のため
+#include <string.h>                             // strcmp(), strchr() のため
 #include <unistd.h>                             // fork(), exec() のため
 #include <sys/wait.h>                           // wait() のため
 #include <ctype.h>                              // ispace() のため
