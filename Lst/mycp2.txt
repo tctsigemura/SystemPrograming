@@ -20,7 +20,6 @@ $ dd if=/dev/random of=srcfile bs=1024 count=10  <-- 10KiBの長いファイル�
 10+0 records out
 10240 bytes transferred in 0.001695 secs (6041591 bytes/sec)
 $ rm destfile
-$ rm destfile
 rm: destfile: No such file or directory          <-- destfile が存在しない場合
 $ mycp2 srcfile destfile
 $ cmp srcfile destfile                           <-- 正しくコピーできている
