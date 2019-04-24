@@ -393,7 +393,7 @@ off_t lseek(int fildes, off_t offset, int whence);
 
 \begin{lstlisting}[numbers=none]
 lseek(fd,  200, SEEK_SET);    // 先頭から200バイトに移動する．
-lseek(fd, -100, SEEK_CUR);   // 現在地から100バイト後ろに移動する．
+lseek(fd, -100, SEEK_CUR);    // 現在地から100バイト後ろに移動する．
 lseek(fd,  -10, SEEK_END);    // 最後から10バイト後ろに移動する．
 \end{lstlisting}
 

@@ -1,17 +1,14 @@
 % 自分のスタイルファイル
 \ProvidesPackage{mySty}
-\usepackage{luatexja}                              % lualatex の場合
-\usepackage[hiragino-pron]{luatexja-preset}        % ヒラギノフォント
-
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{framed}
-%\usepackage{listings,jlisting}    % lualatex 以外の場合
-\usepackage{listings}              % lualatex の場合
+\usepackage{listings}
+\usepackage{lltjp-tascmac}
+%\usepackage{ascmac}
 %\usepackage[usenames]{color}
 %\usepackage{arydshln}
 %\usepackage{multirow}
-\usepackage{ascmac}
 
 %------------------------------------------------------------------------------
 % 図表のキャプションを太字に
@@ -21,7 +18,8 @@
 
 %------------------------------------------------------------------------------
 % ハイパーリンク設定（印刷用では色使いに注意）
-\usepackage[colorlinks,linkcolor=blue,urlcolor=blue]{hyperref}     % PDF用
+\usepackage[unicode=true,colorlinks,
+  linkcolor=blue,urlcolor=blue]{hyperref}     % PDF用
 %\usepackage{hyperref}                                              % 印刷用
 %\usepackage{pxjahyper}                                        % lualatex 以外の場合
 
