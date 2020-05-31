@@ -20,24 +20,24 @@ int main(int argc, char *argv[], char *envp[])  {
 }
 
 /* 実行例
-$ myenv X=Y printenv X                                    <------ (1)
+$ ./myenv X=Y printenv X                                  <------ (1)
 Y
-$ myenv LC_TIME=ja_JP.UTF-8 date
+$ ./myenv LC_TIME=ja_JP.UTF-8 date
 2017年 7月 3日 月曜日 14時05分14秒 JST
-$ myenv LC_TIME=ja_JP.UTF-8 TZ=GMT date                   <------ (2)
+$ ./myenv LC_TIME=ja_JP.UTF-8 TZ=GMT date                 <------ (2)
 2017年 7月 3日 月曜日 05時05分25秒 GMT
-$ myenv LC_TIME=ja_JP.UTF-8 TZ=GMT ls -l myenv.c          <------ (3)
+$ ./myenv LC_TIME=ja_JP.UTF-8 TZ=GMT ls -l myenv.c        <------ (3)
 -rw-r--r--  1 sigemura  staff  2372  7  3 05:04 myenv.c
 $ ls -l myenv.c
 -rw-r--r--  1 sigemura  staff  2372 Jul  3 14:04 myenv.c
-$ myenv LC_TIME=ja_JP.UTF-8 TZ=GMT                        <------ (4)
+$ ./myenv LC_TIME=ja_JP.UTF-8 TZ=GMT                      <------ (4)
 TERM_PROGRAM=iTerm.app
 TERM=xterm-256color
 SHELL=/bin/bash
 CLICOLOR=1
 ...
 TZ=GMT
-$ myenv LC_TIME=ja_JP.UTF-8 TZ=GMT ddd                    <------ (5)
+$ ./myenv LC_TIME=ja_JP.UTF-8 TZ=GMT ddd                  <------ (5)
 ddd: No such file or directory
 $
 (1) 基本的な動作確認

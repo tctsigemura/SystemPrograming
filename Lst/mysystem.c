@@ -1,5 +1,6 @@
 // mysytem.c : system 関数もどきとテストドライバ
 #include <stdio.h>
+#include <stdlib.h>    // exit
 #include <unistd.h>    // fork, execXX
 #include <sys/types.h> // wait
 #include <sys/wait.h>  // wait
@@ -10,12 +11,12 @@ int mysystem(char *command) {                    // 課題の関数 mysystem()
   if (pid<0) return -1;
   if (pid==0) {                                  // 子プロセスは
     execl("/bin/sh", "sh", "-c", command, NULL); //   /bin/shへ変身
-    return 127;                                  //   失敗したら127を返す
+    exit(127);                                   //   失敗したら127で終了
   } else {                                       // 親プロセスは
     while(wait(&stat)!=pid)                      //   /bin/shの終了を待つ
       ;
   }
-  return stat;                                   // 親プロセスは/bin/shの
+  return WEXITSTATUS(stat);                      // 親プロセスは/bin/shの
 }                                                //   終了ステータスを返す
 // テストドライバ
 int main(int argc, char *argv[]) {
@@ -28,7 +29,6 @@ int main(int argc, char *argv[]) {
   printf("r = %08x\n", r);
   return 0;
 }
-
 /* 実行例
 $ ./mysystem ls
 a.txt      mysystem   mysystem.c

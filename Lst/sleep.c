@@ -9,7 +9,7 @@ int main() {
 }
 
 /* 実行例
-$ a.out
+$ ./a.out
 hello
 hello
 ^C                <-- Ctrl-C で止める

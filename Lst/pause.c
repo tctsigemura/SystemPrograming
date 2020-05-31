@@ -10,6 +10,6 @@ int main() {
   return 0;                    // Ctrl-C 3回で終了する
 }
 /* 実行例
-$ a.out
+$ ./a.out
 ^C^C^C$       <-- Ctrl-C 3回で終了した
 */

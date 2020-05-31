@@ -23,7 +23,7 @@ int main(int argc, char *argv[], char *envp[]) {
   exit(0);                            // 親プロセスを正常終了
 }
 /* 実行例
-$ forkexec3 LC_TIME=ja_JP.UTF-8 LC_TIME=ru_RU.UTF-8 TZ=Cuba
+$ ./forkexec3 LC_TIME=ja_JP.UTF-8 LC_TIME=ru_RU.UTF-8 TZ=Cuba
 2016年 7月18日 月曜日 22時25分51秒 JST
 понедельник, 18 июля 2016 г. 22:25:51 (JST)
 понедельник, 18 июля 2016 г. 09:25:51 (CDT)
