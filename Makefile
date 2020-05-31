@@ -9,10 +9,10 @@ PDFS = syspro.pdf
 #	dvipdfmx $*.dvi
 	open $*.pdf
 
-all : ${PDFS}
+all : syspro.pdf
+
 
 syspro.pdf : syspro.tex chap?s.tex
 
 clean :
 	rm -f *.log *.aux *.dvi *.out *.toc *.vrb *.snm *.nav *~
-

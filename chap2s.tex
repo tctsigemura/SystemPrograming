@@ -397,11 +397,11 @@ UNIXマニュアルの第1章はコマンドの章である．} で調べる）�
 以下に \|mycp| プログラムの動作確認を行う手順の例を示す．
 
 \begin{lstlisting}[numbers=none]
-$ dd if=/dev/random of=srcfile bs=1024 count=10   # ランダムな内容の
+$ dd if=/dev/urandom of=srcfile bs=1024 count=10  # ランダムな内容の
 10+0 records in                                   #   10KiBのファイルを作成する
 10+0 records out
 10240 bytes transferred in 0.001528 secs (6701462 bytes/sec)
-$ mycp srcfile destfile                           # mycp プログラムを実行する
+$ ./mycp srcfile destfile                         # mycp プログラムを実行する
 $ cmp srcfile destfile                            # コピー元とコピー先ファイルを比較
 $                                                 # 内容が同じなら何も表示されない
 \end{lstlisting}
