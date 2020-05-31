@@ -24,7 +24,7 @@ int main() {
 }
 
 /* 実行例
-$ a.out
+$ ./a.out
 hello                 <---- hello が一秒に一度表示される．
 hello
 hello
