@@ -20,6 +20,7 @@
   \vfill
   \begin{itemize}
   \item \emph{spawn方式（スポーン：卵を産む方式）} \\
+    Windows等で使用されてきた． \\
     次の３ステップを一つのシステムコールで行う．
     \begin{enumerate}
     \item[1.] プロセスを作る．
@@ -28,6 +29,7 @@
     \end{enumerate}
   \vfill
   \item \emph{fork-exec方式（分岐-実行方式）} \\
+    UNIX系のOSで使用されてきた． \\
     次の３ステップを二つのシステムコールとプログラムで行う．
     \begin{enumerate}
     \item[1.] プロセスを作る（forkシステムコール）．
@@ -41,7 +43,6 @@
 %===============================================================
 \begin{frame}[fragile]
   \frametitle{spawn方式}
-  Windows 等で使用されてきた．\\
   \|posix_spawn|の例 \\
   \begin{description}
   \item[書式] 次の通りである．
@@ -231,7 +232,10 @@
 \begin{frame}[fragile]
   \frametitle{課題 No.9}
   \begin{enumerate}
-  \item[1.] envコマンドのクローンmyenv \\
+  \item[1.] 前のページ（リスト9.5）のプログラムを入力し実行してみる．
+  \item[2.] 入力のリダイレクトをするプログラム例を作る． \\
+    ヒント：標準入力のファイルディスクリプタは0番である．
+  \item[3.] envコマンドのクローンmyenv \\
     \|putenv()|がエラーになるまでコマンド行引数を環境変数の設定と思って使う．
     残りが実行するコマンドを表している．
     下の実行例では\\
@@ -300,15 +304,17 @@
   \vfill
   例えば次のような手順で処理がされる．
   \begin{itemize}
-  \item 親プロセスは複数の子プロセスに\\並行して処理をさせる．
-  \item 子プロセスは自分の処理をして終了する．
-  \item 親プロセスは全ての子プロセスが\\正常に終了したか確認する．\\
+  \item 親プロセスは子プロセスをいくつか作成し，\\
+    それらに同時に並行して処理を行わせる．
+  \item 子プロセスは処理を終えると終了する．
+  \item 子プロセスが処理を終えると，親プロセスは \\
+    子プロセスが正常に終了したかチェックする．\\
     \vfill
     \verb;$ ls -l | grep rwx;\hfil ←  \hfil 二つのプロセスが並列実行される
     \vfill
-  \item 子プロセスが処理結果(正常／エラー)を親に知らせる．\\
+  \item 子プロセスが処理結果と共に自身を終了する． \\
     → \emph{exitシステムコール}
-  \item 親プロセスが子プロセスの終了を知る． \\
+  \item 親プロセスが子プロセスの終了を待つ． \\
     → \emph{waitシステムコール}
   \end{itemize}
 \end{frame}
@@ -330,7 +336,7 @@
     \item プロセスが終了するのでexitは戻らない．
     \item \|status|はプロセスの\emph{終了ステータス}である．\\
       （\|0 <= status <= 255|）\\
-    \item 終了ステータスは親プロセスがwaitで受け取る．
+    \item 親プロセスはwaitで終了ステータスを受け取る．
     \item Cプログラムのmain関数はexitの引数で実行．\\
     \vfill
     \texttt{exit(main(argc, argv, envp));}
@@ -361,7 +367,7 @@
 %===============================================================
 \begin{frame}[fragile]
   \frametitle{fork-exec方式（１６）}
-  \emph{waitシステムコール}：子プロセスの終了を待つ．
+  \emph{waitシステムコール}：親プロセスが子プロセスの終了を待つ．
 
   \begin{description}
   \item[書式] waitシステムコールの書式を示す．
