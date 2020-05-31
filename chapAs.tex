@@ -1,7 +1,6 @@
 \chapter{UNIXシェル}
 本章では簡易版のUNIXシェル（以下では myshell\footnote{
-ソースコードは
-\url{https://github.com/tctsigemura/SystemPrograming}からダウンロードできる．
+\url{https://raw.githubusercontent.com/tctsigemura/SystemPrograming/master/myshell.c}
 }と呼ぶ）を紹介する．
 これの内容を理解し，更に，改造したりすることで，
 「fork-exec方式」，
@@ -15,8 +14,8 @@ myshellに幾つかの機能を追加できるようになることを目標と�
 UNIXのシェルはCLI（Command Line Interface）方式の
 コマンドインタプリタ\footnote{
 macOSのFinderや，WindowsのExplorerはGUI版のシェルである．}である．
-主に，UNIX，LinuxやmacOS等で使用される．
-ユーザが入力したコマンド行を解析し実行するインタプリタの一種である．
+UNIX，Linux，macOS，WSL（Windows Subsystem for Linux）等で使用される．
+ユーザが入力したコマンド行を解析し実行する．
 またコマンド行だけではなく，
 コマンド列（シェルスクリプト）を書いたファイルを実行する機能も備えており，
 処理の自動化にも役立つ．
@@ -87,7 +86,7 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
   後で説明する\|parse()|関数を用いて\|buf|配列のコマンド行を\emph{解析}し，
   execveシステムコールに渡す\|args|配列を作る．
   もしも，コマンド行の文字列が多すぎて配列に格納しきれない時は，
-  \|parese()|関数が\|0|を返すのでエラーメッセージを表示して入力を無視する．
+  \|parse()|関数が\|0|を返すのでエラーメッセージを表示して入力を無視する．
 \item 18行では，
   \|args|配列にコマンドが格納されていることを確認した後，
   後で説明する\|execute()|関数に依頼して
