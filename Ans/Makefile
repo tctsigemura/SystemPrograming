@@ -8,7 +8,7 @@ PDFS = ex1.pdf ex2.pdf ex3.pdf ex4.pdf ex5.pdf ex6.pdf ex7.pdf ex8.pdf \
 	lualatex $*.tex
 #	lualatex $*.tex
 #	dvipdfmx $*.dvi
-	open $*.pdf
+#	open $*.pdf
 
 all : ${PDFS}
 
