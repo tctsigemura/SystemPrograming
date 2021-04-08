@@ -1,0 +1,332 @@
+%\documentclass[dvipdfmx]{beamer}      % platex の場合
+\documentclass{beamer}                 % lualatex の場合
+\usepackage{mySld}
+
+\begin{document}
+\title{オペレーティングシステムの機能を使ってみよう\\
+第７章 シグナル}
+\date{}
+
+%===============================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%===============================================================
+%\begin{frame}[fragile]
+%  \frametitle{}
+%\end{frame}
+
+\section{シグナル}
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{シグナル}
+  前の章で使用して見たkillコマンドやJOB制御等で使用される．\\
+  プロセスに\emph{非同期的}にイベントの発生を知らせる仕組み．．
+
+  \begin{enumerate}
+    \item[1)] プロセスやOSがプロセスにイベントを通知 \\
+      killコマンド（killプロセス）が他のプロセスにシグナルを送る．\\
+      Ctrl-CやCtrl-Zが押された時，OSがプロセスにシグナルを送る．
+    \item[2)] プロセス自身の異常を通知 \\
+      0での割り算 → Floating point exception シグナル（SIGFPE） \\
+      ポインタの初期化忘れ → Segmentation fault シグナル（SIGSEG）
+    \item[3)] プロセスが予約した時刻になった \\
+      アラームシグナル（SIGALRM）
+  \end{enumerate}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{シグナルの一覧}
+  \tbl{scale=0.9}{signal.pdf}
+
+  \begin{itemize}
+  \item 番号，記号名，デフォルト（デフォルトのシグナルハンドリング）
+  \item \texttt{SIGKILL}と\texttt{SIGSTOP}はデフォルトから変更できない
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{シグナルハンドリング}
+  プロセスが，受信したシグナルをどう扱うか．
+
+  \begin{enumerate}
+  \item[1)] \emph{無視（ignore）}
+    そのシグナルを無視する．
+  \item[2)] \emph{捕捉・キャッチ（catch）}
+    そのシグナルを受信し，
+    登録しておいたシグナル処理ルーチン（シグナルハンドラ関数）を呼び出す．
+  \item[3)] \emph{デフォルト（default）}
+    シグナルの種類ごとに決められている初期のハンドリングであり，
+    以下の四種類のどれかである．
+    各シグナルのデフォルトが四種類のうちのどれかは一覧表から分かる．
+    \begin{description}
+    \item[停止] プロセスは一時停止状態になる．
+    \item[無視] プロセスはそのシグナルを無視する．
+    \item[終了] プロセスは終了する．
+    \item[コアダンプ] プロセスはcoreファイルを作成してから終了する．
+  \end{description}
+  \end{enumerate}
+
+  \begin{center}
+  \emph{\Large{シグナルの扱い方 = シグナルハンドリング}}
+  \end{center}
+
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{signalシステムコール}
+  自プロセスのシグナルハンドリングを設定する．
+  
+  \begin{description}
+  \item[書式] \texttt{sig}シグナルの種類，
+    \texttt{func}は新しいハンドリング．
+
+\begin{verbatim}
+#include <signal.h>
+sig_t signal(int sig, sig_t func);
+\end{verbatim}
+
+  \item[解説] \texttt{sig}はハンドリングを変更するシグナル\\
+    \texttt{SIG\_IGN}はシグナルを\emph{無視}するようにする．\\
+    \texttt{SIG\_DFL}はシグナルハンドリングを\emph{デフォルト}に戻す．\\
+    シグナルハンドラ\emph{関数}を指定すると\emph{捕捉}になる．\\
+    シグナルハンドラ関数のプロトタイプ宣言は次の通り．\\
+    \|void func(int sig);|
+
+  \item[戻り値] 正常なら変更前のハンドリングが，\\
+    エラーなら\texttt{SIG\_ERR}が返される．
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プログラム例：シグナルを無視する例}
+  \texttt{SIGINT}を一時的に無視するプログラムの例を示す．
+
+  \begin{quote}
+    \lst{numbers=left}{signalIgnore.c}
+  \end{quote}
+
+  \begin{description}
+  \item[5行] Ctrl-Cを無視するようにハンドリングを変更する．
+  \item[6行] Ctrl-Cを押してもプログラムが終了しない状態．
+  \item[7行] ハンドリングを元に戻しCtrl-Cで終了するようにする．
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{プログラム例：シグナルを捕捉する例}
+  \texttt{SIGINT}を捕捉するプログラムの例を示す．
+
+  \begin{quote}
+    \lst{numbers=left}{signalCatch.c}
+  \end{quote}
+
+  \begin{description}
+    \item[9行] \texttt{SIGINT}のハンドリングを捕捉にする．
+    \item[10行] Ctrl-Cが押される度に\texttt{handler()}関数を実行．
+    \item[11行] \texttt{SIGINT}のハンドリングをデフォルト（終了）に戻す．
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{シグナルハンドラの制約}
+  \begin{enumerate}
+  \item[1)] \emph{制約がある理由} \\
+    ハンドラ関数はいつ呼ばれるか分からない．\\
+    例えば\texttt{printf()}がバッファ操作中にシグナル捕捉！！ \\
+    ハンドラ関数中で\texttt{printf()}実行 → 何か悪いことが起こる
+    \vfill
+  \item[2)] \emph{やってもよいこと} \\
+    \begin{enumerate}
+    \item[1.] シグナルハンドラ関数のローカル変数の操作
+    \item[2.] \texttt{volatile sig\_atomic\_t} 型変数の読み書き\\
+      \texttt{sig\_atomic\_t} 型はmacOSでは\texttt{int}型\\
+      （「読み書き」は単純な\emph{参照}と\emph{代入}のことだけ指す）\\
+      \texttt{volatile}を付けるとCコンパイラの最適化の対象外\\
+      （最適化は非同期にアクセスを前提にしていない．）\\
+    \item[3.] 非同期シグナル安全な関数の呼び出し\\
+      \texttt{\_exit(), alarm(), chdir(), chmod(), close(), creat(), dup(),
+        dup2(), execle(), execve(), fork(), kill(), ...}
+      %link(), lseek(), mkdir(),
+      %open(), pause(), read(), rename(), rmdir(), signal(), sleep(), stat(),
+      %time(), unlink(), wait(), write(), strcpy(), strcat(), ...}
+    \end{enumerate}
+  \end{enumerate}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{シグナルハンドラの例}
+  \begin{quote}
+    \lst{numbers=left}{signalHandler.c}
+  \end{quote}
+
+  \begin{description}
+  \item[3行] ハンドラ関数が操作できる変数\texttt{flg}を宣言
+  \item[4行] ハンドラ関数（限られた操作しかできない）
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{kill システムコール}
+  プロセスがプロセスにシグナルを送信するシステムコール
+
+  \begin{description}
+  \item[書式] \texttt{pid}は送り先プロセス，
+    \texttt{sig}はシグナルの種類
+
+\begin{verbatim}
+#include <signal.h>
+int kill(pid_t pid, int sig);
+\end{verbatim}
+
+  \item[解説]
+    送信先のプロセスとシグナルの種類を指定してシグナルを送信する．
+    （シグナルの種類は前出の表の通り）
+
+  \item[戻り値]
+    正常時は0，異常時-1が返される．
+
+  \item[プログラム例]
+    killシステムコールの使用例として，
+    killコマンドを簡単化したプログラム（mykill）を示す．\\
+  \end{description}
+  \begin{center}
+    使用方法： \texttt{mykill <シグナル番号> <プロセス番号>}
+  \end{center}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{mykillプログラム}
+  \begin{quote}
+    \lst{numbers=left}{mykill.c}
+  \end{quote}
+
+  \begin{itemize}
+  \item \texttt{atio()}は，文字列\texttt{"123"}を整数\texttt{123}に変換
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{mykillの実行例}
+  \begin{quote}
+    \lst{breaklines=true,breakindent=0pt}{mykill.txt}
+  \end{quote}
+
+  \begin{itemize}
+  \item Grapher は macOS のグラフ作成アプリ
+  \item Grapher を使用する実行例
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{sleepシステムコール}
+  自プロセスを指定された時間，待ち状態にする．
+
+  \begin{description}
+  \item[書式] \texttt{seconds}は待ち時間（秒単位）
+
+\begin{verbatim}
+  #include <unistd.h>
+  unsigned int sleep(unsigned int seconds);
+\end{verbatim}
+
+  \item[解説]
+    決められた時間待ち状態になる．
+    途中でシグナルが届いた場合は終了する．
+    （ハンドリングが\emph{無視以外}の場合）
+
+  \item[戻り値]
+    sleep予定だった残りの秒数が返される．（通常は0のはず）
+  
+  \item[プログラム例]
+    １秒に一度\texttt{hello}と表示するプログラム（Ctrl-Cで終了）
+    \lst{lastline=9}{sleep.c}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{pauseシステムコール}
+  自プロセスを待ち状態にする（時間制限なし）．
+
+  \begin{description}
+  \item[書式]
+\begin{verbatim}
+  #include <unistd.h>
+  int pause(void);
+\end{verbatim}
+
+  \item[解説]
+    時間を定めず待ち状態になる．
+    途中でシグナルが届いた場合は終了する．
+    （ハンドリングが\emph{無視以外}の場合）
+
+  \item[戻り値]
+    常にエラーで終了するので-1
+  
+  \item[プログラム例] \texttt{SIGINT}のハンドリングを\emph{捕捉}にした例
+    \lst{lastline=11}{pause.c}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{alarmシステムコール}
+  アラームシグナルの発生を予約する．
+
+  \begin{description}
+  \item[書式]
+\begin{verbatim}
+  #include <unistd.h>
+  unsigned int alarm(unsigned int seconds);
+\end{verbatim}
+
+  \item[解説]
+    \texttt{seconds}秒後に\texttt{SIGALRM}が発生する．\\
+    \emph{予約するだけ}でプロセスが待ち状態になるわけではない．
+
+  \item[戻り値]
+    前回のalarmシステムコールの残り時間（通常0）
+  
+  \item[プログラム例] \texttt{SIGALRM}のハンドリングを\emph{捕捉}にした例
+    \lst{lastline=12}{signalAlarm.c}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.6}
+  \begin{enumerate}
+  \item[1.] リスト7.3のプログラムは，
+    Ctrl-Cが押された回数を\texttt{main()}関数側でカウントしている．
+    そのため，
+    \texttt{main()}関数の処理が忙しくて
+    \texttt{flg}変数を頻繁にチェックできない場合に，
+    Ctrl-Cの回数を正確にカウントできないかもしれない．
+  
+    \texttt{main()}関数の力を借りずにCtrl-Cの回数をカウントし，
+    三回目のCtrl-Cのとき\texttt{flg}変数を1にするように
+    プログラムを改良しなさい．
+    シグナルハンドラ中ではグローバル変数のインクリメントはできないものとする．
+
+    \emph{ヒント：} シグナルハンドラ中で\texttt{signal()}を実行してもよい．
+
+  \item[2.] sleepシステムコールを用いないで，
+    指定秒数プログラムを待ち状態にする関数
+    \texttt{mysleep(int seconds)}を作りなさい．
+  \end{enumerate}
+\end{frame}
+
+\end{document}

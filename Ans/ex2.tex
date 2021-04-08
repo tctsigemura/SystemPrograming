@@ -1,0 +1,42 @@
+\documentclass[a4j,twcolumn,11pt,nomag]{ltjarticle}      % lualatex の場合
+\usepackage{myAns}
+\chead{\textgt{システムプログラミング２　課題 No.2 解答}}
+
+\begin{document}
+\onecolumn
+\section*{課題 No.2 の解答例}
+筆者が日頃使用している MacBook Pro 上で計測した結果を下の表にまとめた．
+実行時間は遅い方から以下の順であった．
+
+\begin{enumerate}
+\item 1バイトのwriteシステムコール
+\item 高水準I/O
+\item 1,024バイトのwriteシステムコール
+\end{enumerate}
+
+カーネルが費やした時間は高水準I/Oが最も短いことから，
+高水準I/Oは1,024バイトよりも大きいバッファを使用していると考えられる．
+
+\begin{figure}[h]
+  \begin{center}
+  1バイトのwriteシステムコール使用\\
+  \tbl{scale=0.9}{mycp2_1_10M-crop.pdf}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    高水準I/O使用\\
+    \tbl{scale=0.9}{mycp_10M-crop.pdf}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    1,024バイトのwriteシステムコール使用\\
+    \tbl{scale=0.9}{mycp2_1024_10M-crop.pdf}
+  \end{center}
+\end{figure}
+
+\end{document}
+

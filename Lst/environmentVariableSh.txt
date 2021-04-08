@@ -1,0 +1,6 @@
+$ printenv MYNAME           <--- MYNAMEは存在しない
+$ MYNAME=sigemura           <--- シェル変数MYNAMEを作る
+$ export MYNAME             <--- MYNAMEを環境変数に変更する
+$ printenv MYNAME
+sigemura                    <--- 環境変数MYNAMEの値
+$

@@ -1,0 +1,518 @@
+%\Documentclass[dvipdfmx]{beamer}      % platex の場合
+\documentclass{beamer}                 % lualatex の場合
+\usepackage{mySld}
+
+\begin{document}
+\title{オペレーティングシステムの機能を使ってみよう\\第２章 ファイル入出力システムコール}
+\date{}
+
+%===============================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%===============================================================
+%\begin{frame}[fragile]
+%  \frametitle{}
+%\end{frame}
+
+\section{ファイル入出力システムコール}
+%===============================================================
+\begin{frame}
+  \frametitle{ファイル入出力システムコール}
+  \begin{itemize}
+  \item ファイルの読み書きを行うシステムコールを勉強する．
+  \item システムコールを直接に使用したプログラムを作成してみる．
+  \item プログラムの作成にはC言語を用いる．
+  \item システムコールを直接に使用する入出力を\emph{低水準入出力}と呼ぶ．\\
+    これまで使用してきたものは\emph{高水準入出力}と呼ぶ．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}
+  \frametitle{高水準入出力と低水準入出力}
+\begin{itemize}
+\item C言語の入門で勉強した入出力関数は\emph{高水準入出力}関数．
+\item システムコールを直接使用する入出力は\emph{低水準入出力}．
+\item 高水準入出力関数は内部でシステムコールを利用．
+\item 高機能・豊富な高水準と，シンプルな低水準．
+\end{itemize}
+
+\begin{center}
+{\footnotesize\ttfamily\begin{tabular}{l | l}\hline\hline
+高水準入出力関数 & 対応するシステムコール \\\hline
+fopen()      & open システムコール \\
+printf()     & write システムコール \\
+putchar()    & write システムコール \\
+fputs()      & write システムコール \\
+fputc()      & write システムコール \\
+...          & ...                     \\
+scanf()      & read システムコール \\
+getchar()    & read システムコール \\
+fgets()      & read システムコール \\
+fgetc()      & read システムコール \\
+...          & ...                      \\
+fclose()     & close システムコール \\
+\end{tabular}}
+\end{center}
+
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{open システムコール（書式１）}
+  \begin{itemize}
+  \item ファイルを開くシステムコール
+  \item \texttt{fopen()}関数が使用している
+  \end{itemize}
+
+\begin{description}
+
+\item[書式]（オープンするだけの場合）
+\begin{lstlisting}[language=C++]
+#include <fcntl.h>
+int open(const char *path, int oflag);
+\end{lstlisting}
+
+\item[解説]（書式１，２共通）
+\begin{itemize}
+\item \texttt{fcntl.h}をインクルードする必要がある．
+\item openシステムコールは正常時には\emph{ファイルディスクリプタ}
+  （３以上の番号）を返す．
+\footnote{stdinが0，stdoutが1，stderrが2なので3以降になる．}．
+\item エラーが発生した時は\texttt{-1}を返す．
+\item エラー原因は\texttt{perror()}関数で表示できる．
+\end{itemize}
+
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+\begin{description}
+\item[引数]
+\begin{itemize}
+\item \|path|はオープンまたは作成するファイルのパス（名前）
+\item \|oflag|はオープンの方法を表の記号定数を「\texttt{|}」で接続して書く．
+（「\texttt{|}」は，C言語のビット毎の論理和演算子）
+\end{itemize}
+
+{\footnotesize\begin{tabular}{l | c | l}
+\hline\hline
+\emph{以下の一つ} & と & \emph{以下のいくつか} \\\hline
+\|O_RDONLY|（読み出し用） &    & \|O_APPEND|（追記）  \\
+\|O_WRONLY|（書き込み用） & +  & \|O_CREAT|（作成）   \\
+\|O_RDWR|（読み書き両用） &    & \|O_TRUNC|（切詰め） \\
+                      &    & ...      \\
+\end{tabular}}
+
+\item[使用例]
+\begin{lstlisting}[numbers=none]
+#include <fcntl.h>
+...
+int fdr, fdw, fda;
+fdr=open("r.txt", O_RDONLY);              // 読み出し用にオープン
+fdw=open("w.txt", O_WRONLY);              // 書き込み用にオープン
+fda=open("a.txt", O_WRONLY|O_APPEND);     // 追記用にオープン
+
+if (fdw<0) {                              // エラーチェック
+  perror("w.txt");                        //  原因の表示
+  exit(1);                                //  エラー終了
+}
+\end{lstlisting}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{open システムコール（書式２）}
+  ファイルが存在しない時はファイルを自動的に作った上で開く．
+
+\begin{description}
+\item[書式]（ファイル作成もする場合）
+
+\|oflag|に\|O_CREAT|を含む場合は，
+該当ファイルが存在しないなら新規作成してからオープンする．
+新規作成するファイルの\emph{保護モード}を\|mode|で指定する．
+
+\begin{lstlisting}[language=C++]
+#include <fcntl.h>
+int open(const char *path, int oflag, mode_t mode);
+\end{lstlisting}
+
+\begin{itemize}
+\item \|mode_t| は，16bit の整数型（16bit \|int|）である．
+\item \|mode| は，作成されるファイルの保護モードである．
+\item \|mode| は，8進数で記述することが多い．
+\end{itemize}
+
+{\footnotesize\ttfamily\begin{center}\begin{tabular}{l l l l}
+0: --- ~~~ & 2: -w-  ~~~~ & 4: r-- ~~~ & 6: rw- \\
+1: --x     & 3: -wx       & 5: r-x     & 7: rwx \\
+\end{tabular}\end{center}}
+
+\item[使用例]
+\begin{lstlisting}[numbers=none]
+fd=open("a.txt", O_WRONLY|O_CREAT, 0644);  // モードは rw-r--r--
+\end{lstlisting}
+
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{ファイルの保護モード}
+open システムコールの第３引数（\|mode|）は次のような 12bit の値である．
+
+\begin{center}
+{\ttfamily\small\begin{tabular}{|c|c|c||c|c|c||c|c|c||c|c|c|}
+\multicolumn{1}{c}{11} &
+\multicolumn{1}{c}{10} &
+\multicolumn{1}{c}{ 9} &
+\multicolumn{1}{c}{ 8} &
+\multicolumn{1}{c}{ 7} &
+\multicolumn{1}{c}{ 6} &
+\multicolumn{1}{c}{ 5} &
+\multicolumn{1}{c}{ 4} &
+\multicolumn{1}{c}{ 3} &
+\multicolumn{1}{c}{ 2} &
+\multicolumn{1}{c}{ 1} &
+\multicolumn{1}{c}{ 0} \\\hline
+s  & s  & t & r & w & x & r & w & x & r & w & x \\\hline
+\multicolumn{3}{c}{省略} &
+\multicolumn{3}{c}{ユーザ} &
+\multicolumn{3}{c}{グループ} &
+\multicolumn{3}{c}{その他}
+\end{tabular}}
+\end{center}
+
+\begin{itemize}
+\item 最初の 3bit の意味は難しいのでここでは説明を省略する．
+\item 他のビットは \|rwx| のどれかである．\|rwx| の意味は次の通り．
+\end{itemize}
+
+\begin{quote}
+\begin{tabular}{c c l}
+\texttt{r} & : & \textbf{r}ead 可（読み出し可能）   \\
+\texttt{w} & : & \textbf{w}rite 可（書き込み可能）   \\
+\texttt{x} & : & e\textbf{x}ecute 可（実行可能）
+\end{tabular}
+\end{quote}
+
+例えば，第8ビットが \|1| だった． ＝＞\\
+ユーザ（ファイルの所有者）が read （読み出し）可能の意味．
+%逆に \|0|なら read 不可の意味になる．
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+ファイルのモードやユーザ（所有者），グループは次のようにして確認できる．
+
+\begin{quote}
+\begin{lstlisting}[numbers=none]
+$ ls -l a.txt
+-rw-r--r--  1 sigemura  staff  0 Apr 11 05:53 a.txt
+$
+\end{lstlisting}
+\end{quote}
+
+実行結果から a.txt ファイルについて以下のことが分かる．
+\begin{itemize}
+\item モードの下位9ビットが \|110100100| である．
+\item 所有者は sigemura である．
+\item グループは staff である．
+\end{itemize}
+
+以上を総合すると a.txt ファイルについて以下のことが分かる．
+\begin{itemize}
+\item sigemura が読み書きができる．
+\item staff グループに属するユーザは読むことだけできる．
+\item その他のユーザも読むことだけできる．
+\end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{readシステムコール（１）}
+\begin{itemize}
+\item 読み出し用にオープン済みのファイルからデータを読む．
+\item ファイルの先頭から順に読み出す．\\
+（\emph{シーケンシャルアクセス（順アクセス）}）
+\end{itemize}
+
+\begin{description}
+\item[書式]（詳しくは\texttt{man 2 read}で調べる．）
+
+\begin{lstlisting}
+#include <unistd.h>
+ssize_t read(int fildes, void *buf, size_t nbyte);
+\end{lstlisting}
+
+\item[解説]
+\begin{itemize}
+\item \|unistd.h|をインクルードする必要がある．
+\item \|ssize_t|は 64bit int 型．
+\item 正常時には読んだデータのバイト数（正の値）を返す．
+\item EOF では \|0| を返す．
+\item エラーが発生した時は\|-1|を返す．
+\item エラーの原因は \|perror()| 関数で表示できる．
+\end{itemize}
+
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{readシステムコール（２）}
+\begin{description}
+\item[引数]
+\begin{itemize}
+\item \|fildes|はオープン済みのファイルディスクリプタ
+\item \|buf|はデータを読み出すバッファ領域を指すポインタ
+\item \|nbyte|はバッファ領域の大きさ（バイト単位）
+\end{itemize}
+
+\item[使用例１]
+\begin{itemize}
+\item \|fd|は open システムコールでオープン済みと仮定
+\item \|buf|はバッファ用の \|char| 型の大きさ100の配列
+\item \|char|型は1バイトなので，配列全体で100バイト
+\item 3回の\|read|によりファイルの先頭から順に100バイトずつ読む
+\end{itemize}
+
+\begin{lstlisting}[language=C++]
+char buf[100];
+n = read(fd, buf, 100); // 1回目
+n = read(fd, buf, 100); // 2回目
+n = read(fd, buf, 100); // 3回目
+\end{lstlisting}
+
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{read システムコール（３）}
+\begin{description}
+\item[使用例２]
+\begin{itemize}
+\item ループでファイルの先頭から順にデータを読み出す例
+\item \|n|の値が\|0|以下になったら EOF かエラー
+\item EOFかエラーになったらループを終了
+\end{itemize}
+
+\begin{lstlisting}[numbers=none]
+while ((n=read(fd, buf, 100)) > 0) { // 読む
+   ... 読んだ n バイトのデータを処理する ...
+}
+\end{lstlisting}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{writeシステムコール}
+\begin{itemize}
+\item 書き込み用にオープン済みのファイルへデータを書き込む．
+\item ファイルの先頭から順にデータを書き込む．\\
+（\emph{シーケンシャルアクセス}）
+\item ファイルの最後に達するまでは元々あったデータを上書きする．
+\item ファイルの最後に書き込むとファイル長が延長される．
+\end{itemize}
+
+\begin{description}
+\item[書式]（詳しくは\texttt{man 2 write}で調べる．）
+\begin{lstlisting}[numbers=none]
+#include <unistd.h>
+ssize_t write(int fildes, void *buf, size_t nbyte);
+\end{lstlisting}
+
+\item[解説]
+\begin{itemize}
+\item ファイルに実際に書き込んだデータのバイト数を返す．
+\item 返された値が\|nbyte|と一致しない場合はエラー？
+\end{itemize}
+
+\item[使用例]
+ファイルに \|abc| の3バイトを書き込む．
+\begin{lstlisting}[numbers=none]
+char *a = "abc";
+n = write(fd, a, 3);       // nが3以外ならエラーが疑われる
+\end{lstlisting}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{lseekシステムコール（１）}
+\begin{itemize}
+\item オープン済みファイルの読み書き位置を移動する．
+\item lseekシステムコールと組み合わせることで，
+read，writeシステムコールを用いたファイルの
+\emph{ランダムアクセス（直接アクセス）}が可能になる．
+\end{itemize}
+
+\begin{description}
+\item[書式]（詳しくは\texttt{man 2 lseek}で調べる．）
+\begin{lstlisting}[numbers=none]
+#include <unistd.h>
+off_t lseek(int fildes, off_t offset, int whence);
+\end{lstlisting}
+
+\item[解説]
+\begin{itemize}
+\item \|fildes|はオープン済みのファイルディスクリプタ
+\item \|off_t|型は64bit \|int| 型
+\item ファイルの現在の読み書き位置を\|offset|に移動
+\item \|offset|の意味は\|whence|によって変化する．
+\item 正常時は新しい読み書き位置が返される．
+\item エラーが発生した時は\|-1|を返す．
+\item エラーの原因は \|perror()| 関数で表示できる．
+\end{itemize}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{lseekシステムコール（２）}
+\begin{description}
+\item[whence の意味]
+\begin{tabular}{l | l}
+\hline\hline
+\|whence|    & \emph{意　味} \\\hline
+\|SEEK_SET|  &  \|offset|はファイルの先頭からのバイト数  \\
+\|SEEK_CUR|  &  \|offset|は現在の読み書き位置からのバイト数  \\
+\|SEEK_END|  &  \|offset|はファイルの最後からのバイト数  \\
+\end{tabular}
+
+\vfill
+
+\item[使用例]
+\|fd|はオープン済みのファイルディスクリプタとする．
+
+\begin{lstlisting}[numbers=none]
+lseek(fd,  200, SEEK_SET);    // 先頭から200バイトに移動する．
+lseek(fd, -100, SEEK_CUR);    // 現在地から100バイト後ろに移動する．
+lseek(fd,  -10, SEEK_END);    // 最後から10バイト後ろに移動する．
+\end{lstlisting}
+
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{closeシステムコール}
+ファイルを閉じる．
+\begin{description}
+\item[書式]（詳しくは\texttt{man 2 close}で調べる．）
+
+\begin{lstlisting}[numbers=none]
+#include <unistd.h>
+int close(int fildes);
+\end{lstlisting}
+
+\item[解説]
+\begin{itemize}
+\item オープン済みのファイルを閉じる．
+\item 引数はオープン済みのファイルディスクリプタ
+\item 多数のファイルを開くプログラムでは不要になったものをクローズしないと，
+同時に開くことができるファイル数の上限を超えることがある．
+\end{itemize}
+
+\item[使用例]
+\|fd|はオープン済みのファイルディスクリプタとする．
+
+\begin{lstlisting}[numbers=none]
+close(fd);
+\end{lstlisting}
+\end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+\frametitle{課題 No.1}
+\begin{itemize}
+\item mycp プログラムを作る．
+\item 但し，open，read，write，close システムコールを用いる．
+\item バッファサイズより大きなファイルのコピーもできること．
+\item ファイルサイズがバッファサイズの整数倍とは限らない．
+\item open システムコールエラーチェックは必須．
+\item エラーメッセージは\|perror()|関数で表示する．
+\end{itemize}
+
+\begin{lstlisting}[numbers=none]
+$ dd if=/dev/urandom of=srcfile bs=1024 count=10 # ランダムな内容の
+10+0 records in                                  #   10KiBのファイルを作成する
+10+0 records out
+10240 bytes transferred in 0.001528 secs (6701462 bytes/sec)
+$ ./mycp srcfile destfile                        # mycp プログラムを実行する
+$ cmp srcfile destfile                           # コピー元とコピー先ファイルを比較する
+$                                                # 内容が同じなら何も表示されない
+\end{lstlisting}
+\end{frame}
+
+%===============================================================
+%===============================================================
+\end{document}
+%===============================================================
+%===============================================================
+
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.1 の解答例（1/5）}
+  \lst{language=C,lastline=13,caption=プログラム例（1/3）}{mycp2.c}
+  \begin{itemize}
+    \item インクルードファイル
+    \item バッファサイズの定義
+    \item エラー終了関数
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.1 の解答例（2/5）}
+  \lst{language=C,firstline=14,lastline=24,caption=プログラム例（2/3）}
+      {mycp2.c}
+  \begin{itemize}
+    \item \texttt{main()}関数
+    \item 変数の宣言，バッファの宣言
+    \item コマンドライン引数のチェック
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.1 の解答例（3/5）}
+  \lst{language=C,firstline=25,caption=プログラム例（3/3）}{mycp2.c}
+  \begin{itemize}
+    \item \texttt{open()}のフラグに注目！！
+    \item \texttt{write()}には\texttt{len}を渡すこと．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.1 の解答例（4/5）}
+  \lst{language=bash,lastline=15,caption=実行例（1/2）}{mycp2.txt}
+  \begin{itemize}
+    \item コマンドライン引数のエラーチェックの動作確認
+    \item open に関する動作確認
+    \item その他
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.1 の解答例(5/5)}
+  \lst{language=bash,firstline=16,caption=実行例（2/2）}{mycp2.txt}
+  \begin{itemize}
+    \item read/write の繰り返しに関する動作確認
+    \item ファイル長がバッファ長の倍数でない場合の動作確認
+    \item ファイルが短くなる場合の動作確認
+    \item その他
+  \end{itemize}
+\end{frame}
+
+\end{document}

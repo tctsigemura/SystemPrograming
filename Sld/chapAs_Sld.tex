@@ -1,0 +1,113 @@
+%\documentclass[dvipdfmx]{beamer}      % platex の場合
+\documentclass{beamer}                 % lualatex の場合
+\usepackage{mySld}
+
+\begin{document}
+\title{オペレーティングシステムの機能を使ってみよう\\
+第１０章 UNIX シェル}
+\date{}
+
+%===============================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{UNIX シェル}
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{UNIXのシェルとは}
+  \begin{itemize}
+    \item CLI（Command Line Interface）方式のコマンドインタプリタ
+    \item macOSのFinderやWindowsのExplorerはGUI方式のシェル
+    \item CLI版のシェルは，sh，bash，ksh，zsh，csh，tcshなど
+    \item UNIXシェルの持つべき機能
+      \begin{enumerate}
+      \item[1.] 外部コマンド（プログラム）の起動
+      \item[2.] カレントディレクトリの変更
+      \item[3.] 環境変数の管理
+      \item[4.] 入出力のリダイレクト，パイプ（\|<|，\|>|，\verb;|;）
+      \item[5.] ジョブの管理（\|jobs|，\|fg|，\|bg|など）
+      \item[6.] ファイル名の展開（ワイルドカード（\|*|，\|?|））
+      \item[7.] 繰り返しや条件判断
+      \item[8.] スクリプトの実行（処理の自動化）
+      \end{enumerate}
+  \end{itemize}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{簡易UNIXシェル（\texttt{myshell）}}
+  \begin{itemize}
+  \item \emph{特徴}\\
+    C言語で70行以内で記述できる簡易シェル
+  \item \emph{できること}
+    \begin{enumerate}
+    \item[1.] 外部コマンド（プログラム）の起動
+    \item[2.] カレントディレクトリの変更
+    \end{enumerate}
+  \item \emph{目的}\\
+    myshell の構造を学び，
+    「fork-exec 方式」，「環境変数」，「リダイレクト」等への理解を深める．
+  \item \emph{目標}\\
+    「環境変数の管理機能」，「リダイレクト機能」
+    をmyshellに追加できるようになる．
+  \end{itemize}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{基本構造（\texttt{main()}関数）}
+  \lst{numbers=left,xleftmargin=5mm}{myshellMain.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{コマンド行の解析（\texttt{parse()}関数）（１）}
+  \lst{numbers=left,xleftmargin=5mm}{myshellParse.c}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{コマンド行の解析（\texttt{parse()}関数）（２）}
+  \fig{scale=0.8}{myshellArgs-crop.pdf}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{コマンドの実行（\texttt{execute()}関数）}
+  \lst{numbers=left,xleftmargin=5mm}{myshellExecute.c}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.11}
+  \begin{enumerate}
+  \item[1.] myshell に環境変数を追加するコマンド setenv ，\\
+    削除するコマンド unsetenv を追加しなさい．
+  \item[2.] myshell にリダイレクト機能を追加しなさい．
+  \end{enumerate}
+
+  \begin{lstlisting}[xleftmargin=5mm]
+Command: setenv A B
+Command: printenv A
+B
+Command: unsetenv A
+Command: printenv A
+Command: echo aaa > a.txt
+Command: cat a.txt
+aaa
+Command:
+  \end{lstlisting}
+  \vfill
+\end{frame}
+
+%===============================================================
+%\begin{frame}[fragile]
+%  \frametitle{}
+%\end{frame}
+
+\end{document}

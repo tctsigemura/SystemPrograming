@@ -1,0 +1,213 @@
+%\documentclass[dvipdfmx]{beamer}      % platex の場合
+\documentclass{beamer}                 % lualatex の場合
+\usepackage{mySld}
+
+\begin{document}
+\title{オペレーティングシステムの機能を使ってみよう\\
+第３章 高水準入出力と低水準入出力}
+\date{}
+
+%===============================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%===============================================================
+%\begin{frame}[fragile]
+%  \frametitle{}
+%\end{frame}
+
+\section{高水準入出力と低水準入出力}
+%===============================================================
+\begin{frame}
+  \frametitle{高水準入出力と低水準入出力}
+  \emph{ファイルを読み書きするための機能} \\
+  （API：Application Proguram Interface）
+  \begin{itemize}
+  \item \emph{高水準入出力（高水準I/O）} \\
+    多くの高機能な関数群\\
+    （\texttt{fprintf()}，\texttt{fscanf()}，
+      \texttt{fputc()}，\texttt{fgetc()}，...）
+  \item \emph{低水準出力（高水準I/O）} \\
+    システムコールのこと \\
+    少なく，かつ，シンプルなAPI \\
+    （\texttt{open()}，\texttt{read()}，\texttt{write()}，
+      \texttt{lseek()}，\texttt{close()}）
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}
+  \frametitle{高水準I/Oのデータ構造（書き込み）}
+  \fig{scale=0.6}{HiVsLoWrite-crop.pdf}
+  \begin{itemize}
+  \item ファイルポインタ（\texttt{fp}）
+  \item \texttt{FILE}構造体
+  \item バッファリング
+  \item writeシステムコール
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}
+  \frametitle{高水準I/Oのデータ構造（読み出し）}
+  \fig{scale=0.6}{HiVsLoRead-crop.pdf}
+  \begin{itemize}
+  \item ファイルポインタ（\texttt{fp}）
+  \item \texttt{FILE}構造体
+  \item readシステムコール
+  \item バッファリング
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}
+  \frametitle{標準入出力（標準入出力ストリーム）}
+  \tbl{scale=1.0}{stdio.pdf}
+  \fig{scale=0.60}{stdio-crop.pdf}
+\end{frame}
+
+%===============================================================
+\begin{frame}
+  \frametitle{ユニファイドI/O}
+  \tbl{scale=1.0}{printfVsFprintf.pdf}
+  \begin{itemize}
+  \item \texttt{printf(...)}と\texttt{fprintf(stdout,...)}は同じ
+  \item \texttt{fp}の代わりに\texttt{stdin}，\texttt{stdout}等が使用できる．
+  \item キーボードやディスプレイ（\emph{入出力装置}）と\emph{ファイル}を
+    同じ要領で操作できる．
+  \item 入出力装置をファイルに統合＝（\emph{ユニファイドI/O}）
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}
+  \frametitle{標準入力ストリーム}
+  \fig{scale=0.6}{stdio-crop.pdf}
+  \begin{itemize}
+  \item ファイルポインタは\texttt{stdin}
+  \item ファイルディスクリプタは 0 番
+  \item ファイルディスクリプタ 0 は通常キーボードに接続
+%  \item ファイルディスクリプタ 0 はプログラム起動前にシェルがオープン
+  \item ファイルポインタとFILE構造体はプログラム起動時に初期化
+  \item シェルはファイルディスクリプタ 0 をリダイレクト可能
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}
+  \frametitle{標準出力ストリーム}
+  \fig{scale=0.6}{stdio-crop.pdf}
+  \begin{itemize}
+  \item ファイルポインタは\texttt{stdout}
+  \item ファイルディスクリプタは 1 番
+  \item ファイルディスクリプタ 1 は通常ディスプレイに接続
+%  \item ファイルディスクリプタ 1 はプログラム起動前にシェルがオープン
+  \item ファイルポインタとFILE構造体はプログラム起動時に初期化
+  \item シェルはファイルディスクリプタ 1 をリダイレクト可能
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}
+  \frametitle{標準エラー出力ストリーム}
+  \fig{scale=0.6}{stdio-crop.pdf}
+  \begin{itemize}
+  \item エーラメッセージ出力用のストリーム
+  \item ファイルポインタは\texttt{stderr}
+  \item ファイルディスクリプタは 2 番
+  \item ファイルディスクリプタ 2 は通常ディスプレイに接続
+%  \item ファイルディスクリプタ 2 はプログラム起動前にシェルがオープン
+  \item ファイルポインタとFILE構造体はプログラム起動時に初期化
+  \item シェルはファイルディスクリプタ 2 をリダイレクト可能
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.2 ： 三つのプログラムの性能比較}
+  
+  次の三つのプログラムの性能測定を行う．
+  測定に適した実行時間になるようにファイルサイズは調整すること．
+  演習方法の詳細は指示されたGithubのREADMEを参照すること．
+
+  \begin{enumerate}
+  \item[1] mycp（高水準I/Oを使用）
+  \item[2] mycp2\_1（バッファサイズ１バイトで低水準I/Oを使用）
+  \item[3] mycp2\_1024（バッファサイズ１Kiバイトで低水準I/Oを使用）
+  \end{enumerate}
+\end{frame}
+  
+  
+%===============================================================
+%===============================================================
+\end{document}
+%===============================================================
+%===============================================================
+
+%===============================================================
+\begin{frame}
+  \frametitle{性能比較（1/2）}
+  \begin{enumerate}
+  \item[1] プログラムを準備する \\
+    \begin{tabular}{l l l}
+    \texttt{mycp}        & ： &  高水準I/O版 \\
+    \texttt{mycp2\_1}    & ： &  低水準I/O版（バッファサイズ＝1バイト）\\
+    \texttt{mycp2\_1024} & ： &  低水準I/O版（バッファサイズ＝1,024バイト）\\
+    \end{tabular}
+  \item[2] 大きめのファイルを作る \\
+    \lst{language=bash}{dd_10M.txt}
+  \end{enumerate}
+\end{frame}
+
+%===============================================================
+\begin{frame}
+  \frametitle{性能比較(2/2)}
+  \begin{enumerate}
+  \item[3] 実行時間を測定方法
+    \lst{language=bash}{mycp2_1.txt}
+  \item[4] 実行時間の測定
+    \tbl{scale=0.7}{mycp2_1_10M-crop.pdf}
+  \end{enumerate}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+\frametitle{課題 No.2 の解答例（1/5） 低水準I/O(1/2)}
+\lst{lastline=23,frame=tlr}{mycp2.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+\frametitle{課題 No.2 の解答例（2/5） 低水準I/O(2/2)}
+\lst{firstline=25,frame=lrb}{mycp2.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+\frametitle{課題 No.2 の解答例（3/5） 高水準I/O(1/2)}
+\lst{lastline=22,frame=tlr}{mycp.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+\frametitle{課題 No.2 の解答例（4/5） 高水準I/O(2/2)}
+\lst{firstline=24,frame=lrb}{mycp.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+\frametitle{課題 No.2 の解答例（5/5） 実行時間のまとめ}
+
+{\small  1バイトのwriteシステムコール使用の場合}
+\tbl{scale=0.66}{mycp2_1_10M-crop.pdf}
+
+{\small 1,024バイトのwriteシステムコール使用の場合}
+\tbl{scale=0.66}{mycp2_1024_10M-crop.pdf}
+
+{\small 高水準I/O使用の場合}
+\tbl{scale=0.66}{mycp_10M-crop.pdf}
+
+\end{frame}
+
+\end{document}

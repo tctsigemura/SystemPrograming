@@ -1,0 +1,51 @@
+\documentclass[a4j,twcolumn,11pt,nomag]{ltjarticle}      % lualatex の場合
+\usepackage{myAns}
+\chead{\textgt{システムプログラミング２　課題 No.5 解答}}
+
+\begin{document}
+\onecolumn
+
+\section*{課題 No.5 の解答例}
+\begin{enumerate}
+\item[(a)] フォアグラウンドで暴走してしまったジョブを強制終了する手順．
+（Ctrl-CではなくKILLシグナルを使用すること）
+
+\begin{lstlisting}
+$ ./a.out
+^C^C^Z                               <-- Ctrl-Cで止まらない！！
+[1]+  Stopped            a.out       <-- Ctrl-Zで一時停止させた．
+$ ps                                 <-- ps で確認
+  PID TTY           TIME CMD
+13227 ttys005    0:00.06 -bash
+13243 ttys005    0:07.00 a.out       <-- このプロセスだ！
+$ kill -KILL 13243                   <-- KILLシグナルを送る
+$                                    <-- Enterを押すまで結果が分からない
+[1]+  Killed: 9          a.out       <-- 止まっていた
+$
+\end{lstlisting}
+
+\item[(b)] 間違ってフォアグラウンドで起動した Grapher を
+バックグラウンドに変更する手順．
+
+\begin{lstlisting}
+$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+^Z                                          <-- 一時停止させる
+[1]+  Stopped  /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+$ bg                                        <-- バックグラウンドに切替える
+[1]+ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
+$
+\end{lstlisting}
+
+\item[(c)] バックグラウンドで実行中のジョブを
+フォアグラウンドに変更してCtrl-Cで終了する手順．
+
+\begin{lstlisting}
+$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &    <-- 起動
+[1] 20559
+$ fg                                            <-- フォアグラウンドに変更
+/Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+^C                                                       <-- Cntrl-Cで終了
+$
+\end{lstlisting}
+\end{enumerate}
+\end{document}

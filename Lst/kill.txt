@@ -1,0 +1,22 @@
+$ sleep 10000 &                          <--- サンプル用プロセスを起動
+[1] 59882
+$ ps
+  PID TTY           TIME CMD
+58863 ttys003    0:00.23 bash
+59882 ttys003    0:00.00 sleep 10000     <--- PIDが分かる
+$ kill 59882                             <--- プロセスを終了させる
+$ 
+[1]+  Terminated: 15          sleep 10000
+$ sleep 10000 &                          <--- 新しいサンプル用プロセスを起動
+[1] 59888                                <--- 実はPIDはここでも分かる
+$ kill -TSTP 59888                       <--- プロセスを一時停止
+[1]+  Stopped                 sleep 10000
+$ ps
+  PID TTY           TIME CMD
+58863 ttys003    0:00.24 bash
+59888 ttys003    0:00.00 sleep 10000     <--- プロセスは存在している
+$ kill -CONT 59888                       <--- プロセスを再開させる
+$ kill 59888                             <--- プロセスを終了させる
+$ 
+[1]+  Terminated: 15          sleep 10000
+

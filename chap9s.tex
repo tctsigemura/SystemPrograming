@@ -1,0 +1,466 @@
+\chapter{プロセスの生成とプログラムの実行}
+この章では新しいプロセスでプログラムを実行させる方法を学ぶ．
+プログラムを起動する方式には大きく分けて，
+\emph{spawn方式}（スポーン：卵を産む方式）と，
+\emph{fork-exec方式}（分岐-実行方式）がある．
+
+\section{spawn 方式}
+Windows等で使用される方式である．
+新しい「(1) プロセスを作り」，「(2) プロセスを初期化し」，
+「(3) プログラムを実行する」の三つの仕事を一つのspawnシステムコールで行う．
+fork-exec方式を実現するためには，
+メモリ再配置のためのハードウェア機構を持っている必要がある．
+そのため組込用の小さなコンピュータではspawn方式しか選択肢がない場合がある．
+
+UNIX系OSでもspawn方式を使用できる．
+次にmacOSの\|posix_spawn|システムコールを紹介する．
+新しいプロセスの初期化を指示するデータ構造を渡すようになっている．
+
+\begin{description}
+\item[書式] 次の通りである．
+\begin{lstlisting}[numbers=none]
+  #include <spawn.h>
+  int posix_spawn(pid_t *pid, char *path,
+                  posix_spawn_file_actions_t *file_actions,
+                  posix_spawnattr_t *attrp,
+                  char *argv[], char *envp[]);
+\end{lstlisting}
+
+\item[解説]
+  新しいプロセスを作り\|path|で指定したプログラムを実行する．
+
+\item[引数]
+  \|pid|は新しいプロセスのプロセス番号を格納する変数を指すポインタ．
+  \|path|は実行するプログラムを格納したファイルのパスである．
+  絶対パスでも相対パスでも良い．
+  \|file_actions|，\|attrp|はプロセスの初期化を指示するデータ構造へのポインタ．
+  \|argv|，\|envp|は実行されるプログラムに渡すコマンド行引数と環境変数である．
+\end{description}
+
+\section{fork-exec 方式}
+UNIX系のOSで用いられてきた方式のことである．
+以下に示す次の三つのステップで新しいプログラムを実行する．
+また，その様子を\figref{forkExec}に模式的に示す．
+\begin{enumerate}
+\item 親プロセスが
+  新しいプロセス（子プロセス）を作る(\emph{forkシステムコール})．
+\item ユーザが記述したプログラムに従い子プロセスが自ら初期化処理を行う．
+\item 子プロセスが
+  新しいプログラムをロード・実行(\emph{execveシステムコール})する．
+\end{enumerate}
+この方式はユーザが記述したプログラムで初期化処理を行うので柔軟性が高い．
+以下では，fork-exec方式について具体的なプログラム例を示しながら詳しく解説する．
+
+\myfigure{btp}{scale=0.66}{Fig/forkExec-crop.pdf}{fork-exec方式}{forkExec}
+
+\subsection{プログラムのロードと実行(execveシステムコール)}
+まず，プロセスが新しいプログラムの実行を開始する
+ために使用するexecveシステムコールを紹介する．
+\figref{forkExec}では，
+作ったばかりの子プロセスにexecveを実行させているが，
+普通のプロセスがexecveシステムコールを使用しても良い．
+forkと組み合わせて使用する例は後の方で説明することとし，
+ここではexecveシステムコール単独で使用する例を示す．
+
+\figref{execve}に execve システムコールを実行するプロセスの様子を示す．
+プロセスが execve システムコールを実行すると，
+そのプロセスのメモリ空間に新しいプログラムがロードされる．
+execve システムコールを実行したプログラムは，
+新しいプログラムで上書きされ消えてしまう．
+プロセスの仮想CPUはリセットされ，
+新しいプログラムが最初から実行される．
+プロセスは新しいプログラムを実行するように\emph{変身}した（変身の術）．
+以下に，UNIXのexecveシステムコールの解説を示す．
+
+\myfigure{btp}{scale=0.8}{Fig/execve-crop.pdf}
+         {execveシステムコールの仕組み}{execve}
+
+\begin{description}
+\item[書式] execveシステムコールの書式は次の通りである．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int execve(char *path, char *argv[], char *envp[]);
+\end{lstlisting}
+
+\item[解説]
+  自プロセスで\|path|で指定したプログラムを実行する．
+  正常時にはexecveを実行したプログラムは新しいプログラムで上書きされ消える．
+  execveシステムコールが戻る(次の行が実行される)のはエラー発生時だけである．
+
+\item[引数]
+  \|path|は実行するプログラムを格納したファイルのパスである．
+  絶対パスでも相対パスでも良い．
+  \|argv|，\|envp|は新しいプログラムに渡すコマンド行引数と環境変数である．
+
+\item[使用例１]
+  リスト\ref{exectest1}に execve システムコールを用いて，
+  \|/bin/date|プログラムを実行するプログラムの例を示す．
+  3行は自身の環境変数を指すポインタ\|environ|を宣言している．
+  4行でdateプログラムの\|argv|に渡す配列\|args|を準備した．
+  7行のexecveシステムコールで\|/bin/date|プログラムをロード・実行する．
+  \|args|，\|environ|は，
+  dateプログラムのmain関数の\|argv|と\|envp|に渡される．
+  \|environ|を渡したので，
+  dateプログラムはこのプログラムと同じ環境変数で実行される．
+
+  execveシステムコールが正常に実行された場合は，
+  システムコールを発行したプログラムがdateプログラムによって
+  上書きされ消えるので8行以降は実行されない．
+  8行が実行されるのはシステムコールの実行に失敗した場合だけである．
+  そこでエラー判定（if文）なしにエラー処理（perrorの実行など）を行ってよい．
+
+  \lstinputlisting[label=exectest1
+    ,caption=execveの使用例(その１)
+    ,float=btp, numbers=left]{Lst/exectest1.c}
+
+\item[使用例２]
+  リスト\ref{exectest3}は，
+  環境変数の一部を書き換えた上で，
+  \|/bin/date|プログラムを実行するプログラムの例である．
+  これは，プログラムを実行する前に行う\emph{初期化処理}の例でもある．
+  まず8行で初期化処理として\|putenv()|関数を用いて自身の環境変数を書換える．
+  execveシステムコールに渡される\|environ|は書換え後のものである．
+  \|LC_TIME|環境変数を\|ja_JP.UTF-8|に書換えてあるので，
+  15行のように現在時刻が日本語で表示さる．
+
+  \lstinputlisting[label=exectest3
+    ,caption=execveの使用例(その２)
+    ,float=btp, numbers=left]{Lst/exectest3.c}
+
+\item[使用例３]
+  リスト\ref{exectest2}は，
+  全く新しい環境変数の一覧を渡して
+  \|/bin/date|プログラムを実行する例である．
+  4行で\|environ|と同じデータ構造の\|envs|配列を作って，
+  7行でexecveシステムコールに渡した．
+  \|envs|配列に\|LC_TIME|，\|TZ|環境変数が格納されているので，
+  これらが\|/bin/date|プログラムにコピーされる．
+  他の環境変数を\|/bin/date|プログラムは必要としていないので，
+  13行のように言語とタイムゾーンを変更して正常に動作する．
+
+  \lstinputlisting[label=exectest2
+    ,caption=execveの使用例(その３)
+    ,float=btp, numbers=left]{Lst/exectest2.c}
+
+\item[使用例４]
+  リスト\ref{exectest4}は，
+  複数のコマンド行引数がある場合の例である．
+  \|/bin/echo|プログラムを \|aaa|， \|bbb| を引数にして実行する．
+  \|args|配列にプログラムの名前（\|argv[0]|のための\|"echo"|）を
+  忘れないように注意すること．
+
+  \lstinputlisting[label=exectest4
+    ,caption=execveの使用例(その４)
+    ,float=btp, numbers=left]{Lst/exectest4.c}
+
+\end{description}
+
+\subsection{execveシステムコールのラッパー関数}
+execveシステムコールを使いやすくするライブラリ関数を紹介する．
+ここで紹介する関数は内部でexecveシステムコールを呼び出す．
+これらの関数はexecveシステムコールの
+\emph{ラッパー（wrapper）関数}になっている．
+
+\begin{description}
+\item[書式]
+  execve システムコールの四つのラッパー関数の書式をまとめて掲載する．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int execv(char *path, char *argv[]);
+  int execvp(char *file,  char *argv[]);
+  int execl(char *path, char *argv0, *argv1, ... ,*argvn, NULL);
+  int execlp(char *file, char *argv0, *argv1, ... ,*argvn, NULL);
+\end{lstlisting}
+
+\item [解説]
+  \emph{\texttt{execv()}関数}は環境変数を指定する必要がないexec関数である．
+  常に自プログラムの環境変数\|environ|をexecveシステムコールに渡す．
+  execveシステムコールとの関係は次のようになる．
+
+  \centerline{\texttt{execv("/bin/date", argv);}
+    →  \texttt{execve("/bin/date", argv, environ);}}
+
+  \emph{\texttt{execvp()}関数}は，\|execv()|関数にPATH環境変数を用いた
+  プログラムファイルの検索機能を追加したものである．
+  第一引数に\|/bin/date|のようなパスではなく\|date|のような
+  ファイル名だけ渡すと，自動的にPATH環境変数を使用した検索を行い
+  \|/bin/date|プログラムを発見して実行してくれる．
+  
+  \centerline{\texttt{execvp("date", argv);}
+    →  \texttt{execve("/bin/date", argv, environ);}}
+
+  \emph{\texttt{execl()}関}数は，\|execv()|関数の\|argv|配列の代わりに
+  複数の文字列を渡すことができる関数である．
+  文字列の個数は可変なので終わりを示す\| NULL|を最後に置く必要がある．
+  リスト\ref{exectest4}のexecveシステムコールを次のように書換えることで，
+  同じ結果を得ることができる．
+  \|argv[0]|に渡す\|"echo"|を忘れないように注意が必要である．
+
+  \centerline{\texttt{execl("/bin/echo", "echo", "aaa", "bbb", NULL);}}
+
+  \emph{\texttt{execlp()}関数}は，\|execl()|関数にPATH環境変数を用いた
+  プログラムファイルの検索機能を追加したものである．
+
+  \centerline{\texttt{execlp("echo", "echo", "aaa", "bbb", NULL);}}
+
+\end{description}
+
+\subsection{入出力のリダイレクト}
+execveする際，プロセス状態（\figref{execve}参照）の一部が引き継がれる．
+例えば，PID（プロセス番号），
+オープン中のファイルや入出力，
+カレントディレクトリ，
+「無視」に設定されたシグナルハンドリング等は，
+新しいプログラムに引き継がれる．
+プログラムが最初から標準入力(0)，標準出力(1)，
+標準エラー出力(2)を利用できるのは，
+execve前にオープンされていた入出力を引き継ぐからである．．
+
+シェルがプログラムを実行する際は，
+シェルは標準入力をキーボード用にオープンし，
+標準出力と標準エラー出力をディスプレイ用にオープンした状態
+\footnote{
+  既にシェル自身用にオープン状態になっているので，
+  わざわざ，オープンし直す必要は無い．}
+で目的のプログラムをexecveする．
+シェルのリダイレクト（プログラムの入出力を切替える仕組み）は，
+リダイレクト先のファイルを標準入力・出力としてオープンした状態で
+目的のプログラムをexecveすることで実現している．
+
+\lstinputlisting[label=exectest5
+  ,caption=標準出力をリダイレクトして\texttt{/bin/echo}を実行する例
+  ,float=btp, numbers=left]{Lst/exectest5.c}
+
+リスト\ref{exectest5}は，
+標準出力を\|aaa.txt|ファイルにリダイレクトした状態で
+\|/bin/echo|を実行するプログラムである．
+まず，初期化処理（\figref{forkExec}参照）として
+7行と8行で標準出力のリダイレクトを行っている．
+7行の\|close(1)|は標準出力（ファイルディスクリプタ1番）をクローズする．
+8行の\|open()|はファイルディスクリプタ番号を小さい順に使用するので，
+\|close(1)|直後の\|open()|は1番のファイルディスクリプタを返す．
+ここまでで，
+標準出力である1番のファイルディスクリプタがファイルにリダイレクトされた．
+次に，14行のexecveシステムコールで自身がechoプログラムに変身する．
+
+\subsection{新しいプロセスを作る(forkシステムコール)}
+execveシステムコールはプロセスを新しいプログラムに変身させる．
+変身して新しいプログラムを実行したプロセスは終了してしまう．
+プロセスの数は減る一方である．
+新しいプロセスを作って，新しいプログラムを実行させる仕組みが必要である．
+forkシステムコールは新しいプロセスを作成し自身をコピーする．
+つまり，\emph{分身}を作るシステムコールである（分身の術）．
+次にUNIXのforkシステムコールを説明する．
+
+\begin{description}
+\item[書式] fork の書式を示す．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int fork(void);
+\end{lstlisting}
+
+\item[解説] forkシステムコールを実行した瞬間の，プロセスのコピーを作る．
+  元のプロセスを\emph{親プロセス}，
+  コピーして作ったプロセスを\emph{子プロセス}と呼ぶ．
+  \figref{fork}に模式図を示す．
+  親プロセスと子プロセスではPID（プロセス番号）を除き全く同じになる．
+  CPUの状態もコピーされる（PCもコピーされる）ので，
+  子プロセスはforkシステムコールの途中から実行が開始される．
+
+  \myfigure{btp}{scale=0.8}{Fig/fork-crop.pdf}{forkの仕組み}{fork}
+
+  forkシステムコールが終了する際，
+  親プロセスには子プロセスのPIDが返され，
+  子プロセスには\|0|が返される．
+  プログラムはこの値を目印に自分が親か子か判断できる．
+  エラー時は，親プロセスに\|-1|が返され子プロセスは作られない．
+
+\item[使用例]
+  リスト\ref{forktest}にforkシステムコールを実行するプログラムの例を，
+  以下にforkの処理手順を示す．
+  最終的に親プロセスと子プロセスが同時に並行して実行される状態になる．
+
+  \lstinputlisting[label=forktest
+    ,caption=forkシステムコールの使用例
+    ,float=btp, numbers=left]{Lst/forktest.c}
+  
+  \begin{enumerate}
+  \item 6行で親プロセスがforkシステムコールを実行する．
+    \figref{fork}のように，
+    新しいプロセス（子プロセス）が作られ，親プロセスの内容がコピーされる．
+    子プロセスには，
+    メモリ空間（プログラム，変数（データ），スタック），
+    プロセスの状態（どのファイルをオープン中か，シグナルハンドラの登録等），
+    CPUの状態（CPUレジスタの値，SPの値，PCの値，フラグの値）等，
+    全ての情報がコピーされる．
+    ただし，プロセス番号(PID:Process ID)は親子プロセスで異なる．
+  \item 親プロセスはforkシステムコールを完了しプログラムの実行を再開する．
+    この時，forkシステムコールの返り値は子プロセスのPIDになる．
+  \item 子プロセスはforkシステムコールを呼出した瞬間のコピーなので，
+    forkシステムコールが完了するところ（6行）からプログラムの実行を開始する．
+    この時，forkシステムコールの返り値は\|0|になる．
+  \item 7行でforkシステムコールでエラーが発生していないかチェックしている．
+  \item 10行ではforkシステムコールの返り値から，
+    自身が親プロセスか子プロセスか調べている．
+  \item 自身が親プロセスの場合は11，12行を実行する．
+    11行で親プロセスは変数\|x|を\|20|に書き換える．
+    12行の\|printf()|は20行のような出力をする．
+    変数は自身のメモリ空間にあるので子プロセスに影響を与えない．
+  \item 自身が子プロセスの場合は14行を親プロセスと並行して実行する．
+    子プロセスが参照する変数\|x|は自身のメモリ空間にあるので，
+    親プロセスが値を書き換えた\|x|とは別のインスタンスである．
+    21行のように\|10|が表示される．
+  \end{enumerate}
+\end{description}
+
+\subsection{プロセスの終了と待ち合わせ}
+親プロセスは子プロセスを幾つか作成し，
+それらに同時に並行して処理を行わせる．
+子プロセスは処理を終えると終了する．
+子プロセスが処理を終えると，
+親プロセスは子プロセスが正常に終了したかチェックする．
+全ての子プロセスが正常に終了していれば処理全体が完了である．
+このような処理ができるように，
+子プロセスが処理結果と共に自身を終了するexitシステムコール\footnote{
+  正確には\texttt{exit()}関数は
+  \texttt{\_exit}システムコールを呼び出すライブラリ関数である．
+  \texttt{exit()}はファイル（ストリーム）のクローズ処理
+  （バッファのフラッシュ等）をした後で
+  \texttt{\_exit}システムコールを呼び出す．
+}と，
+親プロセスが子プロセスの終了を待つwaitシステムコールが準備されている．
+子プロセスはexitシステムコールを実行してもすぐに消滅するわけではない．
+子プロセスは，
+親プロセスがwaitシステムコールを実行し終了ステータスを取り出すまで，
+待ち状態になる．
+この状態を\emph{zombie状態}（\tabref{psStat}参照）と呼ぶ．
+
+\begin{enumerate}
+\item \emph{exitシステムコール} \\
+  exitシステムコールを呼び出したプロセスを終了する．
+  プロセスが終了する際に，
+  処理結果を表す\emph{終了ステータス}を親プロセスに返すことができる．
+
+  \begin{description}
+  \item[書式] exitシステムコールの書式を示す．
+\begin{lstlisting}[numbers=none]
+  #include <stdlib.h>
+  void exit(int status);
+\end{lstlisting}
+
+  \item[解説] 自プロセスを終了する．
+    exitを呼び出すとプロセスが終了するのでexitは戻らない．
+    \|status|はプロセスの終了ステータスである．
+    親プロセスはwaitシステムコールで\|status|の値を受け取る．
+    終了ステータスは下位 8bit が有効である（\|0 <= status <= 255|）．
+  \end{description}
+
+  なおCプログラムのmain関数は，スタートアップルーチンから
+  次のように呼び出されている．
+
+  \centerline{\texttt{exit(main(argc, argv, envp));}}
+
+  main関数を\|return n;|で終了すると，
+  \|exit(n);|が実行されることになる．
+  つまり，
+  main関数中では\|return n;|と\|exit(n);|が同じ意味になる．
+
+\item \emph{waitシステムコール} \\
+  親プロセスが子プロセスの終了を待つシステムコールである．
+  \begin{description}
+  \item[書式] waitシステムコールの書式を示す．
+
+\begin{lstlisting}[numbers=none]
+  #include <sys/wait.h>
+  pid_t wait(int *status);
+\end{lstlisting}
+
+  \item[解説] 
+    waitシステムコールは終了した子プロセスのプロセス番号（PID）を返す．
+    エラーが発生した場合に\|-1|を返す．
+    \|status|には子プロセスが終了した理由等が格納される．
+    status の下位 8bit には，子プロセスが exit に渡した
+    終了ステータスが格納される．
+    その他のビットで終了の理由(exit，シグナル等)が分かるようになっている．
+  \end{description}
+\end{enumerate}
+
+\subsection{fork-exec方式のプログラム例}
+リスト\ref{forkexec1}に
+新しいプロセスで新しいプログラムを実行するプログラムの基本的な例を示す．
+このプログラムは，
+fork，exec，wait，exitシステムコールを組み合わせて使用する一般的な例である．
+\figref{forkExecWaitExit}は，
+リスト\ref{forkexec1}のプログラムの動きを解説したものである．
+
+  \lstinputlisting[label=forkexec1
+    ,caption=fork-execのプログラム例
+    ,float=btp, numbers=left]{Lst/forkexec1.c}
+  
+\myfigure{btp}{scale=0.8}{Fig/forkExecWaitExit-crop.pdf}
+    {リスト\ref{forkexec1}におけるfork-exec-wait-exitの関係}{forkExecWaitExit}
+
+プログラムの8行でプロセスのコピーが作られる．
+12行で自身が親プロセスか子プロセスか判定する．
+親プロセスは14行の\|wait()|で子プロセスが終了するまでブロックする．
+子プロセスは16行でdateプログラムをロード・実行する．
+dateプログラムの内部でexitシステムコールが実行され，
+子プロセスが終了する．
+子プロセスが終了したら，
+親プロセスの\|wait()|が終了ステータスを受け取り次に進む．
+親プロセスは20行の\|exit()|で正常終了する．
+
+\subsection{環境変数を変更しながらfork-execを繰り返す例}
+リスト\ref{forkexec2}に少し実用的な例を示す．
+このプログラムは，実行例に示すようにコマンド行引数に
+指示された環境変数の変更を行った上でdateプログラムを次々に実行する．
+環境変数の変更は子プロセス側で行うようになっているので，
+\emph{親プロセスの環境変数は変化しない}．
+
+\lstinputlisting[label=forkexec2
+  ,caption=子プロセスで環境変数を変更しながらdateを次々と実行する例
+  ,float=btp, numbers=left]{Lst/forkexec2.c}
+
+リスト\ref{forkexec3}は，
+環境変数の変更を親プロセスがforkする前に行うように変更したものである．
+リスト\ref{forkexec2}の実行結果との違いに注目して欲しい．
+
+\lstinputlisting[label=forkexec3
+  ,caption=親プロセスで環境変数を変更しながらdateを次々と実行する例
+  ,float=btp, numbers=left]{Lst/forkexec3.c}
+
+\section*{課題 No.9}
+\begin{enumerate}
+\item リスト\ref{exectest5}のプログラムを入力し実行してみる．
+\item 入力のリダイレクトをするプログラム例を作る． \\
+  ヒント：標準入力のファイルディスクリプタは0番である．
+\item envコマンドのクローンmyenv を作る． \\
+  \|putenv()|がエラーになるまで，
+  コマンド行引数を環境変数の設定だと思って使う．
+  残りが実行するコマンドを表している．
+  次の実行例では\|putenv(argv[1]);| \|putenv(argv[2]);|
+  \|putenv(argv[3]);| \|execvp(argv[3], &argv[3]);|
+  （三回目の\|putenv()|はエラーになる）が実行されるようにプログラムを作る．
+
+  \|$ ./myenv LC_TIME=ja_JP.UTF-8 TZ=Cuba ls -l| %$
+\end{enumerate}
+
+\section*{課題 No.10}
+\begin{enumerate}
+\item 次々リダイレクトしてdateを実行するプログラム \\
+  コマンド行引数で「環境変数とファイル名」の組を複数指定し，
+  環境変数を変更した上で出力をファイルにリダイレクトしdateを実行する
+  プログラムを作りなさい．
+  例えば次のように実行すると，現在時刻をキューバ時間で表したものが\|c.txt|に
+  ローマ時間で表したものが\|r.txt|に格納される．
+
+  \|$ ./a.out TZ=Cuba c.txt TZ=Europe/Rome r.txt| %$
+
+\item system 関数のクローン mysystem \\
+  \|system()| 関数の仕様を調べて，なるべく同じものを作りなさい．
+  C言語中で\|system("...");|の関数呼出しをすると，
+  シェルに以下のように入力したのと同じことが起こる．
+
+  \|$ /bin/sh -c "..."| %$
+
+\end{enumerate}

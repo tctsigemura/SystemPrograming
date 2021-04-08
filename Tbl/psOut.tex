@@ -1,0 +1,26 @@
+\RequirePackage{luatex85}
+\documentclass{standalone}
+\usepackage{luatexja}                              % lualatex の場合
+\usepackage[hiragino-pron]{luatexja-preset}        % ヒラギノフォント
+\begin{document}
+{\ttfamily
+\begin{tabular}{l|l}
+\hline\hline
+\multicolumn{1}{c}{欄} &
+\multicolumn{1}{|c}{意味} \\
+\hline
+PID     & プロセス番号 \\
+TTY     & 制御端末     \\
+TT      & TTYの簡易表示 \\
+TIME    & プロセスがこれまでにCPUを使用した時間 \\
+CMD     & プロセスを起動したコマンド \\
+COMMAND & CMDと同じ \\
+USER    & 誰の権限で実行しているか \\
+\%CPU   & CPUの利用率 \\
+\%MEM   & メモリの利用率 \\
+VSZ     & 仮想記憶サイズ（KiB単位） \\
+RSS     & 常駐セット（KiB単位） \\
+STAT    & プロセスの状態 \\
+STARTED & プロセスの開始時刻
+\end{tabular}}
+\end{document}

@@ -1,0 +1,447 @@
+%\documentclass[dvipdfmx]{beamer}      % platex の場合
+\documentclass{beamer}                 % lualatex の場合
+\usepackage{mySld}
+
+\begin{document}
+\title{オペレーティングシステムの機能を使ってみよう\\
+第９章 プロセスの生成とプログラムの実行}
+\date{}
+
+%===============================================================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{プロセスの生成とプログラムの実行}
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{spawn方式とfork-exec方式}
+  新しいプログラムを実行する方式は次の二種類がある．
+  \vfill
+  \begin{itemize}
+  \item \emph{spawn方式（スポーン：卵を産む方式）} \\
+    Windows等で使用されてきた． \\
+    次の３ステップを一つのシステムコールで行う．
+    \begin{enumerate}
+    \item[1.] プロセスを作る．
+    \item[2.] プロセスを初期化する．
+    \item[3.] プログラムを実行する．
+    \end{enumerate}
+  \vfill
+  \item \emph{fork-exec方式（分岐-実行方式）} \\
+    UNIX系のOSで使用されてきた． \\
+    次の３ステップを二つのシステムコールとプログラムで行う．
+    \begin{enumerate}
+    \item[1.] プロセスを作る（forkシステムコール）．
+    \item[2.] プロセスを初期化する（ユーザプログラム）．
+    \item[3.] プログラムを実行する（execシステムコール）．
+    \end{enumerate}
+  \end{itemize}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{spawn方式}
+  \|posix_spawn|の例 \\
+  \begin{description}
+  \item[書式] 次の通りである．
+\begin{lstlisting}[numbers=none]
+  #include <spawn.h>
+  int posix_spawn(pid_t *pid, char *path,
+            posix_spawn_file_actions_t *file_actions,
+            posix_spawnattr_t *attrp,
+            char *argv[], char *envp[]);
+\end{lstlisting}
+
+  \item[解説]
+    新しいプロセスを作り\|path|で指定したプログラムを実行する．
+
+  \item[引数]
+    \|pid|は新しいプロセスのプロセス番号を格納する変数を指すポインタ．
+    \|path|は実行するプログラムを格納したファイルのパスである．
+    絶対パスでも相対パスでも良い．
+    \|file_actions|，\|attrp|はプロセスの初期化を指示する
+    データ構造へのポインタ．
+    \|argv|，\|envp|は実行されるプログラムに渡す
+    コマンド行引数と環境変数である．
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１）}
+  \fig{scale=0.6}{forkExec-crop.pdf}
+  \begin{enumerate}
+  \item[1.] 新しいプロセス（子プロセス）を作る(\emph{forkシステムコール})．
+  \item[2.] ユーザプログラムに従い子プロセスが自ら初期化処理を行う．
+  \item[3.] 新しいプログラムをロード・実行(\emph{execveシステムコール})する．
+  \end{enumerate}
+  プログラムで初期化処理を行うので柔軟性が高い．
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（２）}
+  \emph{プログラムのロードと実行（execveシステムコール）} の概要\\
+  \fig{scale=0.6}{execve-crop.pdf}
+  \begin{itemize}
+  \item プロセスのメモリ空間に新しいプログラムをロードする．
+  \item execveシステムコールを発行したプログラムは上書きされて消える．
+  \item プロセスの仮想CPUはリセットされプログラムの先頭から実行．
+  \item プロセスが新しいプログラムに\emph{変身}した．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（３）}
+  \emph{execveシステムコール} \\
+  \begin{description}
+  \item[書式] execveシステムコールの書式は次の通りである．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int execve(char *path, char *argv[], char *envp[]);
+\end{lstlisting}
+
+  \item[解説]
+    自プロセスで\|path|で指定したプログラムを実行する．
+    正常時にはexecveを実行したプログラムは新しいプログラムで上書きされ消える．
+    execveシステムコールが戻る(次の行が実行される)のはエラー発生時だけである．
+
+  \item[引数]
+    \|path|は実行するプログラムを格納したファイルのパスである．
+    絶対パスでも相対パスでも良い．
+    \|argv|，\|envp|は新しいプログラムに渡すコマンド行引数と環境変数である．
+  \end{description}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（４）}
+  \emph{execveシステムコールの使用例１} \\
+  \lst{numbers=none}{exectest1.c}
+  \begin{itemize}
+  \item \texttt{/bin/date}プログラムをロード・実行する．
+  \item dateプログラムの\texttt{argv}配列を準備して渡す．
+  \item 環境変数は自身のものを渡す．
+  \item execveが戻ってきたら無条件にエラー処理をする．
+  \end{itemize}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（５）}
+  \emph{execveシステムコールの使用例２} \\
+  \lst{numbers=none}{exectest3.c}
+  \begin{itemize}
+  \item （環境変数を変更＝初期化処理）をした上でexecveする．
+  \item \texttt{putenv()}関数を用いて自身の環境変数を書き換え．
+  \item execveに自身の環境変数を渡す．
+  \end{itemize}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（６）}
+  \emph{execveシステムコールの使用例３} \\
+  \lst{numbers=none}{exectest2.c}
+  \begin{itemize}
+  \item 全く新しい環境変数の一覧を渡す例．
+  \item dateプログラムが必要とする環境変数だけの配列を渡す．
+  \end{itemize}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（７）}
+  \emph{execveシステムコールの使用例４} \\
+  \lst{numbers=none}{exectest4.c}
+  \begin{itemize}
+  \item 複数のコマンド行引数をもつプログラム（echo）の実行例．
+  \item \texttt{argv[0]}にプログラムの名前を入れ忘れないように．
+  \end{itemize}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（８）}
+  \emph{execveシステムコールのラッパー関数} \\
+  \begin{itemize}
+  \item 関数の内部でexecveシステムコールを発行（wrapper）
+  \end{itemize}
+  \begin{description}
+  \item[書式] 四つのラッパー関数の書式をまとめて掲載
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int execv(char *path, char *argv[]);
+  int execvp(char *file,  char *argv[]);
+  int execl(char *path, char *argv0, *argv1, ... ,*argvn, NULL);
+  int execlp(char *file, char *argv0, *argv1, ... ,*argvn, NULL);
+\end{lstlisting}
+  \item[意味] \texttt{execv("/bin/date", argv);} \\
+    →  \texttt{execve("/bin/date", argv, environ);} \\
+    \texttt{execvp("date", argv);} \\
+    →  \texttt{execve("/bin/date", argv, environ);} \\
+    \texttt{execl("/bin/echo", "echo", "aaa", "bbb", NULL);} \\
+    \texttt{execlp("echo", "echo", "aaa", "bbb", NULL);} \\
+  \end{description}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（９）}
+  \emph{入出力のリダイレクト１} \\
+  \begin{itemize}
+  \item リダイレクトの復習
+\begin{lstlisting}[numbers=none]
+  $ echo aaa bbb
+  aaa bbb                     <--- echoの出力が表示される
+  $ echo aaa bbb  > a.txt     <--- echoの出力が表示されない
+  $ cat a.txt
+  aaa bbb                     <--- echoの出力がa.txtに格納されてた
+\end{lstlisting} %$
+  \item プログラムは標準入出力を自らオープンする必要が無かった．
+  \item プロセスの状態がexecve前のプログラムから引き継がれるから．
+  \fig{scale=0.6}{execve-crop.pdf}
+  \end{itemize}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１０）}
+  \emph{入出力のリダイレクト２} \\
+  \begin{itemize}
+  \item リダイレクトはプログラムのロード・実行前にシェルが行う．
+  \item シェルが標準入出力をファイルに接続してからexecveしている．
+  \item 原理を表すプログラム例
+    \lst{numbers=none,lastline=17}{exectest5.c}
+  \end{itemize}
+  \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.9}
+  \begin{enumerate}
+  \item[1.] 前のページ（リスト9.5）のプログラムを入力し実行してみる．
+  \item[2.] 入力のリダイレクトをするプログラム例を作る． \\
+    ヒント：標準入力のファイルディスクリプタは0番である．
+  \item[3.] envコマンドのクローンmyenv \\
+    \|putenv()|がエラーになるまでコマンド行引数を環境変数の設定と思って使う．
+    残りが実行するコマンドを表している．
+    下の実行例では\\
+    \|putenv(argv[1]);|\\
+    \|putenv(argv[2]);|\\
+    \|putenv(argv[3]);|\\
+    \|execvp(argv[3], &argv[3]);|\\
+    （三回目の\|putenv()|はエラーになる）\\
+    が実行されるようにプログラムを作る．
+    \vfill
+    \|$ ./myenv LC_TIME=ja_JP.UTF-8 TZ=Cuba ls -l| %$
+  \end{enumerate}
+   \vfill
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１１）}
+  \emph{新しいプロセスを作る（forkシステムコール）１} \\
+  \fig{scale=0.6}{fork-crop.pdf}
+  \begin{itemize}
+  \item forkシステムコールはプロセスのコピー\emph{分身}を作る．
+  \item もともとのプロセスが\emph{親プロセス}，分身が\emph{子プロセス}．
+  \item \emph{分身}はPID以外は同じ（\emph{CPUのPCも同じ}）．
+  \item 子プロセスはforkシステムコールの途中から実行を開始する．
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１２）}
+  \emph{新しいプロセスを作る（forkシステムコール）２} \\
+
+\begin{description}
+\item[書式] fork の書式を示す．
+\begin{lstlisting}[numbers=none]
+  #include <unistd.h>
+  int fork(void);
+\end{lstlisting}
+\item[解説] 
+  forkシステムコールが終了する際，
+  親プロセスには子プロセスのPIDが返され，
+  子プロセスには\|0|が返される．
+  プログラムはこの値を目印に自分が親か子か判断できる．
+  エラー時は，親プロセスに\|-1|が返され子プロセスは作られない．
+\end{description}
+\lst{xleftmargin=5mm,firstline=3,lastline=11,numbers=none}{forktest.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１３）}
+  \emph{新しいプロセスを作る（forkシステムコール）３} \\
+
+\begin{description}
+\item[使用例]
+  親プロセスと子プロセスが並行実行される状態になる．
+\end{description}
+\lst{numbers=left, xleftmargin=5mm,lastline=17}{forktest.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１４）}
+  \emph{プロセスの終了と待ち合わせ}\\
+  \vfill
+  例えば次のような手順で処理がされる．
+  \begin{itemize}
+  \item 親プロセスは子プロセスをいくつか作成し，\\
+    それらに同時に並行して処理を行わせる．
+  \item 子プロセスは処理を終えると終了する．
+  \item 子プロセスが処理を終えると，親プロセスは \\
+    子プロセスが正常に終了したかチェックする．\\
+    \vfill
+    \verb;$ ls -l | grep rwx;\hfil ←  \hfil 二つのプロセスが並列実行される
+    \vfill
+  \item 子プロセスが処理結果と共に自身を終了する． \\
+    → \emph{exitシステムコール}
+  \item 親プロセスが子プロセスの終了を待つ． \\
+    → \emph{waitシステムコール}
+  \end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１５）}
+  \emph{exitシステムコール}：自プロセスを終了する．
+
+  \begin{description}
+  \item[書式] exitシステムコールの書式を示す．
+\begin{lstlisting}[numbers=none]
+  #include <stdlib.h>
+  void exit(int status);
+\end{lstlisting}
+
+  \item[解説]
+    \begin{itemize}
+    \item プロセスが終了するのでexitは戻らない．
+    \item \|status|はプロセスの\emph{終了ステータス}である．\\
+      （\|0 <= status <= 255|）\\
+    \item 親プロセスはwaitで終了ステータスを受け取る．
+    \item Cプログラムのmain関数はexitの引数で実行．\\
+    \vfill
+    \texttt{exit(main(argc, argv, envp));}
+    \vfill
+    \item 次のCプログラムは同じ結果になる．\\
+      \begin{minipage}{0.3\columnwidth}
+\begin{lstlisting}[numbers=none]
+  int main() {
+    ...
+    exit(1);
+    ...
+  }
+\end{lstlisting}
+      \end{minipage} ~~＝~~~
+      \begin{minipage}{0.3\columnwidth}
+\begin{lstlisting}[numbers=none]
+  int main() {
+    ...
+    return 1;
+    ...
+  }
+\end{lstlisting}
+      \end{minipage}
+    \end{itemize}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１６）}
+  \emph{waitシステムコール}：親プロセスが子プロセスの終了を待つ．
+
+  \begin{description}
+  \item[書式] waitシステムコールの書式を示す．
+
+\begin{lstlisting}[numbers=none]
+  #include <sys/wait.h>
+  pid_t wait(int *status);
+\end{lstlisting}
+
+  \item[解説] 
+    \begin{itemize}
+    \item 終了したプロセスの番号（PID：正の値）を返す．
+    \item エラーが発生した場合に\|-1|を返す．
+    \item \|status|にプロセスの終了理由等が格納される．\\
+      \|status| の下位 8bit が子プロセスの終了ステータス \\
+      他のビットで終了の理由(exit，シグナル等)を表す．
+    \end{itemize}
+  \end{description}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１７）}
+  \emph{プログラム例}
+  \lst{numbers=left,xleftmargin=5mm}{forkexec1.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１８）}
+  \emph{プログラムの解説}
+  \fig{scale=0.6}{forkExecWaitExit-crop.pdf}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（１９）}
+  \lst{numbers=left,firstnumber=5,xleftmargin=5mm,firstline=5,
+    basicstyle={\fontsize{8pt}{8.5pt}\selectfont\ttfamily}}{forkexec2.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{fork-exec方式（２０）}
+  \lst{numbers=left,firstnumber=5,xleftmargin=5mm,firstline=5,
+    basicstyle={\fontsize{8pt}{8.5pt}\selectfont\ttfamily}}{forkexec3.c}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{課題 No.10}
+  \begin{enumerate}
+  \item[1.] 次々リダイレクトしてdateを実行するプログラム \\
+    コマンド行引数で「環境変数とファイル名」の組を複数指定し，
+    環境変数を変更した上で出力をファイルにリダイレクトしdateを実行する
+    プログラムを作りなさい．
+    例えば次のように実行すると，現在時刻をキューバ時間で表したものが\|c.txt|に
+    ローマ時間で表したものが\|r.txt|に格納される．
+    
+    \|$ ./a.out TZ=Cuba c.txt TZ=Europe/Rome r.txt| %$
+
+  \item[2.] system 関数のクローン mysystem \\
+    \|system()| 関数の仕様を調べて，なるべく同じものを作りなさい．
+    C言語中で\|system("...");|の関数呼出しをすると，
+    シェアルに以下のように入力したのと同じことが起こる．
+    
+    \|$ /bin/sh -c "..."| %$
+    
+  \end{enumerate}
+\end{frame}
+
+%===============================================================
+%\begin{frame}[fragile]
+%  \frametitle{}
+%\end{frame}
+
+\end{document}

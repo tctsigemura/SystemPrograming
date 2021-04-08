@@ -1,0 +1,7 @@
+$ dd if=/dev/urandom of=aaa bs=1024 count=10240  <-- 10MiBのファイルaaaを作る
+10240+0 records in
+10240+0 records out
+10485760 bytes transferred in 1.019062 secs (10289621 bytes/sec)
+$ ls -l aaa
+-rw-r--r--  1 sigemura  staff  10485760 Apr 15 17:35 aaa  <-- できている
+$

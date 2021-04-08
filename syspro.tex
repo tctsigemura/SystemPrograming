@@ -1,0 +1,86 @@
+%------------------------------------------------------------------------------
+%
+% システムプログラミング教科書
+%
+%------------------------------------------------------------------------------
+\documentclass[a4paper,11pt,twocolumn]{ltjsbook}      % lualatex の場合
+\usepackage{mySty}
+%------------------------------------------------------------------------------
+% はじまり
+\begin{document}
+\frontmatter
+%------------------------------------------------------------------------------
+% 表紙
+\title{システムプログラミング\\Ver. 1.1.0}
+\author{徳山工業高等専門学校\\情報電子工学科}
+\date{}
+\maketitle
+
+%------------------------------------------------------------------------------
+% 著作権表示
+\thispagestyle{empty}
+\onecolumn
+~
+\vfill
+\begin{flushleft}
+Copyright \copyright ~~ 2017 - 2021 by \\
+Dept. of Computer Science and Electronic Engineering, \\
+Tokuyama College of Technology, JAPAN
+\end{flushleft}
+
+\vspace{0.8cm}
+本ドキュメントはCC-BY-SA 4.0 ライセンスによって許諾されています。
+
+本ドキュメントは
+CC-BY-SA 3.0 de ライセンス，
+CC-BY-SA 4.0 ライセンス
+で許諾された著作物を含みます．
+
+（CC-BY-SA 3.0 de ライセンス全文は
+\url{https://creativecommons.org/licenses/by-sa/3.0/de/}で，
+CC-BY-SA 4.0 ライセンス全文は
+\url{https://creativecommons.org/licenses/by-sa/4.0/deed.ja}で確認できます．）
+
+%------------------------------------------------------------------------------
+% 目次
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+% 本文
+%\twocolumn
+\mainmatter
+
+\part{OSの機能を使用してみよう}
+\include{chap1s} % システムプログラム
+\include{chap2s} % ファイル入出力システムコール
+\include{chap3s} % 高水準入出力と低水準入出力
+\setcounter{page}{23}               % 授業で配布した時とページがずれたので
+\include{chap4s} % ファイルシステム
+\include{chap5s} % ファイル操作システムコール
+\include{chap6s} % プロセスとジョブ
+\include{chap7s} % シグナル
+\include{chap8s} % 環境変数
+\include{chap9s} % Fork-Exec
+\include{chapAs} % myShell
+
+%------------------------------------------------------------------------------
+% 発行元
+\backmatter
+\pagestyle{empty}
+\onecolumn
+~
+\vfill\vfill\vfill
+\begin{center}
+\fbox{\parbox{10cm}{ \vspace{0.3cm}
+\large{\textbf{システムプログラミング Ver. 1.1.0}} \\
+\\
+　発行年月　２０２１年０４月　Ver.1.1.0 \\
+　発　　行　独立行政法人国立高等専門学校機構 \\
+　　　　　　徳山工業高等専門学校 \\
+　　　　　　情報電子工学科　重村哲至 \\
+　　　　　　〒745-8585 山口県周南市学園台 \\
+　　　　　　sigemura@tokuyama.ac.jp \\
+}}
+\end{center}
+\vfill
+\end{document}

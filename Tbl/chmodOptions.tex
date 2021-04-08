@@ -1,0 +1,19 @@
+\RequirePackage{luatex85}
+\documentclass{standalone}
+\usepackage{luatexja}                              % lualatex の場合
+\usepackage[hiragino-pron]{luatexja-preset}        % ヒラギノフォント
+\begin{document}
+{\ttfamily
+\begin{tabular}{l | l}
+\hline\hline
+\multicolumn{1}{c|}{文字} & \multicolumn{1}{c}{意味}\\\hline
+\texttt{u}  & 所有者（ユーザ） \\
+\texttt{g}  & グループ         \\
+\texttt{o}  & その他のユーザ   \\
+\texttt{+}  & 権利を与える     \\
+\texttt{-}  & 権利を取上げる   \\
+\texttt{r}  & 読出し           \\
+\texttt{w}  & 書込み           \\
+\texttt{x}  & 実行             \\
+\end{tabular}}
+\end{document}

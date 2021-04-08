@@ -1,0 +1,5 @@
+$ printenv MYNAME
+yosinaga
+$ unset MYNAME
+$ printenv MYNAME
+$                             # MYNAMEは存在しない

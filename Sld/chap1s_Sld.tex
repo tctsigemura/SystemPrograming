@@ -1,0 +1,102 @@
+%\documentclass[dvipdfmx]{beamer}      % platex の場合
+\documentclass{beamer}                 % lualatex の場合
+\usepackage{mySld}
+
+\begin{document}
+\title{オペレーティングシステムの機能を使ってみよう\\第１章 システムプログラミング}
+\date{}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%\begin{frame}
+%  \frametitle
+%  \tableofcontents
+%\end{frame}
+
+\section{システムプログラミング}
+\begin{frame}
+  \frametitle{システムプログラムとは}
+  \begin{itemize}
+  \item カーネル（OSの本体）
+  \item ライブラリ（プログラムが使用するサブルーチン，DLL ...）
+  \item ミドルウェア（DBMS，Webサーバ ...）
+  \item ユーティリティ（ファイル操作，時計，シェル，システム管理 ...）
+  \item プログラム開発環境（エディタ，コンパイラ，アセンブラ，リンカ，インタプリタ ...）
+  \end{itemize}
+  \fig{scale=0.6}{systemConstruct-crop.pdf}
+\end{frame}
+
+\begin{frame}
+  \frametitle{システムプログラミングとは}
+  \begin{itemize}
+  \item システムプログラムを作成すること．
+  \item 本講義ではユーティリティのプログラミングを行う．
+  \end{itemize}
+  \vfill
+  \begin{quote}
+    {\Large
+      \begin{itembox}[l]{なぜシステムプログラミング？}
+        「システムプログラミングを通して
+          オペレーティングシステムの体感的な理解」をする．
+        \end{itembox}
+      }
+      \vfil
+      オペレーティングシステムを体感的に理解するために，
+      オペレーティングシステムの機能を直接に使用する
+      \emph{簡単なCLI版のユーティリティプログラムの作成（プログラミング）}
+      を行う．
+  \end{quote}
+\end{frame}
+
+\begin{frame}
+  \frametitle{複数のプログラムが正しく実行されない}
+  \begin{itemize}
+  \item コンピュータの中では複数のプログラムが同時に作動している．
+  \item 各プログラムが勝手に\emph{資源}にアクセスすると具合が悪い．
+  \item 例えばディスクのどの領域をどのファイルが使用するか？\\
+    各プログラムが勝手に決めると不具合が起こる．
+  \end{itemize}
+  \fig{scale=0.7}{noSystemcall-crop.pdf}
+\end{frame}
+
+\begin{frame}
+  \frametitle{複数のプログラムが正しく実行される}
+  \begin{itemize}
+  \item OSの本体（\emph{カーネル}）が代表して資源を管理する．
+  \item 一般のプログラムはカーネルに処理を依頼し目的を達成する．
+  \item 例えばファイルを作成してディスクのどの領域を使用するか？\\
+    カーネルが責任を持って一貫した管理を行う．（集中管理）
+  \item 他のプログラムは\emph{システムコール}を行いカーネルに処理を依頼．
+  \end{itemize}
+  \fig{scale=0.6}{systemcall-crop.pdf}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{システムコールの使用}
+  \begin{itemize}
+  \item C言語からシステムコールを利用することができる．
+  \item UNIX（macOS）のC言語ではシステムコールと同じ名前の関数を呼び出すと
+    システムコールの発行になる．
+  \item macOS上でC言語を用いてシステムコールを直接に使用する
+    ユーティリティプログラムを作成する（システムプログラミングを行う）．
+  \item OSの機能をシステムコールを通して実感する．
+  \item OSが提供すべき機能を理解する．
+  \end{itemize}
+  \begin{quote}
+\begin{lstlisting}[language=C++]
+    // ディレクトリを作るユーティリティプログラム（mymkdir）の例
+    int main(int argc, char *argv[]) {
+      if (argc!=2) {
+        // エラー処理
+      }
+      mkdir(argv[1]);    // ディレクトリを作るシステムコール
+      return 0;
+    }
+\end{lstlisting}
+  \end{quote}
+\end{frame}
+
+\end{document}
+

@@ -1,0 +1,423 @@
+\chapter{ファイル入出力システムコール}
+
+この章ではファイルの読み書きを行うシステムコールを紹介し，
+これらを直接に使用したユーティリティプログラムを作成してみる．
+C言語を用いると，
+システムコールと同じ名前の関数を呼び出すことで
+システムコールを呼び出すことができる．
+例えばopenシステムコールを使用するときは，
+\|open()|関数を呼び出す．
+
+\section{高水準入出力と低水準入出力}
+C言語の入門で勉強した
+\|fopen()|，
+\|printf()|，
+\|puts()|，
+\|putchar()|，
+\|fprintf()|，
+\|fputs()|，
+\|fputc()|，
+\|scanf()|，
+\|getchar()|，
+\|fgets()|，
+\|fgetc()|，
+\|fclose()|...
+等は\emph{高水準入出力}関数と呼ばれる．
+これに対してシステムコールを直接使用する入出力を\emph{低水準入出力}と呼ぶ．
+
+\tabref{hilevelVsSystemcall}に対応を示すように，
+高水準入出力関数は内部でファイル入出力を行うシステムコールを呼び出している．
+つまり，種類や機能が豊富な高水準入出力は，
+数種類の基本的な機能しか提供しない低水準入出力を用いて
+実現されていることになる．
+
+
+\begin{mytable}{btp}{高水準入出力関数とシステムコール}{hilevelVsSystemcall}
+\begin{tabular}{l | l}\hline\hline
+\emph{高水準入出力関数} & \emph{対応するシステムコール} \\\hline
+\texttt{fopen()}      & open システムコール \\
+\texttt{printf()}     & write システムコール \\
+\texttt{putchar()}    & write システムコール \\
+%\texttt{fputs()}      & write システムコール \\
+\texttt{fputc()}      & write システムコール \\
+...          & ...                     \\
+\texttt{scanf()}      & read システムコール \\
+\texttt{getchar()}    & read システムコール \\
+%\texttt{fgets()}      & read システムコール \\
+\texttt{fgetc()}      & read システムコール \\
+...          & ...                      \\
+\texttt{fclose()}     & close システムコール \\
+\end{tabular}
+\end{mytable}
+
+\section{openシステムコール}
+ファイルのオープンに使用するシステムコールである．
+詳細なマニュアルは UNIX(macOS) のターミナルで，
+\texttt{man 2 open}と入力すると表示される\footnote{
+\texttt{man}はUNIXマニュアルを表示するユーティリティプログラムである．
+引数の\texttt{2}が表す第2章は，「システムコール」を解説している．
+本文中の例は「UNIXマニュアルの第2章の\texttt{open}」の項目を表示する．}．
+
+\begin{description}
+\item[書式１]（オープンするだけの場合）
+
+\begin{lstlisting}[numbers=none]
+#include <fcntl.h>
+int open(const char *path, int oflag);
+\end{lstlisting}
+
+\item[解説]
+openシステムコールを使用するプログラムの先頭では，
+\|fcntl.h|をインクルードする必要がある．
+openシステムコールは
+正常時には\emph{ファイルディスクリプタ}（ゼロ以上の整数）を返す
+\footnote{stdinのファイルディスクリプタが0，
+stdoutのものが1，stderrのものが2なので3以降の番号を返す．}．
+エラーが発生した時は\|-1|を返す．
+エラー原因は\|perror()|関数で表示できる．
+
+\item[引数]
+\|path|はオープンまたは作成するファイルのパス（名前），
+\|oflag|はオープンの方法を表す。
+\|oflag|は\tabref{open}の記号定数を\texttt{|}\footnote{
+\texttt{|}は，C言語のビット毎の論理和演算子である．}で接続して書く．
+表の左側の記号定数を一つと，
+右側の記号定数を幾つか組合せることができる．
+例えばファイルの内容を消してから書き込み用にオープンしたい場合は，
+\verb;O_WRONLY|O_TRUNC;のように書く．
+
+\begin{mytable}{btp}{openシステムコールの第２引数\texttt{oflag}}{open}
+\begin{tabular}{l | c | l}
+\hline\hline
+\emph{以下の一つ} & と & \emph{以下のいくつか} \\\hline
+\|O_RDONLY|（読み出し用） &    & \|O_APPEND|（追記）  \\
+\|O_WRONLY|（書き込み用） & +  & \|O_CREAT|（作成）   \\
+\|O_RDWR|（読み書き両用） &    & \|O_TRUNC|（切詰め） \\
+                      &    & ...      \\
+\end{tabular}
+\end{mytable}
+
+\item[使用例]（書式１）
+
+\begin{lstlisting}[numbers=none]
+#include <fcntl.h>
+...
+int fdr, fdw, fda;
+fdr=open("r.txt", O_RDONLY);              // 読み出し用にオープン
+fdw=open("w.txt", O_WRONLY);              // 書き込み用にオープン
+fda=open("a.txt", O_WRONLY|O_APPEND);     // 追記用にオープン
+
+if (fdw<0) {                              // エラーチェック
+  perror("w.txt");                        //  原因の表示
+  exit(1);                                //  エラー終了
+}
+\end{lstlisting}
+
+
+\begin{figure}[tb]
+\begin{framed}
+\subsection*{ファイルの保護モード}
+open システムコールの第３引数（\|mode|）は次のような 12bit の値である．
+
+\begin{center}
+{\ttfamily\small\begin{tabular}{|c|c|c||c|c|c||c|c|c||c|c|c|}
+\multicolumn{1}{c}{11} &
+\multicolumn{1}{c}{10} &
+\multicolumn{1}{c}{ 9} &
+\multicolumn{1}{c}{ 8} &
+\multicolumn{1}{c}{ 7} &
+\multicolumn{1}{c}{ 6} &
+\multicolumn{1}{c}{ 5} &
+\multicolumn{1}{c}{ 4} &
+\multicolumn{1}{c}{ 3} &
+\multicolumn{1}{c}{ 2} &
+\multicolumn{1}{c}{ 1} &
+\multicolumn{1}{c}{ 0} \\\hline
+s  & s  & t & r & w & x & r & w & x & r & w & x \\\hline
+\multicolumn{3}{c}{省略} &
+\multicolumn{3}{c}{ユーザ} &
+\multicolumn{3}{c}{グループ} &
+\multicolumn{3}{c}{その他} 
+\end{tabular}}
+\end{center}
+
+最初の 3bit の意味は難しいのでここでは説明を省略する．
+他のビットは \|rwx| のどれかである．
+\|rwx| の意味は次の通りである．
+
+\begin{tabular}{c c l}
+\texttt{r} & : & \emph{r}ead 可（読み出し可能）   \\
+\texttt{w} & : & \emph{w}rite 可（書き込み可能）   \\
+\texttt{x} & : & e\emph{x}ecute 可（実行可能）
+\end{tabular}
+
+例えば，第8ビットが \|1| だったら、
+ユーザ（ファイルの所有者）が read （読み出し）可能の意味になる．
+%逆に \|0|なら read 不可の意味になる．
+ファイルのモードやユーザ（所有者），グループは次のようにして確認できる．
+
+\begin{lstlisting}[numbers=none]
+$ ls -l a.txt
+-rw-r--r--  1 sigemura  staff  0 Apr 11 05:53 a.txt
+$
+\end{lstlisting}
+
+a.txt ファイルのモードの下位9ビットが \|110100100| である．
+所有者は sigemura，
+グループは staff である．
+このファイルは sigemura が読み書きができる．
+staff グループに属するユーザは読むことだけできる．
+その他のユーザも読むことだけできる．
+\end{framed}
+\end{figure}
+
+\item[書式２]（ファイル作成もする場合）
+
+\|oflag|に\|O_CREAT|を含む場合は，
+該当ファイルが存在しないなら新規作成してからオープンする．
+新規作成するファイルの\emph{保護モード}を\|mode|で指定する．
+
+\begin{lstlisting}[numbers=none]
+#include <fcntl.h>
+int open(const char *path, int oflag, mode_t mode);
+\end{lstlisting}
+
+\|mode_t| は，16bit の整数型（16bit \|int|）である．
+\|mode| は，作成されるファイルの保護モードである．
+\|mode| は，8進数で記述することが多い\footnote{
+C言語では，数値を \texttt{0} で書き始めると8進数の意味になる．}．
+8進数と保護モードの対応は次のようになる．
+
+{\ttfamily\begin{center}\begin{tabular}{l l}
+0: --- ~~~ & 4: r-- \\
+1: --x     & 5: r-x \\
+2: -w-     & 6: rw- \\
+3: -wx     & 7: rwx
+\end{tabular}\end{center}}
+
+\item[使用例]（書式２）
+
+\begin{lstlisting}[numbers=none]
+fd=open("a.txt", O_WRONLY|O_CREAT, 0644);  // 作るファイルのモードは rw-r--r-- になる
+\end{lstlisting}
+
+\end{description}
+
+\section{readシステムコール}
+読み出し用にオープン済みのファイルからデータを読み出すシステムコールである．
+１回目はファイルの先頭から指定されたバイト数を読み出す．
+２回目以降は，ファイルの前回読み終わった位置から続きを読み出す．
+このようにファイルの先頭から順に読み書きする方式は，
+\emph{シーケンシャルアクセス（順次アクセス）}と呼ばれる．
+後で紹介するwriteシステムコールもシーケンシャルアクセスを行う．
+
+\begin{description}
+\item[書式]（詳しくは\texttt{man 2 read}で調べる．）
+
+\begin{lstlisting}[numbers=none]
+#include <unistd.h>
+ssize_t read(int fildes, void *buf, size_t nbyte);
+\end{lstlisting}
+
+\item[解説]
+read システムコールを使用するプログラムの先頭では，
+\|unistd.h|をインクルードする必要がある．
+オープン済みのファイルディスクリプタを渡し，
+ファイルからデータを読み出す．
+
+read システムコールは\|ssize_t|型（64bit \|int|型）の値を返す．
+値は正常時には読んだデータのバイト数（正の値），
+EOF では \|0| ，
+エラーが発生した時は\|-1|である．
+エラーの原因は \|perror()| 関数で表示できる．
+
+\item[引数]
+\|fildes|はオープン済みのファイルディスクリプタ，
+\|buf|はデータを読み出すバッファ領域を指すポインタ，
+\|nbyte|はバッファ領域の大きさ（バイト単位）である．
+
+\item[使用例１]
+\|fd|は open システムコールでオープン済みのファイルディスクリプタである．
+\|buf|はバッファ用の \|char| 型の大きさ100の配列である．
+\|char|型は1バイトなので，配列全体で100バイトになる．
+
+1回目ではファイルの先頭100バイトを読み出す．
+2回目ではファイルの101バイト目から100バイトを読み出す．
+3回目ではファイルの201バイト目から100バイトを読み出す．
+通常 \|n| は 100 になるが，
+EOF に達した場合は，実際に読み込めたバイト数になる．
+
+\begin{lstlisting}[numbers=none]
+char buf[100];
+n = read(fd, buf, 100); // 1回目
+n = read(fd, buf, 100); // 2回目
+n = read(fd, buf, 100); // 3回目
+\end{lstlisting}
+
+\item[使用例２]
+ループでファイルの先頭から順にデータを読み出す例である．
+\|n|の値が\|0|以下になったら EOF かエラーなのでループを終了する．
+
+\begin{lstlisting}[numbers=none]
+while ((n=read(fd, buf, 100)) > 0) { // 読む
+   ... 読んだ n バイトのデータを処理する ...
+}
+\end{lstlisting}
+\end{description}
+
+\section{writeシステムコール}
+書き込み用にオープン済みのファイルへデータを書き込むシステムコールである．
+ファイルの先頭から順にデータを書き込む（シーケンシャルアクセス）．
+ファイルの最後に達するまでは元々あったデータを上書きする．
+ファイルの最後に達した場合は書き込む度にファイルの長さが長くなる．
+
+\begin{description}
+\item[書式]（詳しくは\texttt{man 2 write}で調べる．）
+
+\begin{lstlisting}[numbers=none]
+#include <unistd.h>
+ssize_t write(int fildes, void *buf, size_t nbyte);
+\end{lstlisting}
+
+\item[解説]
+write システムコールを使用するプログラムの先頭では，
+\|unistd.h|をインクルードする必要がある．
+書き込み用にオープン済みのファイルディスクリプタを渡し，
+ファイルにデータを書き込む．
+writeシステムコールが返す値は，
+ファイルに実際に書き込んだデータのバイト数である．
+
+\item[引数]
+\|fildes|はオープン済みのファイルディスクリプタ，
+\|buf|は書き込むデータを格納したバッファ領域を指すポインタ，
+\|nbyte|は書き込むデータの大きさ（バイト単位）である．
+
+\item[使用例]
+ファイルに \|abc| の3バイトを書き込む．
+
+\begin{lstlisting}[numbers=none]
+char *a = "abc";
+n = write(fd, a, 3);       // nが3以外ならエラーが疑われる
+\end{lstlisting}
+
+\end{description}
+
+\section{lseekシステムコール}
+オープン済みファイルの読み書き位置を移動するシステムコールである．
+lseekシステムコールと組み合わせることで，
+read，writeシステムコールを用いたファイルの
+\emph{ランダムアクセス（直接アクセス）}が
+可能になる．
+
+\begin{description}
+\item[書式]（詳しくは\texttt{man 2 lseek}で調べる．）
+
+\begin{lstlisting}[numbers=none]
+#include <unistd.h>
+off_t lseek(int fildes, off_t offset, int whence);
+\end{lstlisting}
+
+\item[解説]
+openシステムコールを用いてオープン済みのファイルの現在の読み書き位置を
+\|offset|に移動する．
+\|fildes|はオープン済みのファイルディスクリプタである．
+\|offset|の意味は\|whence|によって変化する．
+lseekシステムコールは\|off_t|型（64bit \|int| 型）の値を返す．
+値はファイルの先頭を基準にした新しい読み書き位置（単位はバイト）である．
+エラーが発生した時は\|-1|を返す．
+エラーの原因は \|perror()| 関数で表示できる．
+\tabref{whence}に\|whence|の意味をまとめる．
+\|SEEK_CUR|，\|SEEK_END|では\|offset|が負の値になることがある．
+
+\begin{mytable}{btp}{lseekシステムコールの第3引数（\texttt{whence}）}{whence}
+\begin{tabular}{l | l}
+\hline\hline
+\|whence|    & \emph{意　味} \\\hline
+\|SEEK_SET|  &  \|offset|はファイルの先頭からのバイト数  \\
+\|SEEK_CUR|  &  \|offset|は現在の読み書き位置からのバイト数  \\
+\|SEEK_END|  &  \|offset|はファイルの最後からのバイト数  \\
+\end{tabular}
+\end{mytable}
+
+\item[使用例]
+\|fd|はオープン済みのファイルディスクリプタとする．
+
+\begin{lstlisting}[numbers=none]
+lseek(fd, SEEK_CUR, -100);   // 現在地から100バイト後ろに移動する．
+\end{lstlisting}
+\end{description}
+
+\section{closeシステムコール}
+
+ファイルを閉じる．
+
+\begin{description}
+\item[書式]（詳しくは\texttt{man 2 close}で調べる．）
+
+\begin{lstlisting}[numbers=none]
+#include <unistd.h>
+int close(int fildes);
+\end{lstlisting}
+
+\item[解説]
+openシステムコールを用いてオープン済みのファイルを閉じる．
+引数はオープン済みのファイルディスクリプタである．
+
+ファイルはプログラム終了時に自動的にクローズされるので
+クローズし忘れは致命的ではないが，
+たくさんのファイルを開くプログラムでは不要になったものをクローズしないと，
+同時に開くことができるファイル数の上限を超えることがある．
+
+\item[使用例]
+\|fd|はオープン済みのファイルディスクリプタとする．
+
+\begin{lstlisting}[numbers=none]
+close(fd);
+\end{lstlisting}
+\end{description}
+
+\section*{課題 No.1}
+以前，作成した mycp プログラムを，
+open，read，write，close システムコールを用いて作り直しなさい．
+バッファサイズは適当な値を自分で決めること．
+バッファサイズより大きなファイルのコピーもできるように，
+繰り返しを用いること．
+（\emph{注意：}ファイルサイズがバッファサイズの整数倍とは限らない．）
+
+最低，
+open システムコールの実行結果についてはエラーチェックを行うこと．
+エラーを検出した場合は，\|perror()|関数を用いてエラーメッセージを表示すること．
+
+ファイルが正しくコピーできたことは cmp コマンド（\| man cmp |\footnote{
+「UNIXマニュアル第1章 cmp コマンド」が表示される．
+UNIXマニュアルの第1章はコマンドの章である．} で調べる）を
+用いて確認できる．
+コピーするための適切なファイルが無い場合は dd コマンド（\| man dd |で調べる）を
+用いて作成できる．
+以下に \|mycp| プログラムの動作確認を行う手順の例を示す．
+
+\begin{lstlisting}[numbers=none]
+$ dd if=/dev/urandom of=srcfile bs=1024 count=10  # ランダムな内容の
+10+0 records in                                   #   10KiBのファイルを作成する
+10+0 records out
+10240 bytes transferred in 0.001528 secs (6701462 bytes/sec)
+$ ./mycp srcfile destfile                         # mycp プログラムを実行する
+$ cmp srcfile destfile                            # コピー元とコピー先ファイルを比較
+$                                                 # 内容が同じなら何も表示されない
+\end{lstlisting}
+
+\newpage
+\section*{練習問題}
+\begin{enumerate}
+%\renewcommand{\labelenumi}{\ttfamily \arabic{chapter}.\arabic{enumi}}
+% \setlength{\leftskip}{1em}
+
+\item \emph{ファイルディスクリプタ}とは何か説明しなさい．
+
+\item \emph{ファイルの保護モード}とは何か説明しなさい．
+
+\item open システムコールの \texttt{oflag} を記号定数の
+ビット毎の論理和で指定できる仕組みについて考察しなさい．
+
+\item dd コマンドの機能について調査し，実装方法について考察しなさい．
+\end{enumerate}
