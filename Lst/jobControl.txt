@@ -1,16 +1,16 @@
-$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
+$ sleep 2000                                 <-- フォアグラウンドで起動
 ^Z
-[1]+  Stopped     /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
-$ bg
-[1]+ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
-$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
-[2] 34655
+[1]+  Stopped                 sleep 2000     <-- 一時停止した
+$ bg                                         <-- バックグラウンドで再開
+[1]+ sleep 2000 & 
+$ sleep 1000 &                               <-- 新しくバックグラウンドで起動
+[2] 59961
+$ jobs                                       <-- 実行中のジョブを確認
+[1]-  Running                 sleep 2000 &
+[2]+  Running                 sleep 1000 &
+$ fg 1                                       <-- 1番をフォアグラウンドに変更
+sleep 2000                                       (zshの人は「fg %1」と入力)
+^C                                           <-- Ctrl-C で終了
 $ jobs
-[1]-  Running     /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
-[2]+  Running     /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
-$ fg 2
-/Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
-^C
-$ jobs
-[1]+  Running     /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
-$
+[2]+  Running                 sleep 1000 &   <-- 2番だけになった
+

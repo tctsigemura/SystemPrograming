@@ -10,11 +10,10 @@ SLDS = chap1s_Sld.pdf chap2s_Sld.pdf chap3s_Sld.pdf chap4s_Sld.pdf \
        chap9s_Sld.pdf chapAs_Sld.pdf
 
 %_Hnd.pdf : %_Hnd.tex %_Sld.pdf
-	lualatex $*_Hnd.tex
+	latexmk -lualatex $*_Hnd.tex
 
 %_Sld.pdf : %_Sld.tex *.sty
-	lualatex $*_Sld.tex
-#       open $*.pdf
+	latexmk -lualatex $*_Sld.tex
 
 all : ${SLDS} ${HNDS} # 中間ファイル *_Sld.pdf を消さないように
 

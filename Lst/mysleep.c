@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 // バグ：alarm を使用中に mysleep を使用するとタイマーが解除される
-void handler(int n) {
+static void handler(int n) {    // 必要以上に見えないように static にする
 }
 
 unsigned int mysleep(unsigned int seconds) {
@@ -32,3 +32,4 @@ hello
 hello
 ^C                    <---- Ctrl-C でプログラムを終了する．
 $
+*/

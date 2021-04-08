@@ -23,8 +23,9 @@
   \frametitle{ファイル操作システムコール}
   \begin{itemize}
     \item ユーティリティコマンド（ln，rm，mkdir，rmdir，chmod …）等が
-      使用しているシステムコール．
-    \item この章では主要な８種類だけ紹介する．
+      使用しているシステムコール．\\
+      （コマンドの一覧は「\texttt{0510\_UNIXコマンド.pdf}」を参照）
+    \item この章では主要な７種類だけ紹介する．
     \item 以下の内容はmacOS 10.13を基準にしているが，
       一部では分かり易さのために簡単化して説明している場合もある．
   \end{itemize}
@@ -266,70 +267,70 @@ if (chmod("a.txt", 0644)<0) { // "rw-r--r--"
 }
 \end{verbatim}
 
-  \item[参考] strtol関数
-
-    8進数を表現する文字列から整数値（int型）に変換する．
-\begin{verbatim}
-char *ptr;
-char *ostr = argv[1];            // 8進数文字列
-int mod;
-mod = strtol(ostr, &ptr, 8);     // int に変換
-if (*ostr=='\0' || *ptr!='\0') { // エラーチェック
-  fprintf(stderr, 
-          "\'%s\' : 8進数の形式が不正\n", ostr);
-  return 1;
-}
-\end{verbatim}
+%  \item[参考] strtol関数
+%
+%    8進数を表現する文字列から整数値（int型）に変換する．
+%\begin{verbatim}
+%char *ptr;
+%char *ostr = argv[1];            // 8進数文字列
+%int mod;
+%mod = strtol(ostr, &ptr, 8);     // int に変換
+%if (*ostr=='\0' || *ptr!='\0') { // エラーチェック
+%  fprintf(stderr, 
+%          "\'%s\' : 8進数の形式が不正\n", ostr);
+%  return 1;
+%}
+%\end{verbatim}
 
 \end{description}
 \end{frame}
 
 %===============================================================
-\begin{frame}[fragile]
-  \frametitle{readlink システムコール（1/2）}
-  \begin{itemize}
-  \item シンボリックリンクの内容を読出すシステムコール．
-  \item \texttt{ls -l}コマンドは，このシステムコールを利用．
-  \end{itemize}
-
-  \begin{description}
-  \item[書式] シンボリックリンクとバッファを指定する．
-\begin{verbatim}
-  #include <unistd.h>
-  int readlink(char *path, char *buf, int size);
-\end{verbatim}
-
-  \item[解説] \|unistd.h|をインクルードする必要がある．\\
-    \|path|で指定されるシンボリックの内容を\|buf|に読み出す．\\
-    正常時は読み出した文字数，エラー発生時は-1を返す．
-    エラー原因は\|perror()|関数で表示できる．\\
-    読み出した文字列は\verb;'\0';で終端\emph{されない}．
-
-  \item[引数] \|path|は目的のシンボリックリンクのパス．\\
-    \|buf|は内容を読み出す領域（バッファ）のポインタ．\\
-    \|size|は領域のサイズ．
-
-  \end{description}
-\end{frame}
+%\begin{frame}[fragile]
+%  \frametitle{readlink システムコール（1/2）}
+%  \begin{itemize}
+%  \item シンボリックリンクの内容を読出すシステムコール．
+%  \item \texttt{ls -l}コマンドは，このシステムコールを利用．
+%  \end{itemize}
+%
+%  \begin{description}
+%  \item[書式] シンボリックリンクとバッファを指定する．
+%\begin{verbatim}
+%  #include <unistd.h>
+%  int readlink(char *path, char *buf, int size);
+%\end{verbatim}
+%
+%  \item[解説] \|unistd.h|をインクルードする必要がある．\\
+%    \|path|で指定されるシンボリックの内容を\|buf|に読み出す．\\
+%    正常時は読み出した文字数，エラー発生時は-1を返す．
+%    エラー原因は\|perror()|関数で表示できる．\\
+%    読み出した文字列は\verb;'\0';で終端\emph{されない}．
+%
+%  \item[引数] \|path|は目的のシンボリックリンクのパス．\\
+%    \|buf|は内容を読み出す領域（バッファ）のポインタ．\\
+%    \|size|は領域のサイズ．
+%
+%  \end{description}
+%\end{frame}
 
 %===============================================================
-\begin{frame}[fragile]
-  \frametitle{readlink システムコール（2/2）}
-  \begin{description}
-  \item[使用例] シンボリックリンク\|"b.txt"|の内容を読み出し表示する例．
-\begin{verbatim}
-  char *name = "b.txt";
-  char buf[100];                   // 100バイト
-  int n = readlink(name, buf, 99); // 99バイト！
-  if (n<0) {                       // エラー？
-    perror(name);                  // エラー表示
-    exit(1);                       // エラー終了
-  }
-  buf[n]='\0';                     // 文字列完成
-  printf("%s -> %s\n", name, buf); // ls -l 風に
-\end{verbatim}
-  \end{description}
-\end{frame}
+%\begin{frame}[fragile]
+%  \frametitle{readlink システムコール（2/2）}
+%  \begin{description}
+%  \item[使用例] シンボリックリンク\|"b.txt"|の内容を読み出し表示する例．
+%\begin{verbatim}
+%  char *name = "b.txt";
+%  char buf[100];                   // 100バイト
+%  int n = readlink(name, buf, 99); // 99バイト！
+%  if (n<0) {                       // エラー？
+%    perror(name);                  // エラー表示
+%    exit(1);                       // エラー終了
+%  }
+%  buf[n]='\0';                     // 文字列完成
+%  printf("%s -> %s\n", name, buf); // ls -l 風に
+%\end{verbatim}
+%  \end{description}
+%\end{frame}
 
 %===============================================================
 \begin{frame}[fragile]
@@ -337,7 +338,7 @@ if (*ostr=='\0' || *ptr!='\0') { // エラーチェック
   \begin{enumerate}
   \item[1.] 簡易版のUNIXコマンドを作成しなさい．
 
-    UNIXコマンド，rm，mkdir，rmdir，ln，mv，chmodの中から３つ以上を選択し，
+    UNIXコマンド，rm，mkdir，rmdir，ln，mvの中から３つ以上を選択し，
     上記のシステムコールを使用して簡易版を作ってみる．
     使用方法のエラーチェック，システムコールのエラーチェックは行うこと．
 

@@ -146,6 +146,16 @@
 
 %===============================================================
 \begin{frame}[fragile]
+  \frametitle{演習4-1}
+  \emph{ファイル木を理解する}
+\begin{itemize}
+\item \emph{Linuxの人:} \texttt{0410\_演習１\_...(Linux版).pdf} をやってみる．
+\item \emph{Macの人:} \texttt{0420\_演習１\_...(Mac版).pdf} をやってみる．
+\end{itemize}
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
   \frametitle{リンク（ハードリンク）}
   \fig{scale=0.8}{Link-crop.pdf}
   \begin{itemize}
@@ -222,6 +232,16 @@
       \lst{numbers=none}{lnsrm.txt}
     \end{minipage}
   }
+\end{frame}
+
+%===============================================================
+\begin{frame}[fragile]
+  \frametitle{演習4-2}
+  \emph{リンクに関する演習}
+\begin{itemize}
+\item \texttt{0440\_演習２\_リンクと....演習.pdf} の
+「1.リンクを作る」をやってみる．
+\end{itemize}
 \end{frame}
 
 %===============================================================
@@ -329,70 +349,22 @@ $ chmod ugo-rwx ファイル...  # 書式３
 
 %===============================================================
 \begin{frame}[fragile]
-  \frametitle{課題 No.3（1/4）}
-  \emph{1. パスとハードリンク}
-\begin{enumerate}
-\item[(a)] 自分のホームディレクトリのパスを調べる．
-\item[(b)] ハードリンクに関する課題を行うために，
-ディレクトリ\texttt{/tmp}にカレントディレクトリを移動する\footnote{
-PC教室のMacはユーザのホームディレクトリを共有ドライブ上に置いている．
-\texttt{/tmp}はローカルハードディスク上にある．}．
-\item[(c)] \texttt{/tmp}以下に図のディレクトリやファイルを作る．
-\item[(d)] \texttt{ls -l}を用いてファイルの種類やリンク数を確認する．
-\end{enumerate}
-
-\fig{scale=0.7}{Link-crop.pdf}
+  \frametitle{演習4-3}
+  \emph{保護属性に関する演習}
+\begin{itemize}
+\item \texttt{0440\_演習２\_リンクと....演習.pdf} の
+「2.保護属性（rwxrwxrwx）の効果を確認する」をやってみる．
+\end{itemize}
 \end{frame}
 
 %===============================================================
 \begin{frame}[fragile]
-  \frametitle{課題 No.3 （2/4）}
+  \frametitle{課題 No.3}
+  \emph{ファイルシステム}
 \begin{enumerate}
-\item[(e)] 相対パスを用いて\texttt{hello.c}の内容を表示する．\\
-（表示には\texttt{cat}コマンドを用いると良い．）
-\item[(f)] 絶対パスを用いて\texttt{hello.c}の内容を表示する．
-\item[(g)] \texttt{h1.c}を利用した相対パスを用いて
-\texttt{hello.c}の内容を表示する．
-\item[(h)] \texttt{ex1.c}を利用した相対パスを用いて
-\texttt{hello.c}の内容を表示する．
-\item[(i)] カレントディレクトリを\texttt{SysPro}に変更する．
-\item[(j)] \texttt{ex1.c}を利用した相対パスを用いて
-\texttt{hello.c}の内容を表示する．
-\item[(k)] \texttt{hello.c}を利用した相対パスを用いて
-\texttt{hello.c}の内容を表示する．
-\item[(l)] ディレクトリのハードリンクができるか試す．
-\item[(m)] 課題のために作成したファイルやディレクトリを全て削除する．
-\end{enumerate}
-\end{frame}
-
-%===============================================================
-\begin{frame}[fragile]
-  \frametitle{課題 No.3 （3/4）}
-  \emph{2. シンボリックリンク}
-\begin{enumerate}
-\item[(a)] シンボリックリンクを作ってみる．
-\item[(b)] シンボリックリンクを\texttt{ls -l}を用いて確認する．
-\item[(c)] シンボリックリンクを用いてファイルをアクセスできることを確認する．
-\item[(d)] リンク切れのシンボリックリンクを使用するとどうなるか確認する．
-\item[(e)] ディレクトリに対するリンクを作って使用できることを確認する．
-\item[(f)] 他のディレクトリにあるファイルをリンクして使用できることを確認する．
-\item[(g)] シンボリックリンクのループを作る．（a.txt →  b.txt，b.txt →  a.txt）
-\item[(h)] ループしているシンボリックリンクを使用するとどうなるか確認する．
-（\|$ cat a.txt|）
-\end{enumerate}
-\end{frame}
-
-%===============================================================
-\begin{frame}[fragile]
-  \frametitle{課題 No.3 （4/4）}
-  \emph{3. 保護モード}
-\begin{enumerate}
-\item[(a)] テキストファイル（\texttt{hello.c}）と
-実行可能ファイル（\texttt{a.out}）を準備する．
-\item[(b)] \texttt{chmod}で保護モードを変化させてみる．
-\item[(c)] \texttt{ls -l}で変化を確認する．
-\item[(d)] 保護モードを変化させて，ファイルの読出しや実行ができるか確認する．
-\item[(e)] ディレクトリの保護モードは何の意味を持つか考える．
+\item[1.] 演習4-1，4-2，4-3を行う．
+\item[2.] \texttt{0440\_演習２\_リンクと....演習.pdf} の
+「3. 1,2の結果を提出する」に従いGithubに結果を提出する．
 \end{enumerate}
 \end{frame}
 

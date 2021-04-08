@@ -124,8 +124,8 @@ macOSでは色々な権限で300以上のプロセスが実行されているこ
 通常，プロセスは予期しないシグナルを受取ると終了する．
 killコマンドはシグナル（省略可能）とプロセス番号を引数に使用する．
 使用できるシグナルの一部を\tabref{kill}に，
-使用例をリスト\ref{Grapher}に示す\footnote{
-コマンド行から簡単に起動できて，かつ，ウインドを開くアプリ Grapher を例にする．
+使用例をリスト\ref{sleepKill}に示す\footnote{
+コマンド行から簡単に起動できて，しばらく実行し続ける sleep を例にする．
 }．
 
 \begin{mytable}{btp}{\texttt{kill}コマンドのシグナル名と番号（一部）}{kill}
@@ -133,20 +133,21 @@ killコマンドはシグナル（省略可能）とプロセス番号を引数�
 \end{mytable}
 
 \lstinputlisting[numbers=left,caption=killコマンドの使用例,
-  float=btp,label=Grapher]{Lst/kill.txt}
+  float=btp,label=sleepKill]{Lst/kill.txt}
 
 \begin{description}
-\item[1行] Grapher をバックグラウンドで起動する．
-\item[2行] Grapher はジョブ番号1，プロセス番号34339で起動した．
+\item[1行] sleep をバックグラウンドで起動する．
+\item[2行] sleep はジョブ番号1，プロセス番号59882で起動した．
 \item[3行] ps コマンドで確認してみる．
-\item[7行] Grapher にTERMシグナルを送信してみる．（シグナル名は省略）
-\item[9行] Grapher は終了した．
-\item[10行] Grapher を再度バックグラウンドで起動する．
-\item[12行] Grapher にTSTPシグナルを送信してみる．
-\item[13行] Grapher は一時停止した．（GUIで操作しても反応しない）
-\item[14行] Grapher にCONTシグナルを送信してみる．（反応するようになる）
-\item[15行] シグナルを名前ではなく番号で指定してみた．
-\item[17行] Grapher は終了した．
+\item[7行] sleep にTERMシグナルを送信してみる．（シグナル名は省略）
+\item[9行] sleep は終了した．
+\item[10行] sleep を再度バックグラウンドで起動する．
+\item[12行] sleep にTSTPシグナルを送信してみる．
+\item[13行] sleep は一時停止した．
+\item[14行] sleep が存在し続けていることを確認する．
+\item[18行] sleep にCONTシグナルを送信してみる．（動き始めたはず）
+\item[19行] シグナル名を省略したのでTERMシグナルが送られたはず．
+\item[21行] sleep は終了した．
 \end{description}
 
 %==============================================================================
@@ -198,28 +199,29 @@ killコマンドはシグナル（省略可能）とプロセス番号を引数�
 \end{description}
 
 リスト\ref{jobControl}にジョブ制御の使用例を示す．
-\begin{description}
-\item [1行] Grapher をフォアグラウンドで起動する．
-\item [2行] Grapher へTSTPシグナルを送る．(Grapherは停止状態になる）
-\item [4行] Grapher をバックグラウンドで再開する．
-\item [6行] もう一つの Grapher をバックグラウンドで起動する．
-\item [8行] 二つの Grapher ジョブがあることを確認する．
-\item [10行] ジョブ 2 がカレントジョブ
-（ジョブを明示しないときの操作対象）である．
-\item [11行] ジョブ 2 をフォアグラウンドに変更する．
-\item [13行] ジョブ 2 へINTシグナルを送る．(Grapherは終了する）
-\item [14行] Grapher ジョブが一つだけになっていることを確認する．
-\end{description}
 
 \lstinputlisting[numbers=left,caption=ジョブ制御の使用例,
   float=btp,label=jobControl]{Lst/jobControl.txt}
+
+\begin{description}
+\item [1行] sleep をフォアグラウンドで起動する．
+\item [2行] sleep へTSTPシグナルを送る．(sleepは停止状態になる）
+\item [4行] sleep をバックグラウンドで再開する．
+\item [6行] もう一つの sleep をバックグラウンドで起動する．
+\item [8行] 二つの sleep ジョブがあることを確認する．
+\item [10行] ジョブ 2 がカレントジョブ
+（ジョブを明示しないときの操作対象）である．
+\item [11行] ジョブ 2 をフォアグラウンドに変更する．
+\item [13行] ジョブ 2 へINTシグナルを送る．(sleepは終了する）
+\item [14行] sleep ジョブが一つだけになっていることを確認する．
+\end{description}
 
 %==============================================================================
 \section*{課題 No.5}
 \begin{enumerate}
 \item 本文と照らし合わせながらプロセスの
 実行例（リスト\ref{jobControl}まで）を試し，内容をよく理解しなさい．
-一時停止状態のGrapherを操作するとどうなるか等，よく観察すること．
+一時停止状態のsleepを操作するとどうなるか等，よく観察すること．
 
 \item 以下の操作方法を考えて手順を説明しなさい．
 
@@ -227,7 +229,7 @@ killコマンドはシグナル（省略可能）とプロセス番号を引数�
 \item フォアグラウンドで暴走してしまったジョブを強制終了する手順．
 （Ctrl-Cではなく，KILLシグナルを使用すること）
 
-\item 間違ってフォアグラウンドで起動したGrapherを
+\item 間違ってフォアグラウンドで起動したsleepを
 バックグラウンドに変更する手順．
 
 \item バックグラウンドで実行中のジョブを
