@@ -1,17 +1,12 @@
 .SUFFIXES:
 .SUFFIXES: .tex .pdf
 
-PDFS = ex1.pdf ex2.pdf ex3.pdf ex4.pdf ex5.pdf ex6.pdf ex7.pdf ex8.pdf \
-       ex9.pdf exA.pdf exB.pdf
+EXS = ex0 ex1 ex2 ex3 ex4 ex5 ex6 ex7 ex8 ex9 exA exB
 
-%.pdf : %.tex *.sty
-	lualatex $*.tex
-#	lualatex $*.tex
-#	dvipdfmx $*.dvi
-#	open $*.pdf
-
-all : ${PDFS}
+all :
+	$(foreach ex, $(EXS), latexmk -lualatex $(ex).tex; )
 
 clean :
-	rm -f *.log *.aux *.dvi *.out *.toc *.vrb *.snm *.nav *~
+	rm -f *.fls *.fdb_latexmk *.log *.aux *.dvi *.out *.toc \
+              *.vrb *.snm *.nav *~
 

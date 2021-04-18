@@ -1,20 +1,22 @@
+$ echo aaa > a.txt                               <-- 内容が"aaa\n"のファイル作成
 $ ./mycp2                                        <-- コマンド行引数がない場合
-Usage: ./mycp2 <srcfile> <dstfile>
+Usage: ./mycp2 srcfile dstfile
 $ ./mycp2 a.txt                                  <-- コマンド行引数が不足の場合
-Usage: ./mycp2 <srcfile> <dstfile>
+Usage: ./mycp2 srcfile dstfile
 $ ./mycp2 a.txt b.txt c.txt                      <-- コマンド行引数が過剰な場合
-Usage: ./mycp2 <srcfile> <dstfile>
+Usage: ./mycp2 srcfile dstfile
 $ ./mycp2 z.txt a.txt                            <-- コピー元が存在しない場合
 z.txt: No such file or directory
 $ ./mycp2 a.txt /a.txt                           <-- コピー先が書き込み禁止の場合
 /a.txt: Permission denied
-$ echo aaa bbb > a.txt                           <-- a.txt を作って
 $ ./mycp2 a.txt b.txt                            <-- b.txt にコピーしてみる
 $ cat b.txt                                      <-- b.txt の内容を確認
-aaa bbb
-$ echo ccc ddd > c.txt                           <-- c.txt を作って
+aaa
+$ echo ccc > c.txt                               <-- 内容が"ccc\n"のファイル作成
 $ ./mycp2 c.txt b.txt                            <-- b.txt に上書きしてみる
-$ cmp c.txt b.txt                                <-- b.txt の内容を確認
+$ cat b.txt                                      <-- b.txt の内容を再確認
+ccc
+$ cmp c.txt b.txt                                <-- b.txt の内容を再々確認
 $ dd if=/dev/urandom of=srcfile bs=1024 count=10 <-- 10KiBの長いファイルを作る
 10+0 records in
 10+0 records out
