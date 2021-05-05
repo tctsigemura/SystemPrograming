@@ -1,3 +1,4 @@
+$ cc -o mycp2 mycp2.c                            <-- エラーも警告も出ない
 $ echo aaa > a.txt                               <-- 内容が"aaa\n"のファイル作成
 $ ./mycp2                                        <-- コマンド行引数がない場合
 Usage: ./mycp2 srcfile dstfile

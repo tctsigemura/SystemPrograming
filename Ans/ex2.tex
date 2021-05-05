@@ -5,38 +5,76 @@
 \begin{document}
 \onecolumn
 \section*{課題 No.2 の解答例}
-筆者が日頃使用している MacBook Pro 上で計測した結果を下の表にまとめた．
+
+高水準I/Oを使用した場合，
+バッファサイズの異なる低水準I/Oを使用した場合について，
+ファイルをコピーする時間を比較した．
+
+\subsection*{実行条件}
+  \begin{center}
+    \begin{tabular}{l c l}
+      実行したコンピュータ & ： & MacBook Pro M1 2020 \\
+      実行コンピュータのOS & ： & macOS 11.3 (Big Sur) \\
+      ファイルサイズ      & ： & 12MiB(bs=1024, count=12288) \\
+    \end{tabular}  
+  \end{center}  
+
+\subsection*{実行結果}
 実行時間は遅い方から以下の順であった．
-
 \begin{enumerate}
-\item 1バイトのwriteシステムコール
-\item 高水準I/O
-\item 1,024バイトのwriteシステムコール
+\item 1バイトのwriteシステムコール(mycp2\_1)
+  \begin{center}
+    \begin{tabular}{|l | r | r | r | r |} \hline
+      & \multicolumn{1}{|c|}{1回目}
+      & \multicolumn{1}{|c|}{2回目}
+      & \multicolumn{1}{|c|}{3回目}
+      & \multicolumn{1}{|c|}{平均} \\\hline\hline
+      real & 20.37 & 19.77 & 19.55 & 19.90 \\\hline
+      user &  1.61 &  1.61 &  1.63 &  1.62 \\\hline
+      sys  & 18.67 & 18.04 & 17.85 & 18.19 \\\hline
+    \end{tabular}
+  \end{center}
+\item 高水準I/O(mycp)
+  \begin{center}
+    \begin{tabular}{|l | r | r | r | r |} \hline
+      & \multicolumn{1}{|c|}{1回目}
+      & \multicolumn{1}{|c|}{2回目}
+      & \multicolumn{1}{|c|}{3回目}
+      & \multicolumn{1}{|c|}{平均} \\\hline\hline
+      real &  0.44 &  0.44 &  0.44 &  0.44 \\\hline
+      user &  0.42 &  0.42 &  0.42 &  0.42 \\\hline
+      sys  &  0.01 &  0.01 &  0.01 &  0.01 \\\hline
+    \end{tabular}
+  \end{center}
+\item 1,024バイトのwriteシステムコール(mycp2\_1024)
+  \begin{center}
+    \begin{tabular}{|l | r | r | r | r |} \hline
+      & \multicolumn{1}{|c|}{1回目}
+      & \multicolumn{1}{|c|}{2回目}
+      & \multicolumn{1}{|c|}{3回目}
+      & \multicolumn{1}{|c|}{平均} \\\hline\hline
+      real &  0.05 &  0.05 &  0.05 &  0.05 \\\hline
+      user &  0.00 &  0.00 &  0.00 &  0.00 \\\hline
+      sys  &  0.04 &  0.04 &  0.04 &  0.04 \\\hline
+    \end{tabular}
+  \end{center}
 \end{enumerate}
-
-カーネルが費やした時間は高水準I/Oが最も短いことから，
-高水準I/Oは1,024バイトよりも大きいバッファを使用していると考えられる．
-
-\begin{figure}[h]
-  \begin{center}
-  1バイトのwriteシステムコール使用\\
-  \tbl{scale=0.9}{mycp2_1_10M-crop.pdf}
-  \end{center}
-\end{figure}
-
-\begin{figure}[h]
-  \begin{center}
-    高水準I/O使用\\
-    \tbl{scale=0.9}{mycp_10M-crop.pdf}
-  \end{center}
-\end{figure}
-
-\begin{figure}[h]
-  \begin{center}
-    1,024バイトのwriteシステムコール使用\\
-    \tbl{scale=0.9}{mycp2_1024_10M-crop.pdf}
-  \end{center}
-\end{figure}
-
+\subsection*{考察}
+\begin{enumerate}
+  \item mycp2\_1はmycp2\_1024よりシステム時間が約400倍になっている．
+   システムコールの呼び出し回数は約1000倍になっているはずなので，
+   システムコール1回当たりの処理時間は0.4倍程度と考えられる．
+   システムコール1回当たり読み書きするデータの量が1000倍になっても，
+   システムコール1回当たりの処理時間は2.5倍(1/0.4倍)程度で済んでいる．
+  \item mycpはmycp2\_1024と比較してシステム時間が短くなっている．
+   このことから高水準I/Oが用いるバッファは1024バイトより大きく，
+   mycpのシステムコール呼び出し回数は
+   mycp2\_1024より少なくなっていると考えられる。
+  \item mycpはmycp2\_1と比較してユーザ時間が4分の1倍に短くなっている．
+   高水準I/Oの関数(\|getc()|，\|putc()|)は，
+   システムコールを呼び出すための前処理より軽い．（これには驚いた．）
+   オンラインマニュアル(\|man getc|)で調べてみると
+   「\|getc()|はマクロでありインラインに展開される」と書いてある．
+   高速化するための工夫が凝らされている．
+\end{enumerate}
 \end{document}
-
