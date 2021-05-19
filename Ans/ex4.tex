@@ -113,27 +113,27 @@ $ ./myln x y
 link: No such file or directory                     <- 存在しない名前を使うと
 $
 \end{lstlisting}
-%\newpage
+\newpage
 
-\lst{caption=シンボリックリンクの作成(mylns.c)}{mylns.c}
-\begin{lstlisting}[caption=mylnsの実行例（動作テスト！！）]
-$ ./mylns
-使用方法： ./mylns file1 file2
-$ ./mylns b.txt
-使用方法： ./mylns file1 file2
-$ ./mylns b.txt a.txt
-$ echo abc > b.txt
-$ ls -l
-total 10
-lrwxr-xr-x  1 sigemura  staff   5 Apr 28 17:03 a.txt -> b.txt
--rw-r--r--  1 sigemura  staff   4 Apr 28 17:05 b.txt
-$ cat a.txt
-abc
-$ ./mylns b.txt a.txt                       <- a.txt はすでに存在
-a.txt: File exists
-$ ./mylns zzz.txt c.txt                     <- リンク先は存在しなくてもよい
-$ 
-\end{lstlisting}
+%\lst{caption=シンボリックリンクの作成(mylns.c)}{mylns.c}
+% \begin{lstlisting}[caption=mylnsの実行例（動作テスト！！）]
+% $ ./mylns
+% 使用方法： ./mylns file1 file2
+% $ ./mylns b.txt
+% 使用方法： ./mylns file1 file2
+% $ ./mylns b.txt a.txt
+% $ echo abc > b.txt
+% $ ls -l
+% total 10
+% lrwxr-xr-x  1 sigemura  staff   5 Apr 28 17:03 a.txt -> b.txt
+% -rw-r--r--  1 sigemura  staff   4 Apr 28 17:05 b.txt
+% $ cat a.txt
+% abc
+% $ ./mylns b.txt a.txt                       <- a.txt はすでに存在
+% a.txt: File exists
+% $ ./mylns zzz.txt c.txt                     <- リンク先は存在しなくてもよい
+% $ 
+% \end{lstlisting}
 %\newpage
 
 \lst{caption=ファイルの移動（名前変更）(mymv.c)}{mymv.c}
@@ -153,31 +153,31 @@ $ ./mymv x.txt /tmp/x.txt           <-- ハードディスクをまたいだ移�
 ./mymv: Cross-device link
 $ 
 \end{lstlisting}
-%\newpage
+\newpage
 
-\lst{caption=ファイルのモード変更(mychmod.c)}{mychmod.c}
-\begin{lstlisting}[caption=mychmodの実行例（動作テスト！！）]
-$ ls -l a b
--rw-r--r--  1 sigemura  kan  0 May  6 21:58 a
--rw-r--r--  1 sigemura  kan  0 May  6 21:58 b
-$ ./mychmod
-使用方法 : ./mychmod <8進数> <file> [<file>...]
-$ ./mychmod 755 a b
-$ ls -l a b
--rwxr-xr-x  1 sigemura  kan  0 May  6 21:58 a
--rwxr-xr-x  1 sigemura  kan  0 May  6 21:58 b
-$ ./mychmod 644 b
-$ ls -l a b
--rwxr-xr-x  1 sigemura  kan  0 May  6 21:58 a
--rw-r--r--  1 sigemura  kan  0 May  6 21:58 b
-$ ./mychmod 644 c
-c: No such file or directory
-$ ./mychmod 789 a
-'789' : 8進数の形式が不正
-$ ./mychmod 12345 a
-'12345' : 8進数の値が不正
-$
-\end{lstlisting}
+% \lst{caption=ファイルのモード変更(mychmod.c)}{mychmod.c}
+% \begin{lstlisting}[caption=mychmodの実行例（動作テスト！！）]
+% $ ls -l a b
+% -rw-r--r--  1 sigemura  kan  0 May  6 21:58 a
+% -rw-r--r--  1 sigemura  kan  0 May  6 21:58 b
+% $ ./mychmod
+% 使用方法 : ./mychmod <8進数> <file> [<file>...]
+% $ ./mychmod 755 a b
+% $ ls -l a b
+% -rwxr-xr-x  1 sigemura  kan  0 May  6 21:58 a
+% -rwxr-xr-x  1 sigemura  kan  0 May  6 21:58 b
+% $ ./mychmod 644 b
+% $ ls -l a b
+% -rwxr-xr-x  1 sigemura  kan  0 May  6 21:58 a
+% -rw-r--r--  1 sigemura  kan  0 May  6 21:58 b
+% $ ./mychmod 644 c
+% c: No such file or directory
+% $ ./mychmod 789 a
+% '789' : 8進数の形式が不正
+% $ ./mychmod 12345 a
+% '12345' : 8進数の値が不正
+% $
+% \end{lstlisting}
 
 \item 本物のUNIXコマンドとの相違
 
@@ -259,18 +259,18 @@ link-unlinkの手法は使用できない。
 ファイルの移動を同じ手法（システムコール）で行えるべきである。
 \end{enumerate}
 
-\item stat システムコール，readdir 関数について調べる．
-\begin{enumerate}
-\item stat システムコール\\
-ファイルの属性情報（メタデータ）を読み出すシステムコールである．
-\item readdir 関数\\
-opendir関数で開いてあるディレクトリファイルから，
-ディレクトリエントリを読み出す関数である．
-\end{enumerate}
+% \item stat システムコール，readdir 関数について調べる．
+% \begin{enumerate}
+% \item stat システムコール\\
+% ファイルの属性情報（メタデータ）を読み出すシステムコールである．
+% \item readdir 関数\\
+% opendir関数で開いてあるディレクトリファイルから，
+% ディレクトリエントリを読み出す関数である．
+% \end{enumerate}
 
-ls コマンドでは，これらを組み合わせて使っている筈だ．
-（ファイルの一覧を知るためにreaddir関数，
-\texttt{ls -l}で属性情報を表示するためにstatシステムコールが必要だ．）
+% ls コマンドでは，これらを組み合わせて使っている筈だ．
+% （ファイルの一覧を知るためにreaddir関数，
+% \texttt{ls -l}で属性情報を表示するためにstatシステムコールが必要だ．）
 \end{enumerate}
 \end{document}
 
