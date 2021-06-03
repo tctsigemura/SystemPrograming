@@ -85,10 +85,13 @@
   \item[書式] \texttt{sig}シグナルの種類，
     \texttt{func}は新しいハンドリング．
 
-\begin{verbatim}
+{\small\begin{verbatim}
 #include <signal.h>
+// macOSの場合
 sig_t signal(int sig, sig_t func);
-\end{verbatim}
+// Ubuntu Linuxの場合
+__sighandler_t signal(int sig, __sighandler_t func);
+\end{verbatim}}
 
   \item[解説] \texttt{sig}はハンドリングを変更するシグナル\\
     \texttt{SIG\_IGN}はシグナルを\emph{無視}するようにする．\\

@@ -104,15 +104,18 @@ JOB制御やアプリケーションの強制終了，
 \item[書式] 次の通りである．
 \begin{lstlisting}[numbers=none]
   #include <signal.h>
-  sig_t signal(int sig, sig_t func);
+  sig_t signal(int sig, sig_t func);                  // macOSの場合
+  __sighandler_t signal(int sig, __sighander_t func); // Ubuntu Linuxの場合
 \end{lstlisting}
 
 \item[解説]
   signalシステムコールは，
   自プロセスの指定されたシグナルのハンドリングを変更する．
-  \|sig_t|型は関数ポインタ型\footnote{
-    関数のアドレスを表す型である．
-  }であり，\texttt{signal.h}をインクルードすることで自動的に宣言される．
+  \|sig_t|（\|__sighandler_t|）型は
+%  関数ポインタ型\footnote{
+%    関数のアドレスを表す型である．
+%  }であり
+  \texttt{signal.h}をインクルードすることで自動的に宣言される．
 
 \item[引数]
   第1引数（\texttt{sig}）はハンドリングを変更するシグナルの種類である．
