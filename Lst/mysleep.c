@@ -3,8 +3,7 @@
 #include <unistd.h>
 
 // バグ：alarm を使用中に mysleep を使用するとタイマーが解除される
-static void alHandler(int n) { }      // 必要以上に見えないように static にする
-
+static void alHandler(int n) { }         // 必要以上に見えないように static
 unsigned int mysleep(unsigned int seconds) {
   if (seconds==0) return 0;              // alarm(0)は予約解除(誤動作防止)
   sig_t org = signal(SIGALRM, alHandler);// 以前のハンドラを保存
@@ -32,10 +31,11 @@ int main() {
 }
 
 /* 実行例
-$ cc -o mysleep mysleep.c           <--- エラー・警告は表示されなかった
+$  make
+cc -Wall -std=c99 -o mysleep mysleep.c     <--- エラー・警告はなかった
 $ ./mysleep
 0秒スリープ開始
-スリープ終了（残り時間0秒）         <--- ０秒スリープ動作確認OK
+スリープ終了（残り時間0秒）                  <--- ０秒スリープ動作確認OK
 1秒スリープ開始
 スリープ終了（残り時間0秒）
 2秒スリープ開始
@@ -45,5 +45,5 @@ $ ./mysleep
 これから10秒スリープします．
 その間に^Cを入力すると残り時間を表示して終了します．
 ^C
-残り時間7秒                        <--- シグナルで終了の場合OK
+残り時間7秒                               <--- シグナルで終了の場合OK
 */
