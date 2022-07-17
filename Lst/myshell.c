@@ -19,56 +19,28 @@ int parse(char *p, char *args[]) {              // コマンド行を解析す�
   return *p=='\0';                              // 解析完了なら 1 を返す
 }
 
-void cdCom(char *args[]) {                      // cd コマンドを実行する
-  if (args[1]==NULL || args[2]!=NULL) {         //   引数を確認して
-    fprintf(stderr,"Usage: cd DIR\n");          //     過不足ありなら使い方表示
-  } else if (chdir(args[1])<0) {                //   親プロセスが chdir する
-    perror(args[1]);                            //     chdirに失敗したらperror
-  }
-}
-
-void setenvCom(char *args[]) {                  // setenv コマンドを実行する
-  if (args[1]==NULL || args[2]==NULL || args[3]!=NULL) {   // 引数を確認して
-    fprintf(stderr,"Usage: setenv NAME VAL\n"); //   過不足ありなら使い方表示
-  } else if (setenv(args[1], args[2], 1)<0) {   //   親プロセスがsetenvする
-    perror(args[1]);                            //     setenvに失敗したらperror
-  }
-}
-
-void unsetenvCom(char *args[]) {                // unsetenv コマンドを実行する
-  if (args[1]==NULL || args[2]!=NULL) {         //   引数を確認して
-    fprintf(stderr,"Usage: unsetenv NAME\n");   //     過不足ありなら使い方表示
-  } else if (unsetenv(args[1])<0) {             //   親プロセスがunsetenvする
-    perror(args[1]);                            //     unsetenvに失敗ならperror
-  }
-}
-
-void externalCom(char *args[]) {                // 外部コマンドを実行する
-  int pid, status;
-  if ((pid = fork()) < 0) {                     //   新しいプロセスを作る
-    perror("fork");
-    exit(1);
-  }
-  if (pid==0) {                                 //   子プロセスなら
-    execvp(args[0], args);                      //     コマンドを実行
-    perror(args[0]);
-    exit(1);
-  } else {                                      //   親プロセスなら
-    while (wait(&status) != pid)                //     子の終了を待つ
-      ;
-  }
-}
- 
 void execute(char *args[]) {                    // コマンドを実行する
- if (strcmp(args[0], "cd")==0) {                // cd (内部コマンド)
-   cdCom(args);
- } else if (strcmp(args[0], "setenv")==0) {     // setenv (内部コマンド)
-   setenvCom(args);
- } else if (strcmp(args[0], "unsetenv")==0) {   // unsetenv (内部コマンド)
-   unsetenvCom(args);
- } else {                                       // 外部コマンドなら
-   externalCom(args);
- }
+  if (strcmp(args[0], "cd")==0) {               // cd (内部コマンド)
+    if (args[1]==NULL || args[2]!=NULL) {       //   引数を確認して
+      fprintf(stderr,"Usage: cd DIR\n");        //     過不足ありなら使い方表示
+    } else if (chdir(args[1])<0) {              //   親プロセスが chdir する
+      perror(args[1]);                          //     chdirに失敗したらperror
+    }
+  } else {                                      // 外部コマンドなら
+    int pid, status;
+    if ((pid = fork()) < 0) {                   //   新しいプロセスを作る
+      perror("fork");
+      exit(1);
+    }
+    if (pid==0) {                               //   子プロセスなら
+      execvp(args[0], args);                    //     コマンドを実行
+      perror(args[0]);
+      exit(1);
+    } else {                                    //   親プロセスなら
+      while (wait(&status) != pid)              //     子の終了を待つ
+        ;
+    }
+  }
 }
 
 int main() {

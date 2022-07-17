@@ -66,7 +66,7 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
 
 \lstinputlisting[label=myshellMain
   ,caption=メインループ（\texttt{main()}）
-  ,float=btp, numbers=left]{Lst/myshellMain.c}
+  ,float=btp, numbers=left, firstline=46, lastline=66]{Lst/myshell.c}
 
 \begin{enumerate}
 \item 6行で
@@ -101,7 +101,7 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
 
 \lstinputlisting[label=myshellParse
   ,caption=コマンド行の解析ルーチン（\texttt{parse()}）
-  ,float=btp, numbers=left]{Lst/myshellParse.c}
+  ,float=btp, numbers=left, firstline=10, lastline=20]{Lst/myshell.c}
 
 \begin{enumerate}
 \item コマンド行に入力された文字列と，
@@ -157,7 +157,7 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
 
 \lstinputlisting[label=myshellExecute
   ,caption=コマンドの実行ルーチン（\texttt{execute()}）
-  ,float=btp, numbers=left]{Lst/myshellExecute.c}
+  ,float=btp, numbers=left, firstline=22, lastline=44]{Lst/myshell.c}
 
 2行ではコマンドの名前を調べている．
 cd コマンドは内部コマンドなので，
