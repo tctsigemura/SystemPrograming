@@ -1,5 +1,5 @@
 /*
- * printenv コマンドもどき(myprintenv.c)
+ *  myprintenv.c : printenv コマンドのクローン
  */
 
 #include <stdio.h>
@@ -7,10 +7,11 @@
 
 extern char **environ;                            // どこかで定義してあるenviron
 
-int main(int argc, char *argv[], char *envp[]) {
+int main(int argc, char *argv[]) {
   if (argc==1) {                                  // 引数がなかった場合
-    for (int i=0; environ[i]!=NULL; i++)          // 全ての環境変数を表示
+    for (int i=0; environ[i]!=NULL; i++) {        // 全ての環境変数を表示
       printf("%s\n", environ[i]);
+    }
   } else {                                        // 引数があった場合
     char *env = getenv(argv[1]);                  // 環境変数を探す
     if (env==NULL) return 1;                      // 見つからない(エラー終了)
@@ -20,23 +21,28 @@ int main(int argc, char *argv[], char *envp[]) {
 }
 
 /* 実行例
-$ ./myprintenv USER
+$ make
+cc -Wall -std=c99 -o myprintenv myprintenv.c   <--- エラーも警告もなし
+$ ./myprintenv USER                            <--- 正常動作のテスト
 sigemura
-$ ./myprintenv HOME
+$ ./myprintenv HOME                            <--- 正常動作のテスト
 /Users/sigemura
-$ ./myprintenv USER HOME
+$ echo $?                                      <--- 終了ステータスを確認
+0                                              <---  正常終了
+$ ./myprintenv NEVER                           <--- 存在しない変数の場合
+$ echo $?                                      <--- 終了ステータスを確認
+1                                              <---  エラー終了
+$ ./myprintenv USER HOME                       <--- 複数指定しても最初だけ
 sigemura
-$ ./myprintenv NEVER
-$ ./myprintenv
+$ ./myprintenv NEVER HOME                      <--- 複数指定して最初が存在しない
+$ ./myprintenv                                 <--- 引数なしの場合
 TERM_PROGRAM=iTerm.app
 TERM=xterm-256color
 SHELL=/bin/bash
 CLICOLOR=1
 USER=sigemura
 LANG=ja_JP.UTF-8
-HOME=/Users/sigemura
-LOGNAME=sigemura
-LC_TIME=C
 ... 省略 ...
-$
+$ echo $?                                      <--- 終了ステータスを確認
+0                                              <---  正常終了
 */
