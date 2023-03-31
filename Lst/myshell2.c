@@ -1,7 +1,7 @@
 #include <stdio.h>                              // perror() のため
 #include <stdlib.h>                             // eixt() のため
 #include <string.h>                             // strcmp(), strchr() のため
-#include <unistd.h>                             // fork(),exec(),close()のため
+#include <unistd.h>                             // fork(),exec()のため
 #include <sys/wait.h>                           // wait() のため
 #include <ctype.h>                              // ispace() のため
 #define MAXLINE 1000                            // コマンド行の最大文字数
