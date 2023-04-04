@@ -1,5 +1,5 @@
-$ printenv MYNAME
-yosinaga
-$ unset MYNAME
-$ printenv MYNAME
-$                             # MYNAMEは存在しない
+% printenv MYNAME
+tetsuji
+% unset MYNAME
+% printenv MYNAME
+%                             # MYNAMEは存在しない

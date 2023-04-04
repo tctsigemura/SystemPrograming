@@ -1,7 +1,7 @@
-$ export i=1                 # 環境変数 i を作る
-$ printenv i
+% export i=1                 # 環境変数 i を作る
+% printenv i
 1
-$ i=`expr $i + 1`            # クォートはバッククォート
-$ echo $i
+% i=`expr $i + 1`            # クォートはバッククォート
+% echo $i
 2
-$
+%

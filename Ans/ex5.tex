@@ -6,46 +6,112 @@
 \onecolumn
 
 \section*{課題 No.5 の解答例}
-\begin{enumerate}
-\item[(a)] フォアグラウンドで暴走してしまったジョブを強制終了する手順．
-（Ctrl-CではなくKILLシグナルを使用すること）
-
+\begin{itemize}
+\item[課題5-1]
+  プロセス数を調べる．
+  \begin{enumerate}
+  \item[a.] システム内の全プロセス数を求めなさい．
 \begin{lstlisting}
-$ ./a.out
-^C^C^Z                               <-- Ctrl-Cで止まらない！！
-[1]+  Stopped            a.out       <-- Ctrl-Zで一時停止させた．
-$ ps                                 <-- ps で確認
-  PID TTY           TIME CMD
-13227 ttys005    0:00.06 -bash
-13243 ttys005    0:07.00 a.out       <-- このプロセスだ！
-$ kill -KILL 13243                   <-- KILLシグナルを送る
-$                                    <-- Enterを押すまで結果が分からない
-[1]+  Killed: 9          a.out       <-- 止まっていた
-$
+psオプション
+ a:他人のプロセスも表示
+ x:端末に属さないプロセスも表示
+$ ps ax | wc
+     536    3228   75717
+psコマンドの出力には1行のヘッダが付くので 536-1=535プロセス
 \end{lstlisting}
-
-\item[(b)] 間違ってフォアグラウンドで起動した Grapher を
-バックグラウンドに変更する手順．
-
+  \item[b.] システム内の全自プロセス数を求めなさい．
 \begin{lstlisting}
-$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
-^Z                                          <-- 一時停止させる
-[1]+  Stopped  /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
-$ bg                                        <-- バックグラウンドに切替える
-[1]+ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &
-$
+psが全自分プロセスを表示する
+$ ps x | wc
+     317    2018   55223
+psコマンドの出力には1行のヘッダが付くので 317-1=316プロセス
 \end{lstlisting}
-
-\item[(c)] バックグラウンドで実行中のジョブを
-フォアグラウンドに変更してCtrl-Cで終了する手順．
-
 \begin{lstlisting}
-$ /Applications/Utilities/Grapher.app/Contents/MacOS/Grapher &    <-- 起動
-[1] 20559
-$ fg                                            <-- フォアグラウンドに変更
-/Applications/Utilities/Grapher.app/Contents/MacOS/Grapher
-^C                                                       <-- Cntrl-Cで終了
-$
+psはロングフォーマットでシステムの全プロセスを出力し，
+例えばsigemuraで始まる行だけを選びカウントする．
+$ ps aux | grep ^sigemura | wc
+     314    3883   71726
+grepプロセス分多いはずなのに逆に２少ない．
+ps x ではrootのloginプロセスが３つ含まれているたが今回は含まれない．
 \end{lstlisting}
-\end{enumerate}
+  \end{enumerate}
+
+\item[課題5-2]
+二つのターミナルを用いてタイマープログラムプロセスを観察する．
+  \begin{enumerate}
+  \item タイマープログラムのPIDとSTATの確認
+\lstset{basicstyle=\footnotesize\ttfamily}
+\begin{lstlisting}
+% ps u
+USER       PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+sigemura 17419   0.0  0.0 407972224   1296 s001  S+   11:04AM   0:00.01 ./timer
+sigemura 17367   0.0  0.0 408300576   3840 s001  S    11:02AM   0:00.09 -zsh
+sigemura 17026   0.0  0.0 408169504   3616 s000  S    10:28AM   0:00.07 -zsh
+\end{lstlisting}
+\|timer|のPIDは17419，STATは\|S+|（短時間のスリープ）
+
+  \item タイマープログラムを一時停止させる．
+\lstset{basicstyle=\small\ttfamily}
+\begin{lstlisting}
+% kill -TSTP 17419
+\end{lstlisting}
+もう一方のターミナルの時計表示が止まった．
+
+  \item タイマープログラムのSTATを再度確認
+\lstset{basicstyle=\footnotesize\ttfamily}
+\begin{lstlisting}
+% ps u
+USER       PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+sigemura 17026   0.3  0.0 408169504   3376 s000  S    10:28AM   0:00.11 -zsh
+sigemura 17419   0.0  0.0 407972224    816 s001  T    11:04AM   0:00.10 ./timer
+sigemura 17367   0.0  0.0 408300576   3376 s001  S+   11:02AM   0:00.09 -zsh
+\end{lstlisting}
+STATが\|T|（一時停止状態）に変化した．
+
+  \item タイマープログラムを再開させる．
+\lstset{basicstyle=\small\ttfamily}
+\begin{lstlisting}
+% kill -CONT 17419
+\end{lstlisting}
+もう一方のターミナルの時計表示が再開された．
+
+  \item タイマープログラムを終了させる．
+\begin{lstlisting}
+% kill -INT 17419
+\end{lstlisting}
+「課題の準備」でタイマープログラムは\|^C|で画面を消して終了していた．
+\|^C|と同じシグナルを送ると同じ終わり方をする．
+
+  \end{enumerate}
+
+\item[課題5-3] 以下を一つのターミナルで行う．
+  \begin{enumerate}
+  \item タイマープログラムを（起動した後，）一時停止する．
+\begin{lstlisting}
+% ./timer
+．．．時計の表示がされる．．．
+^Z
+zsh: suspended  ./timer
+% 
+\end{lstlisting}
+\|^Z|を入力すると一時停止しプロンプトが表示される．
+
+  \item 一時停止したタイマープログラムを再開する．
+\begin{lstlisting}
+% fg
+．．．時計の表示が再開される．．．
+\end{lstlisting}
+\|fg|と入力するとプログラムがフォアグラウンドで実行再開する．
+
+  \item タイマープログラムを終了させる．
+\begin{lstlisting}
+．．．時計の表示がされている．．．
+^C
+．．．画面がクリアされる．．．
+%
+\end{lstlisting}
+\|^C|を入力するとプログラムが終了しプロンプトが表示される．
+
+  \end{enumerate}
+\end{itemize}
 \end{document}

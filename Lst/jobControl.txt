@@ -1,16 +1,16 @@
-$ sleep 2000                                 <-- フォアグラウンドで起動
+% sleep 2000                                 <-- フォアグラウンドで起動
 ^Z
-[1]+  Stopped                 sleep 2000     <-- 一時停止した
-$ bg                                         <-- バックグラウンドで再開
-[1]+ sleep 2000 & 
-$ sleep 1000 &                               <-- 新しくバックグラウンドで起動
-[2] 59961
-$ jobs                                       <-- 実行中のジョブを確認
-[1]-  Running                 sleep 2000 &
-[2]+  Running                 sleep 1000 &
-$ fg 1                                       <-- 1番をフォアグラウンドに変更
-sleep 2000                                       (zshの人は「fg %1」と入力)
+zsh: suspended  sleep 2000                   <-- 一時停止した
+% bg                                         <-- バックグラウンドで再開
+[1]  + continued  sleep 2000
+% sleep 1000 &                               <-- 新しくバックグラウンドで起動
+[2] 80228
+% jobs                                       <-- 実行中のジョブを確認
+[1]  - running    sleep 2000
+[2]  + running    sleep 1000
+% fg %1                                      <-- 1番をフォアグラウンドに変更
+[1]  - running    sleep 2000                 <-- フォアグラウンドに変更された
 ^C                                           <-- Ctrl-C で終了
-$ jobs
-[2]+  Running                 sleep 1000 &   <-- 2番だけになった
+% jobs
+[2]  + running    sleep 1000                 <-- 2番だけになった
 

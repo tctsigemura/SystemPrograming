@@ -211,9 +211,9 @@ s  & s  & t & r & w & x & r & w & x & r & w & x \\\hline
 
 \begin{quote}
 \begin{lstlisting}[numbers=none]
-$ ls -l a.txt
+% ls -l a.txt
 -rw-r--r--  1 sigemura  staff  0 Apr 11 05:53 a.txt
-$
+%
 \end{lstlisting}
 \end{quote}
 
@@ -429,6 +429,8 @@ close(fd);
 \end{description}
 \end{frame}
 
+\end{document}
+
 %===============================================================
 \begin{frame}[fragile]
 \frametitle{課題 No.1}
@@ -442,13 +444,13 @@ close(fd);
 \end{itemize}
 
 \begin{lstlisting}[numbers=none]
-$ dd if=/dev/urandom of=srcfile bs=1024 count=10 # ランダムな内容の
+% dd if=/dev/urandom of=srcfile bs=1024 count=10 # ランダムな内容の
 10+0 records in                                  #   10KiBのファイルを作成する
 10+0 records out
 10240 bytes transferred in 0.001528 secs (6701462 bytes/sec)
-$ ./mycp srcfile destfile                        # mycp プログラムを実行する
-$ cmp srcfile destfile                           # コピー元とコピー先ファイルを比較する
-$                                                # 内容が同じなら何も表示されない
+% ./mycp srcfile destfile                        # mycp プログラムを実行する
+% cmp srcfile destfile                           # コピー元とコピー先ファイルを比較する
+%                                                # 内容が同じなら何も表示されない
 \end{lstlisting}
 \end{frame}
 

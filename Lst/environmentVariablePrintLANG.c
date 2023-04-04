@@ -10,6 +10,6 @@ int main(int argc, char* argv[]) {
   return 0;                           // 正常終了
 }
 /* 実行例
-$ ./a.out
+% ./a.out
 LANG=ja_JP.UTF-8
  */

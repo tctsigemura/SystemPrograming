@@ -1,4 +1,4 @@
-\chapter{環境変数}
+\chapter{環境変数}\label{environment}
 この章では，環境変数について学ぶ．
 環境変数はシェルが管理する変数である．
 変数とはいえC言語の変数とは全く別の仕組みである．
@@ -40,18 +40,20 @@ ls コマンド(ファイルの最終変更時刻表示)等がこれらの環境
 \begin{enumerate}
 \item システム管理者 \\
   システム管理者はユーザがログインした時の初期状態を決める．
-  UNIXやmacOSでは，\|/etc/profile|ファイル等に書かれたスクリプトが
-  全ユーザのシェル起動時に実行される．
+  macOSでは，\|/etc/zprofile|ファイル等\footnote{
+    Linux や macOS Mojave 以前では\texttt{/etc/profile}}に
+  書かれたスクリプトが全ユーザのシェル起動時に実行される．
   システム管理者は全ユーザに共通のシェルの初期化処理をここに書いておく．
   このスクリプトで全ユーザに共通の環境変数の初期化ができる．
 \item ユーザの設定ファイル \\
-  ユーザは自分のホームディレクトリの\|.bash_profile|ファイルに
+  macOSではホームディレクトリの\|.zprofile|ファイル\footnote{
+    Linux や macOS Mojave 以前では\texttt{.bash\_profile}}に
   自分専用の初期化処理を書くことができる．
-  ここに，\ref{environmentVariableOperation}で説明するコマンドを
-  用いてスクリプトを書いておく．
-  以下に\|.bash_profile|ファイルの例を示す\footnote{
+  以下に\|.zprofile|ファイルの例を示す\footnote{
     代入（\texttt{=}）の左右に空白を書いてはならない．
     以降の書式や実行例でも同様である．}．
+  これは，\|PATH|環境変数の値を変更した後，
+  \|LC_TIME|，\|CLICOLOR|環境変数を新たに作成する例である．
   \lstinputlisting[numbers=none]{Lst/dotBashRc.txt}
 \item ユーザによるコマンド操作 \\
   シェルのコマンド操作で環境変数を操作することができる．
@@ -104,7 +106,7 @@ UNIXの標準シェル(sh)での操作方法を説明する．
 \end{description}
 
 \subsection{新規作成(その２）}
-macOSやLinuxで使用されるシェル(bash)では，
+macOSやLinuxで使用されるシェル(zshやbash)では，
 次のように１行の操作で環境変数を作ることができる．
 
 \begin{description}
@@ -235,11 +237,11 @@ env コマンドを用いて，
   エンコーディングは，使用する文字符号化方式を示す．
   エンコーディングがターミナルエミュレータの
   テキストエンコーディングと一致していないと文字化けを起こす
-  （macOSではUTF-8方式が使用される．）．
+  （macOSやLinuxではUTF-8方式が使用される．）．
 \end{itemize}
 
 使用可能なロケールの一覧は\|locale -a|コマンドで表示できる．
-通常，macOSで日本語を使用する場合のロケール名は，
+通常，macOSやLinuxで日本語を使用する場合のロケール名は，
 言語コード=\texttt{ja}，国名コード=\texttt{JP}，エンコーディング=\texttt{UTF-8}を
 組み合わせて次のようになる．
 

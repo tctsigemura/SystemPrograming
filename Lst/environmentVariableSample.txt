@@ -1,4 +1,4 @@
-SHELL=/bin/bash                 # 使用中のシェル
+SHELL=/bin/zsh                  # 使用中のシェル
 TERM=xterm-256color             # 使用中のターミナルエミュレータ
 USER=sigemura                   # 現在のユーザ
 PATH=/usr/bin:/bin:/usr...      # シェルがコマンドを探すディレクトリ一覧

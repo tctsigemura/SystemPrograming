@@ -1,6 +1,8 @@
-$ ps
+% ps
   PID TTY           TIME CMD
- 2955 ttys000    0:00.02 -bash
- 2964 ttys001    0:00.01 -bash
- 2975 ttys001    0:00.34 emacs hello.c
-$
+27828 ttys000    0:00.51 -zsh
+46471 ttys000    0:00.62 vi chap6s.tex
+38060 ttys001    0:00.10 -zsh
+% tty
+/dev/ttys001
+%

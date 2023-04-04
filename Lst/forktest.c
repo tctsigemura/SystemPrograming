@@ -16,7 +16,7 @@ int main() {
   return 0;
 }
 /*  実行例
-$ ./forktest 
+% ./forktest 
 親 pid=8079 x=20              // 親プロセスの出力
 子 pid=0 x=10                 // 子プロセスの出力（xの値に注目)
 */

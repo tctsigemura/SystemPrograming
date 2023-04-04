@@ -22,6 +22,8 @@ UNIX，Linux，macOS，WSL（Windows Subsystem for Linux）等で使用される
 実際にUNIX系OSの多くでは，
 システム起動時に自動的にサービスを立ち上げる等の処理に，
 シェルスクリプトが多用されている．
+\ref{environment}章で紹介した\|/etc/zprofile|や\|.zprofile|も
+シェルスクリプトの一種である．
 
 シェルはユーザプログラムの一種であり，
 ユーザプロセスとして実行される．
@@ -29,10 +31,10 @@ macOSでは\|sh|，\|bash|，\|ksh|，\|zsh|，\|csh|，\|tcsh|等，
 多種類のUNIXのシェルが予めインストールされており利用可能である．
 macOSの場合，標準のログインシェル\footnote{
 ターミナルを開いたとき最初に使用されるシェルのこと．
-}は\|bash|になっているが，好みで変更する\footnote{
+}は\|zsh|になっているが，好みで変更する\footnote{
 chshコマンドで変更する．}ことも可能である．
-これらのUNIXシェルはどれも高機能なものであり，
-かなり大きなプログラムである．
+% これらのUNIXシェルはどれも高機能なものであり，
+% かなり大きなプログラムである．
 UNIXシェルは最低でも次の機能を持っている．
 
 \begin{enumerate}
@@ -66,7 +68,7 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
 
 \lstinputlisting[label=myshellMain
   ,caption=メインループ（\texttt{main()}）
-  ,float=btp, numbers=left]{Lst/myshellMain.c}
+  ,float=btp, numbers=left, firstline=46, lastline=66]{Lst/myshell.c}
 
 \begin{enumerate}
 \item 6行で
@@ -101,7 +103,7 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
 
 \lstinputlisting[label=myshellParse
   ,caption=コマンド行の解析ルーチン（\texttt{parse()}）
-  ,float=btp, numbers=left]{Lst/myshellParse.c}
+  ,float=btp, numbers=left, firstline=10, lastline=20]{Lst/myshell.c}
 
 \begin{enumerate}
 \item コマンド行に入力された文字列と，
@@ -111,20 +113,20 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
     \texttt{isspace()}関数は空白文字を判定するC言語の標準ライブラリ関数である．
     スペース，タブ，改行などを空白と判定する．
   }を用いて文字列に先行する空白を読み飛ばす（ポインタ\|p|を進める）．
-  その際，5行で空白を文字列の終端記号である\|'\0'|に置き換えておく．
-\item 6行では，解析処理の完了を判断する．
+  その際，空白を文字列の終端記号である\|'\0'|に置き換えておく．
+\item 5行では，解析処理の完了を判断する．
   空白を読み飛ばした後で最初に見つかった文字が\|'\0'|なら，
   コマンド行の最後まで達しているので\|for(;;)|ループを脱出し解析を終了する．
   または，\|args|配列のサイズを超えそうになっていた場合も，
   文字列が多すぎてこれ以上処理できないのでループを終了する．
 % この時は12行でエラーを意味する\|0|（false）を返す．
-\item 処理が7行に進むのは，
+\item 処理が6行に進むのは，
   新しく次の文字列が見つかった場合である．
   新しい文字列の開始位置（ポインタ）を\|args|配列に記録する．
-\item 8行では，\|isspace()|関数を用いて文字列を終端する空白を探す．
+\item 7行では，\|isspace()|関数を用いて文字列を終端する空白を探す．
   終端が見つかったら\|for(;;)|ループの先頭に戻り，
-  4，5行で空白を\|'\0'|に書換えC言語の文字列として完成する．
-\item 11，12行では，
+  4行で空白を\|'\0'|に書換えC言語の文字列として完成する．
+\item 9，10行では，
   文字列配列に配列の終端を表す\|NULL|を書込み\|parse()|関数を終了する．
   その際，コマンド行の最後まで解析が終わっていれば\|1|（true）を，
   そうでなければ\|0|（false）を返す．
@@ -140,10 +142,10 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
 を解析した後のデータ構造である．
 渡された文字列の空白を\|'\0'|で上書きし
 \|"ls"|，\|"-l"|，\|"/"|の3つの文字列が作られている\footnote{
-  リスト\ref{myshellParse}の5行で\texttt{'{\bs}0'}に書換えている．}．
+  リスト\ref{myshellParse}の4行で\texttt{'{\bs}0'}に書換えている．}．
 文字列配列の終端は\|NULL|で表現する．
 \|args|配列は各文字列の先頭を指すポインタを格納する\footnote{
-  リスト\ref{myshellParse}の7行でポインタを\texttt{args}配列に格納している．
+  リスト\ref{myshellParse}の6行でポインタを\texttt{args}配列に格納している．
 }ことで文字列配列を表現する．
 文字列の最後の \|'\n'| は \|'\0'| に書き換わっている\footnote{
   \texttt{'{\bs}n'}は\texttt{isspace()}関数により空白と判断される．
@@ -157,17 +159,17 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
 
 \lstinputlisting[label=myshellExecute
   ,caption=コマンドの実行ルーチン（\texttt{execute()}）
-  ,float=btp, numbers=left]{Lst/myshellExecute.c}
+  ,float=btp, numbers=left, firstline=22, lastline=44]{Lst/myshell.c}
 
 2行ではコマンドの名前を調べている．
 cd コマンドは内部コマンドなので，
 5行で自ら\|chdir()|システムコールを実行している\footnote{
   内部コマンドを追加するときは，cd コマンドと同様に，ここに追加する．}．
-7行以下は外部コマンドの処理である．
-9行で子プロセスを作り，14行で子プロセスがコマンドを実行する．
-親プロセスは18行で子プロセスの終了を待つ．
+8行以下は外部コマンドの処理である．
+10行で子プロセスを作り，15行で子プロセスがコマンドを実行する．
+親プロセスは19行で子プロセスの終了を待つ．
 
-14行では\|execve()|システムコールの代わりに\|execvp()|関数を用いているので，
+15行では\|execve()|システムコールの代わりに\|execvp()|関数を用いているので，
 PATH環境変数を用いたプログラムの自動的な探索が行われる．
 
 %=============================================================================

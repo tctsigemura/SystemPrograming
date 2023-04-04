@@ -1,23 +1,23 @@
-$ ps u
+% ps u
 USER       PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
-sigemura  2964   0.0  0.0  2452852   1556 s001  S    10:47AM   0:00.01 -bash
-sigemura  2955   0.0  0.0  2461044   1592 s000  S+   10:46AM   0:00.02 -bash
-sigemura  2975   0.0  0.2  2616528  14636 s001  S+   10:47AM   0:00.34 emacs hello.c
-$ ps au
+sigemura 38060   0.5  0.0 408824272   5680 s001  S    11:03AM   0:00.15 -zsh
+sigemura 46471   0.0  0.1 408816704   9264 s000  S+   11:33AM   0:00.74 vi chap6s.tex
+sigemura 27828   0.0  0.0 409086416   7472 s000  S    10:35AM   0:00.51 -zsh
+% ps au
 USER       PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
-sigemura  2975   0.0  0.2  2616528  14636 s001  S+   10:47AM   0:00.34 emacs hello.c
-sigemura  2964   0.0  0.0  2452852   1556 s001  S    10:47AM   0:00.01 -bash
-root      2963   0.0  0.0  2460388   2664 s001  Ss   10:47AM   0:00.02 login -pf sigemura
-sigemura  2955   0.0  0.0  2461044   1592 s000  S+   10:46AM   0:00.02 -bash
-root      2954   0.0  0.0  2469604   2788 s000  Ss   10:46AM   0:00.02 login -pf sigemura
-root      3790   0.0  0.0  2433188   1004 s000  R+   12:04PM   0:00.00 ps au
-$ ps aux
-USER              PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
-_windowserver     175   6.3  1.3  3693100 106960   ??  Ss   Wed10PM  17:10.51 /System/Lib
-_hidd             121   1.1  0.0  2473636   4052   ??  Ss   Wed10PM   6:43.03 /usr/libexe
-sigemura         1124   0.4  0.1  2542556   7888   ??  S    Thu09AM   0:32.58 /Library/In
-sigemura          861   0.3  0.0  2521980   3328   ??  S    Wed10PM   0:09.41 /System/Lib
-root              253   0.3  0.1  2472892   5548   ??  Ss   Wed10PM   0:44.44 /usr/libexe
-sigemura          891   0.2  0.0  2470772   2160   ??  S    Wed10PM   0:06.82 /System/Lib
-...300行程度続く...
-$
+root     60998   0.0  0.0 408766112   1808 s001  R+   12:08PM   0:00.01 ps au
+sigemura 46471   0.0  0.1 408816704   9264 s000  S+   11:33AM   0:00.74 vi chap6s.tex
+sigemura 38060   0.0  0.0 408824272   5680 s001  S    11:03AM   0:00.15 -zsh
+root     38059   0.0  0.0 408646464   4128 s001  Ss   11:03AM   0:00.02 login -pfl sigemu
+sigemura 27828   0.0  0.0 409086416   7472 s000  S    10:35AM   0:00.51 -zsh
+root     27827   0.0  0.0 408646464   4464 s000  Ss   10:35AM   0:00.02 login -pf sigemur
+% ps aux
+USER               PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+_windowserver      181  30.5  1.5 410618752 251024   ??  Rs   23Mar23  64:38.93 /System/L
+sigemura         43374  10.5  0.6 410251920  97664   ??  R    11:16AM   5:13.83 /Applicat
+sigemura           846   4.3  0.6 410068912 102544   ??  S    24Mar23  24:58.94 /System/A
+sigemura         12009   3.1  1.5 410249072 245024   ??  S    24Mar23   1:35.29 /System/A
+root               418   1.1  0.1 409363184  13936   ??  Rs   23Mar23   3:45.99 /Library/
+root               153   1.1  0.1 408268064  16240   ??  Ss   23Mar23   1:28.69 /System/L
+...600行程度続く...
+%

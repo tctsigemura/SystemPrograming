@@ -16,7 +16,7 @@ int main(int argc, char *argv[], char *envp[]) {
   return 1;
 }
 /* 実行例
-$ ./exectest5               <-- echo が実行されたはずなのに何も出力されない
-$ cat aaa.txt               <-- "aaa.txt" に
+% ./exectest5               <-- echo が実行されたはずなのに何も出力されない
+% cat aaa.txt               <-- "aaa.txt" に
 aaa bbb                     <--   echo の出力が保存されていた
 */

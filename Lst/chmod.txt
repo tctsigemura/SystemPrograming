@@ -1,11 +1,11 @@
-$ ls -l a.txt
+% ls -l a.txt
 -rw-r--r--  1 mura  staff 10 May  1 19:42 a.txt
-$ chmod 640 a.txt
-$ ls -l a.txt
+% chmod 640 a.txt
+% ls -l a.txt
 -rw-r-----  1 mura  staff 10 May  1 19:42 a.txt
-$ chmod g+w a.txt
-$ ls -l a.txt
+% chmod g+w a.txt
+% ls -l a.txt
 -rw-rw----  1 mura  staff 10 May  1 19:42 a.txt
-$ chmod g-r a.txt
-$ ls -l a.txt
+% chmod g-r a.txt
+% ls -l a.txt
 -rw--w----  1 mura  staff 10 May  1 19:42 a.txt

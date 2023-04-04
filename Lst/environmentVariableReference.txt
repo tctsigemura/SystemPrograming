@@ -1,9 +1,9 @@
-$ printenv PATH                     # PATH の初期値を確認
+% printenv PATH                     # PATH の初期値を確認
 /bin:/usr/bin
-$ PATH=$PATH:.                      # カレントディレクトリを追加
-$ printenv PATH
+% PATH=$PATH:.                      # カレントディレクトリを追加
+% printenv PATH
 /bin:/usr/bin:.
-$ PATH=$PATH:$HOME/bin              # ホームのbinを追加
-$ printenv PATH
+% PATH=$PATH:$HOME/bin              # ホームのbinを追加
+% printenv PATH
 /bin:/usr/bin:.:/User/sigemura/bin
-$
+%

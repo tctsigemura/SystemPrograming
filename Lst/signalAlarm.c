@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 /* 実行例
-$ ./a.out
+% ./a.out
 pause()します
 pause()が終わりました         <-- 3秒後表示される
 */

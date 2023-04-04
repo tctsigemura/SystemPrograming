@@ -23,8 +23,8 @@
   \frametitle{ファイルシステム}
   \begin{itemize}
     \item \emph{ファイル}\\
-      二次記憶装置に格納された不揮発性のデータ記憶のこと\\
-      （二次記憶：HDD，USBメモリ，CD-ROM，SSD，…）
+      二次記憶装置（ストレージ）に格納された不揮発性のデータ記憶\\
+      （二次記憶装置：HDD，USBメモリ，CD-ROM，SSD，…）
     \item \emph{ファイルシステム}\\
       二次記憶装置に多数のファイルを記憶・管理する仕組み\\
       記憶・管理されているファイルの集合
@@ -124,9 +124,9 @@
   \item 以下のコマンドで変更と確認ができる．
     \begin{itemize}
       \item \emph{変更（cd コマンド）} \\
-        \texttt{ \$ cd パス }
+        \texttt{ \% cd パス }
       \item \emph{確認（pwd コマンド）} \\
-        \texttt{ \$ pwd }
+        \texttt{ \% pwd }
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -268,7 +268,7 @@
   \frametitle{属性の表示方法}
   \emph{ls -l コマンドを用いる．}
   \begin{lstlisting}[numbers=none]
-$ ls -l a.txt
+% ls -l a.txt
 -rw-r--r--  1 mura  staff 10 May  1 18:18 a.txt
   \end{lstlisting}
 \begin{description}
@@ -291,7 +291,7 @@ ls コマンドがユーザ名に変換して表示している．
   \frametitle{属性の表示方法}
   \emph{ls -l コマンドを用いる．}
   \begin{lstlisting}[numbers=none]
-$ ls -l a.txt
+% ls -l a.txt
 -rw-r--r--  1 mura  staff 10 May  1 18:18 a.txt
   \end{lstlisting}
 \begin{description}
@@ -313,9 +313,9 @@ ls コマンドがグループ名に変換して表示している．
   \emph{chmod コマンドを用いる．}\\
   \begin{minipage}{0.48\columnwidth}
   \begin{lstlisting}[numbers=none]
-$ chmod OOO ファイル...      # 書式１
-$ chmod ugo+rwx ファイル...  # 書式２
-$ chmod ugo-rwx ファイル...  # 書式３
+% chmod OOO ファイル...      # 書式１
+% chmod ugo+rwx ファイル...  # 書式２
+% chmod ugo-rwx ファイル...  # 書式３
   \end{lstlisting}
   \end{minipage}
   \begin{minipage}{0.48\columnwidth}
@@ -369,3 +369,4 @@ $ chmod ugo-rwx ファイル...  # 書式３
 \end{frame}
 
 \end{document}
+

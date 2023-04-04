@@ -1,5 +1,5 @@
 \chapter{ファイルシステム}
-ファイルは二次記憶装置\footnote{
+ファイルは二次記憶装置（ストレージ）\footnote{
 ハードディスク，USBメモリ，メモリカード，CD-ROM，SSD，磁気テープ等の
 外部記憶装置（補助記憶装置）のこと．
 通常これらは不揮発性であり，電源を切ってもデータが失われることはない．}
@@ -114,14 +114,14 @@ UNIXではプロセス（実行中のプログラム）毎にカレントディ�
 カレントディレクトリはcdコマンドで変更できる．
 
 \begin{lstlisting}[numbers=none]
-$ cd パス     # パスのディレクトリへ移動する
+% cd パス     # パスのディレクトリへ移動する
 \end{lstlisting}
 
 \subsection*{pwdコマンド}
 カレントディレクトリのパスはpwdコマンドで確認できる．
 
 \begin{lstlisting}[numbers=none]
-$ pwd         # カレントディレクトリのパスを表示する
+% pwd         # カレントディレクトリのパスを表示する
 \end{lstlisting}
 
 ファイルシステムが\figref{filesystem}の状態の時，
@@ -158,7 +158,7 @@ UNIX ファイルシステムはファイルに別名を付ける方法を二つ
 リンクの追加は次のコマンドで行う．
 
 \begin{lstlisting}[numbers=none]
-$ ln ファイルへのパス 追加するリンクのパス
+% ln ファイルへのパス 追加するリンクのパス
 \end{lstlisting}
 
 \figref{filesystem2}の状態に二つのリンク\texttt{h1.c}，\texttt{ex1.c}を追加し，
@@ -173,7 +173,7 @@ $ ln ファイルへのパス 追加するリンクのパス
 リンクの削除は rm コマンドで行う．
 
 \begin{lstlisting}[numbers=none]
-$ rm ファイルへのパス
+% rm ファイルへのパス
 \end{lstlisting}
 
 rm コマンドはファイルを削除するコマンドと考えてきたが，
@@ -225,7 +225,7 @@ rm コマンドはファイルを削除するコマンドと考えてきたが�
 \texttt{ln}コマンドに\texttt{-s}オプションを付けたものを用いて作成する．
 
 \begin{lstlisting}[numbers=none]
-$ ln -s リンクに書込むパス 作成するリンクのパス
+% ln -s リンクに書込むパス 作成するリンクのパス
 \end{lstlisting}
 
 \figref{filesystem2}の状態に
@@ -245,7 +245,7 @@ $ ln -s リンクに書込むパス 作成するリンクのパス
 シンボリックリンクの削除も\texttt{rm}コマンドで行う．
 
 \begin{lstlisting}[numbers=none]
-$ rm シンボリックリンクのパス
+% rm シンボリックリンクのパス
 \end{lstlisting}
 
 \figref{symlink}の状態から\figref{filesystem2}の状態に戻す手順を次に示す．
@@ -287,7 +287,7 @@ ls コマンドは\texttt{-l}オプションを付けて実行すると，
 以下に ls コマンドを実行した例を示す．
 
 \begin{lstlisting}[numbers=none]
-$ ls -l a.txt
+% ls -l a.txt
 -rw-r--r--  1 mura  staff 10 May  1 18:18 a.txt
 \end{lstlisting}
 
@@ -322,9 +322,9 @@ ls コマンドがグループ名に変換して表示している．
 以下に書式を，リスト\ref{lstchmod}に使用例を示す．
 
 \begin{lstlisting}[numbers=none]
-$ chmod OOO ファイル...      # 書式１
-$ chmod ugo+rwx ファイル...  # 書式２
-$ chmod ugo-rwx ファイル...  # 書式３
+% chmod OOO ファイル...      # 書式１
+% chmod ugo+rwx ファイル...  # 書式２
+% chmod ugo-rwx ファイル...  # 書式３
 \end{lstlisting}
 
 \begin{description}
@@ -358,12 +358,9 @@ $ chmod ugo-rwx ファイル...  # 書式３
 \begin{enumerate}
 \item 自分のホームディレクトリのパスを調べる．
 \item ハードリンクに関する課題を行うために，
-ディレクトリ\texttt{/tmp}にカレントディレクトリを移動する\footnote{
-PC教室のMacは一般ユーザのホームディレクトリを共有ドライブ上に置いている．
-macOSの共有ドライブ上にはハードリンクを作ることができない．
-\texttt{/tmp}はローカルハードディスク上にあり，かつ，
-誰でも自由に一時的なファイルを作ることができるディレクトリである．}．
-\item \texttt{/tmp}以下に\figref{link}のディレクトリやファイルを作る．
+ホームディレクトリ直下に適当な名前のディレクトリを作成し
+カレントディレクトリを移動する．
+\item 作成したディレクトリ以下に\figref{link}のディレクトリやファイルを作る．
 \item \texttt{ls -l}を用いてファイルの種類やリンク数を確認する．
 \item 相対パスを用いて\texttt{hello.c}の内容を表示する．
 （表示には\texttt{cat}コマンドを用いると良い．）
@@ -386,11 +383,12 @@ macOSの共有ドライブ上にはハードリンクを作ることができな
 \item シンボリックリンクを\texttt{ls -l}を用いて確認する．
 \item シンボリックリンクを用いてファイルをアクセスできることを確認する．
 \item リンク切れのシンボリックリンクを使用するとどうなるか確認する．
-\item ディレクトリに対するリンクを作って使用できることを確認する．
-\item 他のディレクトリにあるファイルをリンクして使用できることを確認する．
+\item ディレクトリに対するシンボリックリンクを作って使用できることを確認する．
+\item 他のディレクトリにあるファイルを指すシンボリックリンクを作成し
+      使用できることを確認する．
 \item シンボリックリンクのループを作る．（a.txt →  b.txt，b.txt →  a.txt）
 \item ループしているシンボリックリンクを使用するとどうなるか確認する．
-（\|$ cat a.txt|）
+（\|% cat a.txt|）
 \end{enumerate}
 
 \item 保護モード

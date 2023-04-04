@@ -1,0 +1,49 @@
+0. 自分のシステム（次のどちらかを選択）
+  macOS
+
+1. 最初の状態でPATH環境変数の値を確認する．
+  以下には，PATH環境変数の表示手順と実行結果を書くこと．
+
+% printenv PATH
+/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin     <--- 長くなるので一部省略
+
+2. ホームディレクトリ以下にbinディレクトリを作り自分専用のプログラム置き場に
+  する場合を想定し，このディレクトリをPATH環境変数の値の最後に追加する．
+  以下には，PATH環境変数の変更手順と変更結果の確認手順・確認結果を書くこと．
+
+% cat hello.c 
+#include <stdio.h>
+int main() {
+  printf("hello\n");
+  return 0;
+}
+% cc -o hello hello.c                 # helloプログラムを作り
+% mkdir $HOME/bin
+% mv hello $HOME/bin/hello            # ホームディレクトリのbinに配置する
+% hello                               # 最初は実行できない
+zsh: command not found: hello
+% $HOME/bin/hello                     # helloプログラムのパスを明示すれば
+hello                                 #   実行できる
+% PATH=$PATH:$HOME/bin                # PATHにbinを追加すると
+% printenv PATH
+/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/sigemura/bin
+% hello                               # プログラムの名前だけでも
+hello                                 #   実行できた
+
+別解
+% PATH=$PATH:~/bin
+% PATH=$PATH:/Users/sigemura/bin
+
+3. 2.に続けてカレントディレクトリをPATH環境変数に追加して効果を確認する．
+  以下には，PATH環境変数の変更手順と効果の確認手順・確認結果を書くこと．
+
+% mv $HOME/bin/hello .           # helloプログラムをカレントディレクトリに配置
+% hello                          # 最初は実行できない
+zsh: command not found: hello
+% ./hello                        # パスを明示すれば実行できる
+hello
+% PATH=$PATH:.                   # PATHにカレントディレクトリを追加
+% printenv PATH
+/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/sigemura/bin:.
+% hello
+hello                            # プログラムの名前だけでも実行できた

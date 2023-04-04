@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {        // 今回はenvpは不要
   return 0;                               // 必ず正常終了
 }
 /* 実行例
-$ ./a.out
+% ./a.out
 LANG=ja_JP.UTF-8
 TZ=Japan
 HOME=/Users/sigemura

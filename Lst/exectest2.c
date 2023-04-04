@@ -9,6 +9,6 @@ int main(int argc, char *argv[], char *envp[]) {
   return 1;
 }
 /* 実行例（日本語表示、キューバ時間で表示される）
-$ ./exectest2
-2016年 7月16日 土曜日 09時24分40秒 CDT
+% ./exectest2
+2023年 4月 1日 土曜日 20時25分52秒 CDT
 */
