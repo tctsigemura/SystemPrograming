@@ -75,7 +75,7 @@ int main() {
   return 0;
 }
 /* 実行例（動作テスト結果）
-$ ./myshell                            <--- myshell を起動
+% ./myshell                            <--- myshell を起動
 Command: printenv A                    <--- 環境変数を作ることができるかテスト
 Command: setenv A B
 Command: printenv A

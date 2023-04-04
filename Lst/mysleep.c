@@ -31,9 +31,9 @@ int main() {
 }
 
 /* 実行例
-$  make
+%  make
 cc -Wall -std=c99 -o mysleep mysleep.c     <--- エラー・警告はなかった
-$ ./mysleep
+% ./mysleep
 0秒スリープ開始
 スリープ終了（残り時間0秒）                  <--- ０秒スリープ動作確認OK
 1秒スリープ開始

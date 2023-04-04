@@ -33,7 +33,7 @@ JOB制御やアプリケーションの強制終了，
   \footnote{Segmentation fault シグナル（\texttt{SIGSEG}）が発生する．}
   したことをプロセス自身に通知する．
   通常，この通知を受取るとプロセスは終了する
-  \footnote{終了時に「\texttt{Segmentation fault: 11}」等が表示される．}
+  \footnote{終了時に「\texttt{segmentation fault}」等が表示される．}
 
 \item \emph{プロセスが予約した時刻になった場合}\\
   プロセスは一定時間後にシグナルを発生するように予約できる．
@@ -111,10 +111,9 @@ JOB制御やアプリケーションの強制終了，
 \item[解説]
   signalシステムコールは，
   自プロセスの指定されたシグナルのハンドリングを変更する．
-  \|sig_t|（\|__sighandler_t|）型は
-%  関数ポインタ型\footnote{
-%    関数のアドレスを表す型である．
-%  }であり
+  \|sig_t|型は関数ポインタ型\footnote{
+    関数のアドレスを表す型である．
+  }であり，
   \texttt{signal.h}をインクルードすることで自動的に宣言される．
 
 \item[引数]
@@ -127,7 +126,7 @@ JOB制御やアプリケーションの強制終了，
   \item \texttt{SIG\_IGN}はシグナルを無視するようにする．
   \item \texttt{SIG\_DFL}はシグナルハンドリングをデフォルトに戻す．
   \item \emph{シグナルハンドラ関数}を指定する\footnote{
-    関数の名前を書けばよい．C言語で関数名は関数を指すポインタになる．}と，
+    関数の名前を書けばよい．C言語で関数名は関数を指す関数ポインタになる．}と，
     そのシグナルを捕捉（キャッチ）できるようになる．
     シグナルを捕捉した時にシグナルハンドラ関数が実行される．
     シグナルハンドラ関数の型は\|void func(int sig);|でなければならない．
@@ -208,7 +207,7 @@ JOB制御やアプリケーションの強制終了，
 
 非同期シグナル安全な関数は，
 例えば次のような関数（システムコールも含む）である\footnote{
-詳細はオンラインマニュアル\texttt{man sigaction} を参照のこと．}．
+詳細はオンラインマニュアル\texttt{man 2 sigaction} を参照のこと．}．
 
 \texttt{\_exit(), alarm(), chdir(), chmod(), close(), creat(), dup(),
 dup2(), execle(), execve(), fork(), kill(), link(), lseek(), mkdir(),
@@ -385,7 +384,7 @@ time(), unlink(), wait(), write(), strcpy(), strcat(), ...}
   アラームシグナルが発生するまで
   pause システムコールで待つプログラムの例である．
   alarm システムコールはシグナルの予約をするだけなので，
-  pause システムコールでプログラムを停止する．
+  pause システムコールでプログラムを停止する必要がある．
 
   \lstinputlisting[caption=alarmシステムコールの使用例,language=C,
     float=btp,label=alarm]{Lst/signalAlarm.c}

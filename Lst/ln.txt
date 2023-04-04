@@ -1,7 +1,7 @@
-$ pwd
+% pwd
 /home/mura                # カレントディレクトリはここ
-$ ln hello.c h1.c         # hello.c にリンク h1.c を追加
-$ mkdir SysPro            # SysPro ディレクトリを作る
-$ ln hello.c SysPro/ex1.c # リンク ex1.c を追加
-$ cat h1.c                # hello.c の内容が表示される
-$ cat SysPro/ex1.c        # hello.c の内容が表示される
+% ln hello.c h1.c         # hello.c にリンク h1.c を追加
+% mkdir SysPro            # SysPro ディレクトリを作る
+% ln hello.c SysPro/ex1.c # リンク ex1.c を追加
+% cat h1.c                # hello.c の内容が表示される
+% cat SysPro/ex1.c        # hello.c の内容が表示される

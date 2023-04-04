@@ -202,10 +202,10 @@
   \begin{itemize}
   \item リダイレクトの復習
 \begin{lstlisting}[numbers=none]
-  $ echo aaa bbb
+  % echo aaa bbb
   aaa bbb                     <--- echoの出力が表示される
-  $ echo aaa bbb  > a.txt     <--- echoの出力が表示されない
-  $ cat a.txt
+  % echo aaa bbb  > a.txt     <--- echoの出力が表示されない
+  % cat a.txt
   aaa bbb                     <--- echoの出力がa.txtに格納されてた
 \end{lstlisting} %$
   \item プログラムは標準入出力を自らオープンする必要が無かった．
@@ -246,7 +246,7 @@
     （三回目の\|putenv()|はエラーになる）\\
     が実行されるようにプログラムを作る．
     \vfill
-    \|$ ./myenv LC_TIME=ja_JP.UTF-8 TZ=Cuba ls -l| %$
+    \|% ./myenv LC_TIME=ja_JP.UTF-8 TZ=Cuba ls -l| %$
   \end{enumerate}
    \vfill
 \end{frame}
@@ -310,7 +310,7 @@
   \item 子プロセスが処理を終えると，親プロセスは \\
     子プロセスが正常に終了したかチェックする．\\
     \vfill
-    \verb;$ ls -l | grep rwx;\hfil ←  \hfil 二つのプロセスが並列実行される
+    \verb;% ls -l | grep rwx;\hfil ←  \hfil 二つのプロセスが並列実行される
     \vfill
   \item 子プロセスが処理結果と共に自身を終了する． \\
     → \emph{exitシステムコール}
@@ -429,14 +429,14 @@
     例えば次のように実行すると，現在時刻をキューバ時間で表したものが\|c.txt|に
     ローマ時間で表したものが\|r.txt|に格納される．
     
-    \|$ ./a.out TZ=Cuba c.txt TZ=Europe/Rome r.txt| %$
+    \|% ./a.out TZ=Cuba c.txt TZ=Europe/Rome r.txt| %$
 
   \item[2.] system 関数のクローン mysystem \\
     \|system()| 関数の仕様を調べて，なるべく同じものを作りなさい．
     C言語中で\|system("...");|の関数呼出しをすると，
     シェアルに以下のように入力したのと同じことが起こる．
     
-    \|$ /bin/sh -c "..."| %$
+    \|% /bin/sh -c "..."| %$
     
   \end{enumerate}
 \end{frame}

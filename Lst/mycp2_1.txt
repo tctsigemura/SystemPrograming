@@ -1,8 +1,6 @@
-$ rm bbb               <--- 念のため bbb を消す
+% rm bbb               <--- 念のため bbb を消す
 rm: bbb: No such file or directory
-$ time ./mycp2_1 aaa bbb
-real    1m31.664s
-user    0m11.653s
-sys     1m16.554s
-$ cmp aaa bbb        <--- コピー結果が正常かチェック
-$
+% time ./mycp2_1 aaa bbb
+./mycp2_1 aaa bbb  2.42s user 17.51s system 97% cpu 20.360 total
+% cmp aaa bbb        <--- コピー結果が正常かチェック
+%

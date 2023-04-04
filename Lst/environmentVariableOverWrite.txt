@@ -1,6 +1,6 @@
-$ printenv MYNAME                <--- 値を表示する
+% printenv MYNAME                <--- 値を表示する
 sigemura
-$ MYNAME=yosinaga                <--- 値を変更する
-$ printenv MYNAME
-yosinaga                         <--- 変更されている
-$
+% MYNAME=tetsuji                 <--- 値を変更する
+% printenv MYNAME
+tetsuji                          <--- 変更されている
+%

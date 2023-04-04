@@ -21,21 +21,21 @@ int main(int argc, char *argv[]) {
 }
 
 /* 実行例
-$ make
+% make
 cc -Wall -std=c99 -o myprintenv myprintenv.c   <--- エラーも警告もなし
-$ ./myprintenv USER                            <--- 正常動作のテスト
+% ./myprintenv USER                            <--- 正常動作のテスト
 sigemura
-$ ./myprintenv HOME                            <--- 正常動作のテスト
+% ./myprintenv HOME                            <--- 正常動作のテスト
 /Users/sigemura
-$ echo $?                                      <--- 終了ステータスを確認
+% echo $?                                      <--- 終了ステータスを確認
 0                                              <---  正常終了
-$ ./myprintenv NEVER                           <--- 存在しない変数の場合
-$ echo $?                                      <--- 終了ステータスを確認
+% ./myprintenv NEVER                           <--- 存在しない変数の場合
+% echo $?                                      <--- 終了ステータスを確認
 1                                              <---  エラー終了
-$ ./myprintenv USER HOME                       <--- 複数指定しても最初だけ
+% ./myprintenv USER HOME                       <--- 複数指定しても最初だけ
 sigemura
-$ ./myprintenv NEVER HOME                      <--- 複数指定して最初が存在しない
-$ ./myprintenv                                 <--- 引数なしの場合
+% ./myprintenv NEVER HOME                      <--- 複数指定して最初が存在しない
+% ./myprintenv                                 <--- 引数なしの場合
 TERM_PROGRAM=iTerm.app
 TERM=xterm-256color
 SHELL=/bin/bash
@@ -43,6 +43,6 @@ CLICOLOR=1
 USER=sigemura
 LANG=ja_JP.UTF-8
 ... 省略 ...
-$ echo $?                                      <--- 終了ステータスを確認
+% echo $?                                      <--- 終了ステータスを確認
 0                                              <---  正常終了
 */

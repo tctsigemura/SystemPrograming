@@ -11,7 +11,8 @@ int main(int argc, char *argv[], char *envp[]) {
   }
   if (pid!=0) {                       // pid が 0 以外なら自分は親プロセス
     int status;
-    wait(&status);                    //   子プロセスが終了するのを待つ
+    while (wait(&status)!=pid)        //   子プロセスが終了するのを待つ
+      ;
   } else {                            // pid が 0 なら自分は子プロセス
     execl(execpath, "date", NULL);    //   date プログラムを実行（execlを使用してみた）
     perror(execpath);                 //   exec が戻ってくるならエラー

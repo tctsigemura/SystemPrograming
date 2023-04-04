@@ -1,9 +1,9 @@
-$ date
+% date
 Wed May 31 18:38:53 JST 2017
-$ LC_TIME=ja_JP.UTF-8                       # 既存のLC_TIMEを日本語表示にする
-$ date
+% LC_TIME=ja_JP.UTF-8                       # 既存のLC_TIMEを日本語表示にする
+% date
 2017年 5月31日 水曜日 18時38分59秒 JST
-$ ls /usr/share/zoneinfo/                   # 使用できるタイムゾーンを調べる
+% ls /usr/share/zoneinfo/                   # 使用できるタイムゾーンを調べる
 +VERSION    Canada      GB          Iran        NZ-CHAT     UCT
 Africa      Chile       GB-Eire     Israel      Navajo      US
 America     Cuba        GMT         Jamaica     PRC         UTC
@@ -15,7 +15,7 @@ Australia   Eire        HST         MST         ROC         iso3166.tab
 Brazil      Etc         Hongkong    MST7MDT     ROK         posixrules
 CET         Europe      Iceland     Mexico      Singapore   zone.tab
 CST6CDT     Factory     Indian      NZ          Turkey
-$ ls /usr/share/zoneinfo/Europe/
+% ls /usr/share/zoneinfo/Europe/
 Amsterdam   Busingen    Kiev        Moscow      Simferopol  Vienna
 Andorra     Chisinau    Kirov       Nicosia     Skopje      Vilnius
 Astrakhan   Copenhagen  Lisbon      Oslo        Sofia       Volgograd
@@ -27,19 +27,19 @@ Bratislava  Isle_of_Man Malta       Rome        Ulyanovsk
 Brussels    Istanbul    Mariehamn   Samara      Uzhgorod
 Bucharest   Jersey      Minsk       San_Marino  Vaduz
 Budapest    Kaliningrad Monaco      Sarajevo    Vatican
-$ export TZ=Europe/Moscow                  # モスクワ時間はこれだろう
-$ date                                     # モスクワ時間で表示してみる
+% export TZ=Europe/Moscow                  # モスクワ時間はこれだろう
+% date                                     # モスクワ時間で表示してみる
 2017年 5月31日 水曜日 12時40分38秒 MSK
-$ TZ=MSK-3                                 # 世界標準時とは3時間
-$ date                                     # これでもモスクワ時間になる
+% TZ=MSK-3                                 # 世界標準時とは3時間
+% date                                     # これでもモスクワ時間になる
 2017年 5月31日 水曜日 12時41分18秒 MSK
-$ TZ=JST-9                                 # 日本標準時(JST)を設定してみる
-$ date                                     # 日本時間で表示されるはず
+% TZ=JST-9                                 # 日本標準時(JST)を設定してみる
+% date                                     # 日本時間で表示されるはず
 2017年 5月31日 水曜日 18時42分19秒 JST
-$ LC_TIME=ru_RU.UTF-8                      # 言語をロシア語にする
-$ date                                     # ロシア語表示，日本時間
+% LC_TIME=ru_RU.UTF-8                      # 言語をロシア語にする
+% date                                     # ロシア語表示，日本時間
 среда, 31 мая 2017 г. 18:42:54 (JST)
-$ export TZ=Europe/Moscow                  # タイムゾーンをモスクワ時間にする
-$ date                                     # ロシア語表示，モスクワ時間
+% export TZ=Europe/Moscow                  # タイムゾーンをモスクワ時間にする
+% date                                     # ロシア語表示，モスクワ時間
 среда, 31 мая 2017 г. 12:43:56 (MSK)
-$
+%

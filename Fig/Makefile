@@ -1,14 +1,8 @@
-.SUFFIXES:
-.SUFFIXES: .tex .pdf
+TEXS = cdpwd.tex
 
-PDFS = cdpwd.pdf
-
-%.pdf : %.tex
-	lualatex $*.tex
-	open $*.pdf
-
-all : ${PDFS}
+all :
+	$(foreach tex, ${TEXS}, latexmk -lualatex $(tex);)
 
 clean :
-	rm -f *.log *.aux *.dvi *~
+	rm -f *.log *.aux *.dvi *.out *.toc *.vrb *.snm *.nav *~
 

@@ -13,7 +13,8 @@ int main(int argc, char *argv[], char *envp[]) {
     }
     if (pid!=0) {                     // pid が 0 以外なら自分は親プロセス
       int status;
-      wait(&status);                  //   子プロセスが終了するのを待つ
+      while (wait(&status)!=pid)      //   子プロセスが終了するのを待つ
+        ;
     } else {                          // pid が 0 なら自分は子プロセス
       execl(execpath, "date", NULL);  //   date プログラムを実行（execlを使用してみた）
       perror(execpath);               //   exec が戻ってくるならエラー
@@ -23,8 +24,8 @@ int main(int argc, char *argv[], char *envp[]) {
   exit(0);                            // 親プロセスを正常終了
 }
 /* 実行例
-$ ./forkexec3 LC_TIME=ja_JP.UTF-8 LC_TIME=ru_RU.UTF-8 TZ=Cuba
-2016年 7月18日 月曜日 22時25分51秒 JST
-понедельник, 18 июля 2016 г. 22:25:51 (JST)
-понедельник, 18 июля 2016 г. 09:25:51 (CDT)
+% ./forkexec3 LC_TIME=ja_JP.UTF-8 LC_TIME=ru_RU.UTF-8 TZ=Cuba
+2023年 4月 2日 日曜日 10時49分17秒 JST
+воскресенье,  2 апреля 2023 г. 10:49:17 (JST)
+суббота,  1 апреля 2023 г. 21:49:17 (CDT)
 */

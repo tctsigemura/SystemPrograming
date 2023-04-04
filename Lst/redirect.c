@@ -41,8 +41,8 @@ int main(int argc, char *argv[], char *envp[]) {
   return 0;
 }
 /* 実行例
-$ ./a.out TZ=Cuba c.txt TZ=Europe/Rome r.txt
-$ cat c.txt r.txt
+% ./a.out TZ=Cuba c.txt TZ=Europe/Rome r.txt
+% cat c.txt r.txt
 Thu Jul 19 21:42:40 CDT 2018
 Fri Jul 20 03:42:40 CEST 2018
 */

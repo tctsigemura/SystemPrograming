@@ -26,9 +26,9 @@ int main() {
 }
 
 /* 実行例
-$ ./a.out
+% ./a.out
 ^C1st
 ^C2nd
 ^Clast
-$
+%
 */

@@ -1,21 +1,14 @@
-.SUFFIXES:
-.SUFFIXES: .tex .pdf
+HNDS = chap1s_Hnd.tex chap2s_Hnd.tex chap3s_Hnd.tex chap4s_Hnd.tex \
+       chap5s_Hnd.tex chap6s_Hnd.tex chap7s_Hnd.tex chap8s_Hnd.tex \
+       chap9s_Hnd.tex chapAs_Hnd.tex
 
-HNDS = chap1s_Hnd.pdf chap2s_Hnd.pdf chap3s_Hnd.pdf chap4s_Hnd.pdf \
-       chap5s_Hnd.pdf chap6s_Hnd.pdf chap7s_Hnd.pdf chap8s_Hnd.pdf \
-       chap9s_Hnd.pdf chapAs_Hnd.pdf
+SLDS = chap1s_Sld.tex chap2s_Sld.tex chap3s_Sld.tex chap4s_Sld.tex \
+       chap5s_Sld.tex chap6s_Sld.tex chap7s_Sld.tex chap8s_Sld.tex \
+       chap9s_Sld.tex chapAs_Sld.tex
 
-SLDS = chap1s_Sld.pdf chap2s_Sld.pdf chap3s_Sld.pdf chap4s_Sld.pdf \
-       chap5s_Sld.pdf chap6s_Sld.pdf chap7s_Sld.pdf chap8s_Sld.pdf \
-       chap9s_Sld.pdf chapAs_Sld.pdf
-
-%_Hnd.pdf : %_Hnd.tex %_Sld.pdf
-	latexmk -lualatex $*_Hnd.tex
-
-%_Sld.pdf : %_Sld.tex *.sty
-	latexmk -lualatex $*_Sld.tex
-
-all : ${SLDS} ${HNDS} # 中間ファイル *_Sld.pdf を消さないように
+all :
+	$(foreach tex, ${SLDS}, latexmk -lualatex $(tex);)
+	$(foreach tex, ${HNDS}, latexmk -lualatex $(tex);)
 
 clean:
 	rm -f *.log *.aux *.dvi *.out *.toc *.vrb *.snm *.nav *~

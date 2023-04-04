@@ -9,8 +9,8 @@ int main() {
 }
 
 /* 実行例
-$ cc -o hello hello.c 
-$ ./hello 
+% cc -o hello hello.c 
+% ./hello 
 hello,world
-$ 
+% 
 */

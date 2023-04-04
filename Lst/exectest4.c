@@ -9,6 +9,6 @@ int main(int argc, char *argv[], char *envp[]) {
   return 1;
 }
 /* 実行例
-$ ./exectest4
+% ./exectest4
 aaa bbb                 <--- /bin/echo の出力
 */
