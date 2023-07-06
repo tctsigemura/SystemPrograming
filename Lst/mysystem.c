@@ -22,6 +22,10 @@ int mysystem(char *command) {                    // 課題の関数 mysystem()
     while((r=wait(&status))!=pid) {              //   /bin/shの終了を待つ
       if (r<0) return -1;                        //     waitのエラー
     }
+    if (WIFEXITED(status) &&                     // 子プロセスが
+        WEXITSTATUS(status)==127) {              //   exit(127)で終了したなら
+      return 127;                                //   /bin/shのexecエラー
+    }
   }
   return status;                                 // 親プロセスは/bin/shの
 }                                                //   終了ステータスを返す
