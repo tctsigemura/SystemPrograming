@@ -375,6 +375,10 @@
 \begin{lstlisting}[numbers=none]
   #include <sys/wait.h>
   pid_t wait(int *status);
+  WIFEXITED(status)   // 子プロセスがexitした(マクロ)
+  WIFSIGNALED(status) // 子プロセスがシグナルで終了した(マクロ)
+  WEXITSTATS(status)  // 子プロセスの終了ステータス(マクロ)
+  WTERMSIG(status)    // 子プロセスを終了させたシグナルの番号(マクロ)
 \end{lstlisting}
 
   \item[解説] 
@@ -382,8 +386,7 @@
     \item 終了したプロセスの番号（PID：正の値）を返す．
     \item エラーが発生した場合に\|-1|を返す．
     \item \|status|にプロセスの終了理由等が格納される．\\
-      \|status| の下位 8bit が子プロセスの終了ステータス \\
-      他のビットで終了の理由(exit，シグナル等)を表す．
+      \|status| の内容は上記のマクロで読み取る．
     \end{itemize}
   \end{description}
 \end{frame}

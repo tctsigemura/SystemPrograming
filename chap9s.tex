@@ -374,15 +374,17 @@ forkシステムコールは新しいプロセスを作成し自身をコピー�
 \begin{lstlisting}[numbers=none]
   #include <sys/wait.h>
   pid_t wait(int *status);
+  WIFEXITED(status)   // 子プロセスがexitした(マクロ)
+  WIFSIGNALED(status) // 子プロセスがシグナルで終了した(マクロ)
+  WEXITSTATS(status)  // 子プロセスの終了ステータス(マクロ)
+  WTERMSIG(status)    // 子プロセスを終了させたシグナルの番号(マクロ)
 \end{lstlisting}
 
   \item[解説] 
     waitシステムコールは終了した子プロセスのプロセス番号（PID）を返す．
     エラーが発生した場合に\|-1|を返す．
     \|status|には子プロセスが終了した理由等が格納される．
-    status の下位 8bit には，子プロセスが exit に渡した
-    終了ステータスが格納される．
-    その他のビットで終了の理由(exit，シグナル等)が分かるようになっている．
+    status の内容は書式に掲載したマクロで読み取ることができる．
   \end{description}
 \end{enumerate}
 
