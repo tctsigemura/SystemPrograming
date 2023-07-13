@@ -99,5 +99,5 @@ Command: setenv A= B                   <--- setenv()がエラーを起こす場�
 A=: Invalid argument
 Command: unsetenv A=                   <--- unsetenv()がエラーを起こす場合
 A=: Invalid argument
-Command: ^D
+Command: ^D                            <--- ^D を入力すると EOF になる
 */
