@@ -253,7 +253,7 @@ env コマンドを用いて，
 \begin{itembox}[l]{タイムゾーン}
 \texttt{TZ}環境変数にタイムゾーンを表す値をセットする．
 macOSやUNIXの内部で時刻は協定世界時(UTC)で管理されており，
-時刻を表示する時に現地時間に変換して表示する．
+表示する際に現地時間に変換する．
 時刻に関係するプログラムは
 協定世界時と現地時間の変換方法を\texttt{TZ}環境変数から知ることができる．
 日本の場合はタイムゾーン名が\texttt{JST}，協定世界時との時差が$-9$時間なので，
@@ -276,16 +276,16 @@ OSのインストール時に選択した標準のタイムゾーンが用いら
 \newpage
 
 %==============================================================================
-\section*{課題 No.7}
-\begin{enumerate}
-\item ここまでの実行例を試してみなさい．
-\item 囲み記事を参考に，
-  \texttt{LC\_TIME}環境変数や\texttt{TZ}環境変数を変更し，
-  効果を確認する．
-  例えば，
-  「モスクワ時間，ロシア語表記」で現在時刻を表示するにはどうしたらよいか？
-\end{enumerate}
-\newpage
+%\section*{課題 No.7}
+%\begin{enumerate}
+%\item ここまでの実行例を試してみなさい．
+%\item 囲み記事を参考に，
+%  \texttt{LC\_TIME}環境変数や\texttt{TZ}環境変数を変更し，
+%  効果を確認する．
+%  例えば，
+%  「モスクワ時間，ロシア語表記」で現在時刻を表示するにはどうしたらよいか？
+%\end{enumerate}
+%\newpage
 %==============================================================================
 \section{環境変数の仕組み}
 環境変数を管理する仕組みと，
@@ -327,7 +327,7 @@ OSカーネルは子プロセスのメモリ空間のどこか（例えばスタ
 
 \subsection{変更した上でのコピー}
 プロセスへ環境変数をコピーする仕組みは，
-シェルに限らず全ての他のプログラムを起動するプログラムで共通に用いられる．
+シェルに限らず全ての「他のプログラムを起動するプログラム」で共通に用いられる．
 \ref{environmentVariableOperation}で紹介したenvコマンドも，
 この仕組を利用している．
 
@@ -400,7 +400,7 @@ int main(int argc, char *argv[], char *envp[]);
 
 \begin{lstlisting}[numbers=none]
 #include <stdlib.h>
-char *getenv(char *name);
+char *getenv(const char *name);
 \end{lstlisting}
 
   \item [解説] \|name|には環境変数名を渡す．
@@ -423,6 +423,8 @@ char *getenv(char *name);
   \end{description}
 \end{enumerate}
 
+\newpage
+
 \subsection{操作}
 自プロセスのメモリ空間にコピーされた環境変数を操作する
 三つのC言語ライブラリ関数を紹介する．
@@ -439,7 +441,7 @@ char *getenv(char *name);
 
 \begin{lstlisting}[numbers=none]
 #include <stdlib.h>
-int setenv(char *name, char *val, int overwrite);
+int setenv(const char *name, const char *val, int overwrite);
 \end{lstlisting}
 
   \item [解説]
@@ -502,7 +504,7 @@ putenv("MYNAME=sigemura");
 
 \begin{lstlisting}[numbers=none]
 #include <stdlib.h>
-int unsetenv(char *name);
+int unsetenv(const char *name);
 \end{lstlisting}
 
   \item [解説] \|name|は削除する環境変数の名前である．
@@ -519,14 +521,14 @@ unsetenv("MYNAME");
 \end{enumerate}
 
 %==============================================================================
-\section*{課題 No.8}
-\begin{enumerate}
-\item 外部コマンドprintenvの仕様を調べる \\
-  オンラインマニュアル（\|man 1 printenv|）を読んだり，
-  \|printenv|を実際に実行したりして，
-  printenvコマンドの仕様を調べなさい．
-\item myprintenvプログラム\\
-  外部コマンドprintenvと同様な働きをするmyprintenvプログラムを作成しなさい．
-  なるべく本物と同じ動作をするように作ること．
-\end{enumerate}
- 
+%\section*{課題 No.8}
+%\begin{enumerate}
+%\item 外部コマンドprintenvの仕様を調べる \\
+%  オンラインマニュアル（\|man 1 printenv|）を読んだり，
+%  \|printenv|を実際に実行したりして，
+%  printenvコマンドの仕様を調べなさい．
+%\item myprintenvプログラム\\
+%  外部コマンドprintenvと同様な働きをするmyprintenvプログラムを作成しなさい．
+%  なるべく本物と同じ動作をするように作ること．
+%\end{enumerate}
+% 

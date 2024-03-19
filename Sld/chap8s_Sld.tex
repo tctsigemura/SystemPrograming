@@ -351,7 +351,7 @@ OSのインストール時に選択した標準のタイムゾーンが用いら
   \item [書式] getenv関数に変数名を与えると値が返る．
 \begin{lstlisting}[numbers=none]
   #include <stdlib.h>
-  char *getenv(char *name);
+  char *getenv(const char *name);
 \end{lstlisting}
   \item [プログラム例] \texttt{LANG}環境変数の値を表示する．
     \lst{numbers=left,lastline=15}{environmentVariablePrintLANG.c}
@@ -367,7 +367,7 @@ OSのインストール時に選択した標準のタイムゾーンが用いら
     フラグ（\|overwrite|）を与える．
 \begin{lstlisting}[numbers=none]
   #include <stdlib.h>
-  int setenv(char *name, char *val, int overwrite);
+  int setenv(const char *name, const char *val, int overwrite);
 \end{lstlisting}
   \item [解説] \|overwrite=0|で上書き禁止になる．\\
     返り値は，正常時\|0|，エラー時\|-1|である．\\
@@ -414,7 +414,7 @@ OSのインストール時に選択した標準のタイムゾーンが用いら
   \item [書式] 削除する変数の名前（\|name|）を与える．
 \begin{lstlisting}[numbers=none]
   #include <stdlib.h>
-  int unsetenv(char *name);
+  int unsetenv(const char *name);
 \end{lstlisting}
   \item [解説] 名前（\|name|）を指定して環境変数を削除する．\\
     エラー時\|-1|が返る．正常時は\|0|が返る．

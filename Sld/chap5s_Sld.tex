@@ -45,7 +45,7 @@
 
 \begin{verbatim}
 #include <unistd.h>
-int unlink(char *path);
+int unlink(const char *path);
 \end{verbatim}
 
 \item[解説] \|unistd.h|をインクルードする．\\
@@ -76,7 +76,7 @@ if (unlink("a.txt")<0) {   // "a.txt" 削除
   \item[書式] \|path|，\|mode|でパスと保護モードを指定する．
 \begin{verbatim}
 #include <sys/stat.h>
-int mkdir(char *path, int mode);
+int mkdir(const char *path, mode_t mode);
 \end{verbatim}
 
   \item[解説] \|sys/stat.h|をインクルードする必要がある．\\
@@ -108,7 +108,7 @@ if (mkdir("newdir", 0755)<0) { // "newdir"作成
   \item[書式] \|path|引数でディレクトリのパスを一つ指定する．
 \begin{verbatim}
 #include <unistd.h>
-int rmdir(char *path);
+int rmdir(const char *path);
 \end{verbatim}
 
   \item[解説] \|unistd.h|をインクルードする必要がある．\\
@@ -137,7 +137,8 @@ if (rmdir("newdir")<0) {  // "newdir" 削除
   \item[書式]  存在するパスと新しいパスを指定する．
 \begin{verbatim}
 #include <unistd.h>
-int link(char *oldpath, char *newpath);
+int link(const char *oldpath,
+         const char *newpath);
 \end{verbatim}
 
   \item[解説] \|unistd.h|をインクルードする必要がある．\\
@@ -183,7 +184,8 @@ if (unlink("a.txt")<0) {        // リンクを消す
   \item[書式] シンボリックリンク自身のパスと内容を指定する．
 \begin{verbatim}
 #include <unistd.h>
-int symlink(char *path1, char *path2);
+int symlink(const char *path1,
+            const char *path2);
 \end{verbatim}
 
   \item[解説] \|unistd.h|をインクルードする必要がある．\\
@@ -212,7 +214,7 @@ if (symlink("a.txt", "b.txt")<0) { // リンクを作る
   \item[書式] 新旧二つのパスを指定する．
 \begin{verbatim}
 #include <stdio.h>
-int rename(char *from, char *to);
+int rename(const char *from, const char *to);
 \end{verbatim}
 
   \item[解説] \|stdio.h|をインクルードする必要がある．\\
@@ -243,8 +245,9 @@ if (rename("a.txt", "b.txt")<0) { // パス名を変更
   \item[書式] パスと保護モード（\texttt{rwxrwxrws}）を指定する．
 \begin{verbatim}
 #include <sys/stat.h>
-int chmod(char *path, int mode);
-int lchmod(char *path, int mode);
+#include <unistd.h>
+int chmod(const char *path, mode_t mode);
+int lchmod(const char *path, mode_t mode);
 \end{verbatim}
 
   \item[解説] \|sys/stat.h|をインクルードする必要がある．\\

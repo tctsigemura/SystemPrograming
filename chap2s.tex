@@ -182,7 +182,7 @@ staff グループに属するユーザは読むことだけできる．
 int open(const char *path, int oflag, mode_t mode);
 \end{lstlisting}
 
-\|mode_t| は，16bit の整数型（16bit \|int|）である．
+\|mode_t| は，符号なし16bit整数型である．
 \|mode| は，作成されるファイルの保護モードである．
 \|mode| は，8進数で記述することが多い\footnote{
 C言語では，数値を \texttt{0} で書き始めると8進数の意味になる．}．
@@ -225,7 +225,7 @@ read システムコールを使用するプログラムの先頭では，
 オープン済みのファイルディスクリプタを渡し，
 ファイルからデータを読み出す．
 
-read システムコールは\|ssize_t|型（64bit \|int|型）の値を返す．
+read システムコールは\|ssize_t|型（64bit整数）の値を返す．
 値は正常時には読んだデータのバイト数（正の値），
 EOF では \|0| ，
 エラーが発生した時は\|-1|である．
@@ -234,14 +234,15 @@ EOF では \|0| ，
 \item[引数]
 \|fildes|はオープン済みのファイルディスクリプタ，
 \|buf|はデータを読み出すバッファ領域を指すポインタ，
+\|size_t|型（符号なし64bit整数）の
 \|nbyte|はバッファ領域の大きさ（バイト単位）である．
 
 \item[使用例１]
-\|fd|は open システムコールでオープン済みのファイルディスクリプタである．
+\|fd|はオープン済みのファイルディスクリプタ，
 \|buf|はバッファ用の \|char| 型の大きさ100の配列である．
-\|char|型は1バイトなので，配列全体で100バイトになる．
+\|char|型は1バイトなので\|buf|配列のサイズは100バイトになる．
 
-1回目ではファイルの先頭100バイトを読み出す．
+1回目の\|read()|ではファイルの先頭100バイトを読み出す．
 2回目ではファイルの101バイト目から100バイトを読み出す．
 3回目ではファイルの201バイト目から100バイトを読み出す．
 通常 \|n| は 100 になるが，
@@ -276,7 +277,7 @@ while ((n=read(fd, buf, 100)) > 0) { // 読む
 
 \begin{lstlisting}[numbers=none]
 #include <unistd.h>
-ssize_t write(int fildes, void *buf, size_t nbyte);
+ssize_t write(int fildes, const void *buf, size_t nbyte);
 \end{lstlisting}
 
 \item[解説]
@@ -318,11 +319,11 @@ off_t lseek(int fildes, off_t offset, int whence);
 \end{lstlisting}
 
 \item[解説]
-openシステムコールを用いてオープン済みのファイルの現在の読み書き位置を
+オープン済みファイルの読み書き位置を
 \|offset|に移動する．
 \|fildes|はオープン済みのファイルディスクリプタである．
 \|offset|の意味は\|whence|によって変化する．
-lseekシステムコールは\|off_t|型（64bit \|int| 型）の値を返す．
+lseekシステムコールは\|off_t|型（64bit 整数）の値を返す．
 値はファイルの先頭を基準にした新しい読み書き位置（単位はバイト）である．
 エラーが発生した時は\|-1|を返す．
 エラーの原因は \|perror()| 関数で表示できる．
@@ -343,7 +344,7 @@ lseekシステムコールは\|off_t|型（64bit \|int| 型）の値を返す．
 \|fd|はオープン済みのファイルディスクリプタとする．
 
 \begin{lstlisting}[numbers=none]
-lseek(fd, SEEK_CUR, -100);   // 現在地から100バイト後ろに移動する．
+lseek(fd, SEEK_CUR, -100);   // 現在地からファイルの先頭方向に100バイト移動する．
 \end{lstlisting}
 \end{description}
 
@@ -360,7 +361,7 @@ int close(int fildes);
 \end{lstlisting}
 
 \item[解説]
-openシステムコールを用いてオープン済みのファイルを閉じる．
+オープン済みのファイルを閉じる．
 引数はオープン済みのファイルディスクリプタである．
 
 ファイルはプログラム終了時に自動的にクローズされるので
@@ -376,37 +377,37 @@ close(fd);
 \end{lstlisting}
 \end{description}
 
-\section*{課題 No.1}
-以前，作成した mycp プログラムを，
-open，read，write，close システムコールを用いて作り直しなさい．
-バッファサイズは適当な値を自分で決めること．
-バッファサイズより大きなファイルのコピーもできるように，
-繰り返しを用いること．
-（\emph{注意：}ファイルサイズがバッファサイズの整数倍とは限らない．）
-
-最低，
-open システムコールの実行結果についてはエラーチェックを行うこと．
-エラーを検出した場合は，\|perror()|関数を用いてエラーメッセージを表示すること．
-
-ファイルが正しくコピーできたことは cmp コマンド（\| man cmp |\footnote{
-「UNIXマニュアル第1章 cmp コマンド」が表示される．
-UNIXマニュアルの第1章はコマンドの章である．} で調べる）を
-用いて確認できる．
-コピーするための適切なファイルが無い場合は dd コマンド（\| man dd |で調べる）を
-用いて作成できる．
-以下に \|mycp| プログラムの動作確認を行う手順の例を示す．
-
-\begin{lstlisting}[numbers=none]
-% dd if=/dev/urandom of=srcfile bs=1024 count=10  # ランダムな内容の
-10+0 records in                                   #   10KiBのファイルを作成する
-10+0 records out
-10240 bytes transferred in 0.001528 secs (6701462 bytes/sec)
-% ./mycp srcfile destfile                         # mycp プログラムを実行する
+%\section*{課題 No.1}
+%以前，作成した mycp プログラムを，
+%open，read，write，close システムコールを用いて作り直しなさい．
+%バッファサイズは適当な値を自分で決めること．
+%バッファサイズより大きなファイルのコピーもできるように，
+%繰り返しを用いること．
+%（\emph{注意：}ファイルサイズがバッファサイズの整数倍とは限らない．）
+%
+%最低，
+%open システムコールの実行結果についてはエラーチェックを行うこと．
+%エラーを検出した場合は，\|perror()|関数を用いてエラーメッセージを表示すること．
+%
+%ファイルが正しくコピーできたことは cmp コマンド（\| man cmp |\footnote{
+%「UNIXマニュアル第1章 cmp コマンド」が表示される．
+%UNIXマニュアルの第1章はコマンドの章である．} で調べる）を
+%用いて確認できる．
+%コピーするための適切なファイルが無い場合は dd コマンド（\| man dd |で調べる）を
+%用いて作成できる．
+%以下に \|mycp| プログラムの動作確認を行う手順の例を示す．
+%
+%\begin{lstlisting}[numbers=none]
+%% dd if=/dev/urandom of=srcfile bs=1024 count=10  # ランダムな内容の
+%10+0 records in                                   #   10KiBのファイルを作成する
+%10+0 records out
+%10240 bytes transferred in 0.001528 secs (6701462 bytes/sec)
+%% ./mycp srcfile destfile                         # mycp プログラムを実行する
 % cmp srcfile destfile                            # コピー元とコピー先ファイルを比較
-%                                                 # 内容が同じなら何も表示されない
-\end{lstlisting}
+%%                                                 # 内容が同じなら何も表示されない
+%\end{lstlisting}
 
-\newpage
+%\newpage
 \section*{練習問題}
 \begin{enumerate}
 %\renewcommand{\labelenumi}{\ttfamily \arabic{chapter}.\arabic{enumi}}

@@ -20,10 +20,10 @@ UNIX系OSでもspawn方式を使用できる．
 \item[書式] 次の通りである．
 \begin{lstlisting}[numbers=none]
   #include <spawn.h>
-  int posix_spawn(pid_t *pid, char *path,
-                  posix_spawn_file_actions_t *file_actions,
-                  posix_spawnattr_t *attrp,
-                  char *argv[], char *envp[]);
+  int posix_spawn(pid_t *pid, const char *path,
+                  const posix_spawn_file_actions_t *file_actions,
+                  const posix_spawnattr_t *attrp,
+                  char *const argv[], char *const envp[]);
 \end{lstlisting}
 
 \item[解説]
@@ -79,7 +79,7 @@ execve システムコールを実行したプログラムは，
 \item[書式] execveシステムコールの書式は次の通りである．
 \begin{lstlisting}[numbers=none]
   #include <unistd.h>
-  int execve(char *path, char *argv[], char *envp[]);
+  int execve(const char *path, char *const argv[], char *const envp[]);
 \end{lstlisting}
 
 \item[解説]
@@ -166,10 +166,10 @@ execveシステムコールを使いやすくするライブラリ関数を紹�
   execve システムコールの四つのラッパー関数の書式をまとめて掲載する．
 \begin{lstlisting}[numbers=none]
   #include <unistd.h>
-  int execv(char *path, char *argv[]);
-  int execvp(char *file,  char *argv[]);
-  int execl(char *path, char *argv0, *argv1, ... ,*argvn, NULL);
-  int execlp(char *file, char *argv0, *argv1, ... ,*argvn, NULL);
+  int execv(const char *path, char *const argv[]);
+  int execvp(const char *file, char *const argv[]);
+  int execl(const char *path, const char *argv0, ... , *argvn, NULL);
+  int execlp(const char *file, const char *argv0, ... , *argvn, NULL);
 \end{lstlisting}
 
 \item [解説]
@@ -237,8 +237,8 @@ execve前にオープンされていた入出力を引き継ぐからである�
 まず，初期化処理（\figref{forkExec}参照）として
 7行と8行で標準出力のリダイレクトを行っている．
 7行の\|close(1)|は標準出力（ファイルディスクリプタ1番）をクローズする．
-8行の\|open()|はファイルディスクリプタ番号を小さい順に使用するので，
-\|close(1)|直後の\|open()|は1番のファイルディスクリプタを返す．
+\|open()|は空きファイルディスクリプタを番号の小さい順に使用する．
+8行の\|open()|は\|close(1)|で空きになった1番のファイルディスクリプタを返す．
 ここまでで，
 標準出力である1番のファイルディスクリプタがファイルにリダイレクトされた．
 次に，14行のexecveシステムコールで自身がechoプログラムに変身する．
@@ -256,7 +256,7 @@ forkシステムコールは新しいプロセスを作成し自身をコピー�
 \item[書式] fork の書式を示す．
 \begin{lstlisting}[numbers=none]
   #include <unistd.h>
-  int fork(void);
+  pid_t fork(void);
 \end{lstlisting}
 
 \item[解説] forkシステムコールを実行した瞬間の，プロセスのコピーを作る．
@@ -278,7 +278,7 @@ forkシステムコールは新しいプロセスを作成し自身をコピー�
 \item[使用例]
   リスト\ref{forktest}にforkシステムコールを実行するプログラムの例を示す．
   以下ではこのプログラムの処理手順を説明する．
-  最終的に親プロセスと子プロセスが同時に並行して実行される状態になる．
+  最終的に親プロセスと子プロセスが同時に並行して実行される．
 
   \lstinputlisting[label=forktest
     ,caption=forkシステムコールの使用例
@@ -400,7 +400,7 @@ fork，exec，wait，exitシステムコールを組み合わせて使用する�
     ,caption=fork-execのプログラム例
     ,float=btp, numbers=left]{Lst/forkexec1.c}
   
-\myfigure{btp}{scale=0.8}{Fig/forkExecWaitExit-crop.pdf}
+\myfigure{btp}{scale=0.7}{Fig/forkExecWaitExit-crop.pdf}
     {リスト\ref{forkexec1}におけるfork-exec-wait-exitの関係}{forkExecWaitExit}
 
 プログラムの8行でプロセスのコピーが作られる．
@@ -432,39 +432,39 @@ dateプログラムの内部でexitシステムコールが実行され，
   ,caption=親プロセスで環境変数を変更しながらdateを次々と実行する例
   ,float=btp, numbers=left]{Lst/forkexec3.c}
 
-\section*{課題 No.9}
-\begin{enumerate}
-\item リスト\ref{exectest5}のプログラムを入力し実行してみる．
-\item 入力のリダイレクトをするプログラム例を作る． \\
-  ヒント：標準入力のファイルディスクリプタは0番である．
-\item envコマンドのクローンmyenv を作る． \\
-  \|putenv()|がエラーになるまで，
-  コマンド行引数を環境変数の設定だと思って使う．
-  残りが実行するコマンドを表している．
-  次の実行例では\|putenv(argv[1]);| \|putenv(argv[2]);|
-  \|putenv(argv[3]);| \|execvp(argv[3], &argv[3]);|
-  （三回目の\|putenv()|はエラーになる）が実行されるようにプログラムを作る．
-
-  \|$ ./myenv LC_TIME=ja_JP.UTF-8 TZ=Cuba ls -l| %$
-\end{enumerate}
-
-\section*{課題 No.10}
-\begin{enumerate}
-\item 次々リダイレクトしてdateを実行するプログラム \\
-  コマンド行引数で「環境変数とファイル名」の組を複数指定し，
-  環境変数を変更した上で出力をファイルにリダイレクトしdateを実行する
-  プログラムを作りなさい．
-  例えば次のように実行すると，現在時刻をキューバ時間で表したものが\|c.txt|に
-  ローマ時間で表したものが\|r.txt|に格納される．
-
-  \|% ./a.out TZ=Cuba c.txt TZ=Europe/Rome r.txt| %$
-
-\item system 関数のクローン mysystem \\
-  \|system()| 関数の仕様を調べて（\|man 3 system|），
-  なるべく同じものを作りなさい．
-  C言語中で\|system("...");|の関数呼出しをすると，
-  シェルに以下のように入力したのと同じことが起こる．
-
-  \|% /bin/sh -c "..."| %$
-
-\end{enumerate}
+%\section*{課題 No.9}
+%\begin{enumerate}
+%\item リスト\ref{exectest5}のプログラムを入力し実行してみる．
+%\item 入力のリダイレクトをするプログラム例を作る． \\
+%  ヒント：標準入力のファイルディスクリプタは0番である．
+%\item envコマンドのクローンmyenv を作る． \\
+%  \|putenv()|がエラーになるまで，
+%  コマンド行引数を環境変数の設定だと思って使う．
+%  残りが実行するコマンドを表している．
+%  次の実行例では\|putenv(argv[1]);| \|putenv(argv[2]);|
+%  \|putenv(argv[3]);| \|execvp(argv[3], &argv[3]);|
+%  （三回目の\|putenv()|はエラーになる）が実行されるようにプログラムを作る．
+%
+%  \|$ ./myenv LC_TIME=ja_JP.UTF-8 TZ=Cuba ls -l| %$
+%\end{enumerate}
+%
+%\section*{課題 No.10}
+%\begin{enumerate}
+%\item 次々リダイレクトしてdateを実行するプログラム \\
+%  コマンド行引数で「環境変数とファイル名」の組を複数指定し，
+%  環境変数を変更した上で出力をファイルにリダイレクトしdateを実行する
+%  プログラムを作りなさい．
+%  例えば次のように実行すると，現在時刻をキューバ時間で表したものが\|c.txt|に
+%  ローマ時間で表したものが\|r.txt|に格納される．
+%
+%  \|% ./a.out TZ=Cuba c.txt TZ=Europe/Rome r.txt| %$
+%
+%\item system 関数のクローン mysystem \\
+%  \|system()| 関数の仕様を調べて（\|man 3 system|），
+%  なるべく同じものを作りなさい．
+%  C言語中で\|system("...");|の関数呼出しをすると，
+%  シェルに以下のように入力したのと同じことが起こる．
+%
+%  \|% /bin/sh -c "..."| %$
+%
+%\end{enumerate}

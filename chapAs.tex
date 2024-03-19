@@ -82,8 +82,8 @@ myshell は，コマンド行の\emph{入力}，\emph{解析}，\emph{実行}を
   }を用いてバッファに\|'\n'|が格納されていることを確認する．
   格納されていない場合は，
   「コマンド行が長すぎてバッファに入り切らない」エラーが発生した場合である．
-  簡易版のシェルなのでエラーから復旧は諦めて，
-  エラーメッセージを表示してシェルを終了する．
+  簡易版のシェルなのでエラーからの復旧は諦めて，
+  エラーメッセージを表示し終了する．
 \item 14行では，
   後で説明する\|parse()|関数を用いて\|buf|配列のコマンド行を\emph{解析}し，
   execveシステムコールに渡す\|args|配列を作る．
@@ -173,24 +173,24 @@ cd コマンドは内部コマンドなので，
 PATH環境変数を用いたプログラムの自動的な探索が行われる．
 
 %=============================================================================
-\newpage
-\section*{課題 No.11}
-
-\begin{enumerate}
-\item myshell に環境変数を追加するコマンド setenv ，
-  削除するコマンド unsetenv を追加しなさい．
-\item myshell にリダイレクト機能を追加しなさい．
-\end{enumerate}
-
-\subsection*{機能追加後のmyshellの実行例（参考）}
-\begin{lstlisting}[numbers=none]
-Command: setenv A B
-Command: printenv A
-B
-Command: unsetenv A
-Command: printenv A
-Command: echo aaa > a.txt
-Command: cat a.txt
-aaa
-Command:
-\end{lstlisting}
+%\newpage
+%\section*{課題 No.11}
+%
+%\begin{enumerate}
+%\item myshell に環境変数を追加するコマンド setenv ，
+%  削除するコマンド unsetenv を追加しなさい．
+%\item myshell にリダイレクト機能を追加しなさい．
+%\end{enumerate}
+%
+%\subsection*{機能追加後のmyshellの実行例（参考）}
+%\begin{lstlisting}[numbers=none]
+%Command: setenv A B
+%Command: printenv A
+%B
+%Command: unsetenv A
+%Command: printenv A
+%Command: echo aaa > a.txt
+%Command: cat a.txt
+%aaa
+%Command:
+%\end{lstlisting}

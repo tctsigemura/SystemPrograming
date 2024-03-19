@@ -48,10 +48,10 @@
   \item[書式] 次の通りである．
 \begin{lstlisting}[numbers=none]
   #include <spawn.h>
-  int posix_spawn(pid_t *pid, char *path,
-            posix_spawn_file_actions_t *file_actions,
-            posix_spawnattr_t *attrp,
-            char *argv[], char *envp[]);
+  int posix_spawn(pid_t *pid, const char *path,
+            const posix_spawn_file_actions_t *file_actions,
+            const posix_spawnattr_t *attrp,
+            char *const argv[], char *const envp[]);
 \end{lstlisting}
 
   \item[解説]
@@ -102,7 +102,8 @@
   \item[書式] execveシステムコールの書式は次の通りである．
 \begin{lstlisting}[numbers=none]
   #include <unistd.h>
-  int execve(char *path, char *argv[], char *envp[]);
+  int execve(const char *path,
+             char *const argv[], char *const envp[]);
 \end{lstlisting}
 
   \item[解説]
@@ -180,10 +181,12 @@
   \item[書式] 四つのラッパー関数の書式をまとめて掲載
 \begin{lstlisting}[numbers=none]
   #include <unistd.h>
-  int execv(char *path, char *argv[]);
-  int execvp(char *file,  char *argv[]);
-  int execl(char *path, char *argv0, *argv1, ... ,*argvn, NULL);
-  int execlp(char *file, char *argv0, *argv1, ... ,*argvn, NULL);
+  int execv(const char *path, char *const argv[]);
+  int execvp(const char *file,  char *const argv[]);
+  int execl(const char *path,
+            const char *argv0, ... , *argvn, NULL);
+  int execlp(const char *file,
+            const char *argv0, ... , *argvn, NULL);
 \end{lstlisting}
   \item[意味] \texttt{execv("/bin/date", argv);} \\
     →  \texttt{execve("/bin/date", argv, environ);} \\

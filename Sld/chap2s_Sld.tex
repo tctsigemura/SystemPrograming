@@ -252,7 +252,8 @@ ssize_t read(int fildes, void *buf, size_t nbyte);
 \item[解説]
 \begin{itemize}
 \item \|unistd.h|をインクルードする必要がある．
-\item \|ssize_t|は 64bit int 型．
+\item \|ssize_t|は 64bit 整数型．
+\item \|size_t|は 符号なし 64bit 整数型．
 \item 正常時には読んだデータのバイト数（正の値）を返す．
 \item EOF では \|0| を返す．
 \item エラーが発生した時は\|-1|を返す．
@@ -392,9 +393,9 @@ off_t lseek(int fildes, off_t offset, int whence);
 \|fd|はオープン済みのファイルディスクリプタとする．
 
 \begin{lstlisting}[numbers=none]
-lseek(fd,  200, SEEK_SET);    // 先頭から200バイトに移動する．
-lseek(fd, -100, SEEK_CUR);    // 現在地から100バイト後ろに移動する．
-lseek(fd,  -10, SEEK_END);    // 最後から10バイト後ろに移動する．
+lseek(fd,  200, SEEK_SET); // 先頭から200バイトに移動する．
+lseek(fd, -100, SEEK_CUR); // 現在地から100バイト先頭方向に移動する．
+lseek(fd,  -10, SEEK_END); // 最後から10バイト先頭方向に移動する．
 \end{lstlisting}
 
 \end{description}

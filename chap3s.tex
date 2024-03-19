@@ -73,11 +73,12 @@ FILE 構造体の内部には，
 標準入出力ストリームを使用する
 \|scanf()|，\|getchar()|，\|printf()|，\|putchar()|等は，
 ファイルポインタを引数に持つ
-\|fscanf()|，\|fgetc()|，\|fprintf()|，\|fputc()|関数に
+\|fscanf()|，\|fgetc()|，\|fprintf()|，\|fputc()|に
 標準入出力ストリーム（\|stdin|，\|stdout|等）を渡した場合と同じ働きをする．
 \tabref{printfVsFprintf}に同じ働きをする関数の対応を示す．
-例えば\|getchar()|関数\footnote{正確には\texttt{getchar()}マクロ．}は，
-\|fgetc()|の引数に標準入力ストリームを表す\|stdin|を
+例えば\|getchar()|%\footnote{
+%本当は関数ではなく\texttt{getchar()}マクロである．}
+は，\|fgetc()|の引数に標準入力ストリームを表す\|stdin|を
 渡したものと同じ働きをする．
 
 このようにファイルへの読み書きも，
@@ -133,7 +134,7 @@ FILE 構造体の内部には，
 \url{https://github.com/tctsigemura/C--/blob/v3.1.12/lib/stdio.cmm}
 （\cmm 言語で記述された約400行のプログラム）
 に公開してある．
-興味のある人は，周辺のプログラムも含めて読んで欲しい．
+%興味のある人は，周辺のプログラムも含めて読んで欲しい．
 
 \section{低水準・高水準の性能比較}
 システムコールを直接使用する低水準I/Oは，
@@ -191,19 +192,19 @@ OSカーネルが費やした時間（system），
 なお，実行時間が長すぎて測定が困難な場合はファイルサイズを小さくしても良い．
 \end{enumerate}
 
-\section*{課題 No.2 }
-上記の性能比較を実際に行う．
-提出物は以下の通りとする．
-
-\begin{enumerate}
-\item 三つのプログラムについて実行時間を整理したもの
-\item 使用したプログラムのソースコード
-\item 感想・考察（ソースコードの余白に記入する）
-\end{enumerate}
-
-参考に，高水準版のファイルコピープログラムをリスト\ref{mycp}に掲載する．
-
-\newpage
+%\section*{課題 No.2 }
+%上記の性能比較を実際に行う．
+%提出物は以下の通りとする．
+%
+%\begin{enumerate}
+%\item 三つのプログラムについて実行時間を整理したもの
+%\item 使用したプログラムのソースコード
+%\item 感想・考察（ソースコードの余白に記入する）
+%\end{enumerate}
+%
+%参考に，高水準版のファイルコピープログラムをリスト\ref{mycp}に掲載する．
+%
+%\newpage
 
 \lstinputlisting
     [float=btp,

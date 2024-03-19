@@ -256,9 +256,8 @@ rm コマンドはファイルを削除するコマンドと考えてきたが�
 \section{ファイルの属性}
 UNIXの各ファイル\footnote{ディレクトリやシンボリックリンクも含む}は，
 ファイル本体にデータだけでなく幾つかの属性情報（メタデータ）を持っている．
-ファイル名を属性情報の一部にしているOSも多いが，
-UNIXではファイル名はファイル本体ではなくリンクに付属するので
-属性に含まれていない．
+ファイル名を属性情報の一部にしているOSもあるが，
+UNIXではファイル名はファイル本体ではなくリンクに付属するので属性には含まれない．
 
 \subsection{主な属性}
 UNIXで用いられる主な属性情報は次の通りである．
@@ -346,58 +345,59 @@ ls コマンドがグループ名に変換して表示している．
   \includegraphics[scale=1.0]{Tbl/chmodOptions.pdf}
 \end{mytable}
 
-\lstinputlisting[float=btp,numbers=none,
+\lstinputlisting[%float=btp,
+  numbers=none,
   caption=chmodコマンドの使用例,label=lstchmod]{Lst/chmod.txt}
 
-\newpage
-\section*{課題 No.3}
-以下を行い，それに用いた手順と結果を印刷して提出しなさい．
-
-\begin{enumerate}
-\item パスとハードリンク
-\begin{enumerate}
-\item 自分のホームディレクトリのパスを調べる．
-\item ハードリンクに関する課題を行うために，
-ホームディレクトリ直下に適当な名前のディレクトリを作成し
-カレントディレクトリを移動する．
-\item 作成したディレクトリ以下に\figref{link}のディレクトリやファイルを作る．
-\item \texttt{ls -l}を用いてファイルの種類やリンク数を確認する．
-\item 相対パスを用いて\texttt{hello.c}の内容を表示する．
-（表示には\texttt{cat}コマンドを用いると良い．）
-\item 絶対パスを用いて\texttt{hello.c}の内容を表示する．
-\item \texttt{h1.c}を利用した相対パスを用いて\texttt{hello.c}の内容を表示する．
-\item \texttt{ex1.c}を利用した相対パスを用いて
-\texttt{hello.c}の内容を表示する．
-\item カレントディレクトリを\texttt{SysPro}に変更する．
-\item \texttt{ex1.c}を利用した相対パスを用いて
-\texttt{hello.c}の内容を表示する．
-\item \texttt{hello.c}を利用した相対パスを用いて
-\texttt{hello.c}の内容を表示する．
-\item ディレクトリのハードリンクができるか試す．
-\item 課題のために作成したファイルやディレクトリを全て削除する．
-\end{enumerate}
-
-\item シンボリックリンク
-\begin{enumerate}
-\item シンボリックリンクを作ってみる．
-\item シンボリックリンクを\texttt{ls -l}を用いて確認する．
-\item シンボリックリンクを用いてファイルをアクセスできることを確認する．
-\item リンク切れのシンボリックリンクを使用するとどうなるか確認する．
-\item ディレクトリに対するシンボリックリンクを作って使用できることを確認する．
-\item 他のディレクトリにあるファイルを指すシンボリックリンクを作成し
-      使用できることを確認する．
-\item シンボリックリンクのループを作る．（a.txt →  b.txt，b.txt →  a.txt）
-\item ループしているシンボリックリンクを使用するとどうなるか確認する．
-（\|% cat a.txt|）
-\end{enumerate}
-
-\item 保護モード
-\begin{enumerate}
-\item テキストファイル（\texttt{hello.c}）と
-実行可能ファイル（\texttt{a.out}）を準備する．
-\item \texttt{chmod}で保護モードを変化させてみる．
-\item \texttt{ls -l}で変化を確認する．
-\item 保護モードを変化させて，ファイルの読出しや実行ができるか確認する．
-\item ディレクトリの保護モードは何の意味を持つか考える．
-\end{enumerate}
-\end{enumerate}
+%\newpage
+%\section*{課題 No.3}
+%以下を行い，それに用いた手順と結果を印刷して提出しなさい．
+%
+%\begin{enumerate}
+%\item パスとハードリンク
+%\begin{enumerate}
+%\item 自分のホームディレクトリのパスを調べる．
+%\item ハードリンクに関する課題を行うために，
+%ホームディレクトリ直下に適当な名前のディレクトリを作成し
+%カレントディレクトリを移動する．
+%\item 作成したディレクトリ以下に\figref{link}のディレクトリやファイルを作る．
+%\item \texttt{ls -l}を用いてファイルの種類やリンク数を確認する．
+%\item 相対パスを用いて\texttt{hello.c}の内容を表示する．
+%（表示には\texttt{cat}コマンドを用いると良い．）
+%\item 絶対パスを用いて\texttt{hello.c}の内容を表示する．
+%\item \texttt{h1.c}を利用した相対パスを用いて\texttt{hello.c}の内容を表示する．
+%\item \texttt{ex1.c}を利用した相対パスを用いて
+%\texttt{hello.c}の内容を表示する．
+%\item カレントディレクトリを\texttt{SysPro}に変更する．
+%\item \texttt{ex1.c}を利用した相対パスを用いて
+%\texttt{hello.c}の内容を表示する．
+%\item \texttt{hello.c}を利用した相対パスを用いて
+%\texttt{hello.c}の内容を表示する．
+%\item ディレクトリのハードリンクができるか試す．
+%\item 課題のために作成したファイルやディレクトリを全て削除する．
+%\end{enumerate}
+%
+%\item シンボリックリンク
+%\begin{enumerate}
+%\item シンボリックリンクを作ってみる．
+%\item シンボリックリンクを\texttt{ls -l}を用いて確認する．
+%\item シンボリックリンクを用いてファイルをアクセスできることを確認する．
+%\item リンク切れのシンボリックリンクを使用するとどうなるか確認する．
+%\item ディレクトリに対するシンボリックリンクを作って使用できることを確認する．
+%\item 他のディレクトリにあるファイルを指すシンボリックリンクを作成し
+%      使用できることを確認する．
+%\item シンボリックリンクのループを作る．（a.txt →  b.txt，b.txt →  a.txt）
+%\item ループしているシンボリックリンクを使用するとどうなるか確認する．
+%（\|% cat a.txt|）
+%\end{enumerate}
+%
+%\item 保護モード
+%\begin{enumerate}
+%\item テキストファイル（\texttt{hello.c}）と
+%実行可能ファイル（\texttt{a.out}）を準備する．
+%\item \texttt{chmod}で保護モードを変化させてみる．
+%\item \texttt{ls -l}で変化を確認する．
+%\item 保護モードを変化させて，ファイルの読出しや実行ができるか確認する．
+%\item ディレクトリの保護モードは何の意味を持つか考える．
+%\end{enumerate}
+%\end{enumerate}
