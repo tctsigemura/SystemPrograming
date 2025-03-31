@@ -9,6 +9,8 @@ SLDS = chap1s_Sld.tex chap2s_Sld.tex chap3s_Sld.tex chap4s_Sld.tex \
 all :
 	$(foreach tex, ${SLDS}, latexmk -lualatex $(tex);)
 	$(foreach tex, ${HNDS}, latexmk -lualatex $(tex);)
+	gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=all_Hnd.pdf \
+        chap?s_Hnd.pdf
 
 clean:
 	rm -f *.log *.aux *.dvi *.out *.toc *.vrb *.snm *.nav *~
