@@ -7,7 +7,6 @@
 #include <ctype.h>                              // isspace() のため
 #define MAXLINE 1000                            // コマンド行の最大文字数
 #define MAXARGS 60                              // コマンド行文字列の最大数
-
 int parse(char *p, char *args[]) {              // コマンド行を解析する
   int i=0;                                      // 解析後文字列の数
   for (;;) {
