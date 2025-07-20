@@ -16,7 +16,8 @@ int mysystem(char *command) {                    // 課題の関数 mysystem()
   }
   if ((pid=fork())<0) {                          // forkでエラー
     return -1;
-  } else if (pid==0) {                           // 子プロセスは
+  }
+  if (pid==0) {                                  // 子プロセスは
     execl("/bin/sh", "sh", "-c", command, NULL); //   /bin/shへ変身
     exit(127);                                   //   失敗したら127で終了
   } else {
