@@ -2,11 +2,13 @@
 // myshell.c : 簡易UNIXシェル（リダイレクト機能完成版）
 //
 #include <stdio.h>                              // perror() のため
-#include <stdlib.h>                             // eixt() のため
+#include <stdlib.h>                             // eixt(), setenv(),
+                                                //  unsetenv() のため
 #include <string.h>                             // strcmp(), strchr() のため
-#include <unistd.h>                             // fork(),exec(),close()のため
+#include <unistd.h>                             // fork(), exec(), chdir(),
+                                                //  close()のため
 #include <sys/wait.h>                           // wait() のため
-#include <ctype.h>                              // ispace() のため
+#include <ctype.h>                              // isspace() のため
 #include <fcntl.h>                              // open() のため
 #define MAXLINE 1000                            // コマンド行の最大文字数
 #define MAXARGS 60                              // コマンド行文字列の最大数

@@ -1,9 +1,10 @@
 #include <stdio.h>                              // perror() のため
-#include <stdlib.h>                             // eixt() のため
+#include <stdlib.h>                             // eixt(), setenv(),
+                                                //  unsetenv() のため
 #include <string.h>                             // strcmp(), strchr() のため
-#include <unistd.h>                             // fork(),exec()のため
+#include <unistd.h>                             // fork(),exec(),chdir() のため
 #include <sys/wait.h>                           // wait() のため
-#include <ctype.h>                              // ispace() のため
+#include <ctype.h>                              // isspace() のため
 #define MAXLINE 1000                            // コマンド行の最大文字数
 #define MAXARGS 60                              // コマンド行文字列の最大数
 

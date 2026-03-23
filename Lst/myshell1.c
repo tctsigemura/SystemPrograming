@@ -1,12 +1,12 @@
 #include <stdio.h>                              // perror() のため
-#include <stdlib.h>                             // eixt() のため
+#include <stdlib.h>                             // eixt(), setenv(),
+                                                //  unsetenv()  のため
 #include <string.h>                             // strcmp(), strchr() のため
-#include <unistd.h>                             // fork(),exec(),close()のため
+#include <unistd.h>                             // fork(),exec(),chdir()のため
 #include <sys/wait.h>                           // wait() のため
-#include <ctype.h>                              // ispace() のため
+#include <ctype.h>                              // isspace() のため
 #define MAXLINE 1000                            // コマンド行の最大文字数
 #define MAXARGS 60                              // コマンド行文字列の最大数
-
 int parse(char *p, char *args[]) {              // コマンド行を解析する
   int i=0;                                      // 解析後文字列の数
   for (;;) {
@@ -99,5 +99,5 @@ Command: setenv A= B                   <--- setenv()がエラーを起こす場�
 A=: Invalid argument
 Command: unsetenv A=                   <--- unsetenv()がエラーを起こす場合
 A=: Invalid argument
-Command: ^D
+Command: ^D                            <--- ^D を入力すると EOF になる
 */

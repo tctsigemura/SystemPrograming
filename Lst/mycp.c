@@ -21,11 +21,13 @@ int main(int argc, char *argv[]) {
     exit(1);                                   // エラー終了
   }
 
-  if ((fps = fopen(argv[1], "rb"))==NULL)      // コピー元のオープン失敗
+  if ((fps = fopen(argv[1], "rb"))==NULL) {    // コピー元のオープン失敗
     err_exit(argv[0], argv[1]);
+  }
 
-  if ((fpd = fopen(argv[2], "wb"))==NULL)      // コピー元のオープン失敗
+  if ((fpd = fopen(argv[2], "wb"))==NULL) {    // コピー元のオープン失敗
     err_exit(argv[0], argv[2]);
+  }
 
   while((ch=getc(fps)) != EOF) {               // EOF になるまで
     putc(ch ,fpd);                             // 1バイト毎のコピー

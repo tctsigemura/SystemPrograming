@@ -10,108 +10,108 @@
 \item 簡易版のUNIXコマンドを作成しなさい．
 \lst{numbers=none,language=C,caption=ファイルの削除（myrm.c）}{myrm.c}
 \begin{lstlisting}[caption=myrmの実行例（動作テスト！！）]
-$ echo aaa  > a.txt                                 <-- 実験用ファイルを作る
-$ echo aaa  > b.txt
-$ echo aaa  > c.txt
-$ ls -l *.txt
+% echo aaa  > a.txt                                 <-- 実験用ファイルを作る
+% echo aaa  > b.txt
+% echo aaa  > c.txt
+% ls -l *.txt
 -rw-r--r--  1 sigemura  staff  4 May 18 11:19 a.txt <-- できているか確認
 -rw-r--r--  1 sigemura  staff  4 May 18 11:19 b.txt
 -rw-r--r--  1 sigemura  staff  4 May 18 11:19 c.txt
-$ ./myrm                                            <-- 引数が０個の場合
+% ./myrm                                            <-- 引数が０個の場合
 使用方法: ./myrm file ...
-$ ./myrm /bin/rm                                    <-- システムのファイルは
+% ./myrm /bin/rm                                    <-- システムのファイルは
 /bin/rm: Permission denied                               消せない(権限無し)
-$ ./myrm xyz                                        <-- 存在しないファイル
+% ./myrm xyz                                        <-- 存在しないファイル
 xyz: No such file or directory
-$ ./myrm a.txt                                      <-- ファイルを１つ消す
-$ ls -l *.txt
+% ./myrm a.txt                                      <-- ファイルを１つ消す
+% ls -l *.txt
 -rw-r--r--  1 sigemura  staff  4 May 18 11:19 b.txt <-- a.txt は消えた
 -rw-r--r--  1 sigemura  staff  4 May 18 11:19 c.txt
-$ ./myrm b.txt c.txt                                <-- まとめて２つ消す
-$ ls -l *.txt
+% ./myrm b.txt c.txt                                <-- まとめて２つ消す
+% ls -l *.txt
 ls: *.txt: No such file or directory                <-- 両方消えた
-$ 
+% 
 \end{lstlisting}
 %\newpage
 
 \lst{caption=ディレクトリの作成(mymkdir.c)}{mymkdir.c}
 \begin{lstlisting}[caption=mymkdirの実行例（動作テスト！！）]
-$ ./mymkdir                                         <-- 引数がない場合
+% ./mymkdir                                         <-- 引数がない場合
 使用方法: ./mymkdir directory ...
-$ ./mymkdir a                                       <-- 引数が１つの場合
-$ ./mymkdir b c d                                   <-- 引数が３つの場合
-$ ls -l a b c d
+% ./mymkdir a                                       <-- 引数が１つの場合
+% ./mymkdir b c d                                   <-- 引数が３つの場合
+% ls -l a b c d
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:04 a
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:04 b
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:04 c
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:04 d
-$ ./mymkdir a                                       <-- ディレクトリ名が衝突
+% ./mymkdir a                                       <-- ディレクトリ名が衝突
 a: File exists
-$ ./mymkdir /a                                      <-- / には作れない
+% ./mymkdir /a                                      <-- / には作れない
 /a: Permission denied
-$ ./mymkdir e a f                                   <-- 複数の１つがエラー
+% ./mymkdir e a f                                   <-- 複数の１つがエラー
 a: File exists
-$ ls -l a b c d e f
+% ls -l a b c d e f
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:04 a
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:04 b
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:04 c
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:04 d
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:05 e    <-- エラーにならなかった
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:05 f      ディレクトリはできてる
-$
+%
 \end{lstlisting}
 %\newpage
 
 \lst{caption=ディレクトリの削除(myrmdir.c)}{myrmdir.c}
 \begin{lstlisting}[caption=myrmdirの実行例（動作テスト！！）]
-$ ./myrmdir                                     <-- 引数がない場合
+% ./myrmdir                                     <-- 引数がない場合
 使用方法: ./myrmdir directory ...
-$ ./myrmdir a                                   <-- 引数が１つの場合
-$ ./myrmdir b c d                               <-- 引数が３つの場合
-$ ./myrmdir a                                   <-- ディレクトリが存在しない
+% ./myrmdir a                                   <-- 引数が１つの場合
+% ./myrmdir b c d                               <-- 引数が３つの場合
+% ./myrmdir a                                   <-- ディレクトリが存在しない
 a: No such file or directory
-$ ./myrmdir myrmdir.c                           <-- ディレクトリではない
+% ./myrmdir myrmdir.c                           <-- ディレクトリではない
 myrmdir.c: Not a directory
-$ ./myrmdir /tmp                                <-- システムのディレクトリ
+% ./myrmdir /tmp                                <-- システムのディレクトリ
 /tmp: Permission denied
-$ ls -l                                         <-- 結果の確認
+% ls -l                                         <-- 結果の確認
 total 38
 ...
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:05 e
 drwxr-xr-x  2 sigemura  kan   512 Jan 20 10:05 f
 -rwxr-xr-x  1 sigemura  kan  1234 Jan 20 10:05 myrmdir.c
 ...
-$ ./myrmdir ?                                   <-- ワイルドカード
-$ ls -l                                         <-- 結果の確認
+% ./myrmdir ?                                   <-- ワイルドカード
+% ls -l                                         <-- 結果の確認
 ...                                             <-- e,fが消えた
 -rwxr-xr-x  1 sigemura  kan  1234 Jan 20 10:05 myrmdir.c
 ...
-$
+%
 \end{lstlisting}
 %\newpage
 
 \lst{caption=ハードリンクの作成(myln.c)}{myln.c}
 \begin{lstlisting}[caption=mylnの実行例（動作テスト！！）]
-$ ./myln                                            <- 引数の数が 0 個
+% ./myln                                            <- 引数の数が 0 個
 使用方法： ./myln file1 file2
-$ ./myln a                                          <- 引数の数が 1 個
+% ./myln a                                          <- 引数の数が 1 個
 使用方法： ./myln file1 file2
-$ ./myln a b c                                      <- 引数の数が 3 個
+% ./myln a b c                                      <- 引数の数が 3 個
 使用方法： ./myln file1 file2
-$ echo aaaa > a                                     <- ファイル a を作る
-$ ls -l                                             <- a ができたか確認
+% echo aaaa > a                                     <- ファイル a を作る
+% ls -l                                             <- a ができたか確認
 total 36
 -rw-r--r--  1 sigemura  kan     5 May 10 14:12 a
-$ ./myln a b                                        <- a を b へハードリンク
-$ ls -l                                             <- b ができたか確認
+% ./myln a b                                        <- a を b へハードリンク
+% ls -l                                             <- b ができたか確認
 total 40
 -rw-r--r--  2 sigemura  kan     5 May 10 14:12 a
 -rw-r--r--  2 sigemura  kan     5 May 10 14:12 b
-$ ./myln a b
+% ./myln a b
 link: File exists                                   <- 既にある名前を使うと
-$ ./myln x y
+% ./myln x y
 link: No such file or directory                     <- 存在しない名前を使うと
-$
+%
 \end{lstlisting}
 \newpage
 
@@ -138,20 +138,20 @@ $
 
 \lst{caption=ファイルの移動（名前変更）(mymv.c)}{mymv.c}
 \begin{lstlisting}[caption=mymvの実行例（動作テスト！！）]
-$ ./mymv
+% ./mymv
 使用方法: ./mymv <もとの名前> <新しい名前>
-$ ls -l *.txt
+% ls -l *.txt
 -rw-r--r--  1 sigemura  staff  1536 Feb  9 11:06 s.txt
-$ ./mymv s.txt x.txt                <-- x.txt に変更した
-$ ls -l *.txt
+% ./mymv s.txt x.txt                <-- x.txt に変更した
+% ls -l *.txt
 -rw-r--r--  1 sigemura  staff  1536 Feb  9 11:06 x.txt
-$ ./mymv s.txt x.txt                <-- s.txt が存在しない場合
+% ./mymv s.txt x.txt                <-- s.txt が存在しない場合
 ./mymv: No such file or directory
-$ ./mymv x.txt /x.txt               <-- / に移動する権限がない
+% ./mymv x.txt /x.txt               <-- / に移動する権限がない
 ./mymv: Permission denied
-$ ./mymv x.txt /tmp/x.txt           <-- ハードディスクをまたいだ移動はできない
+% ./mymv x.txt /tmp/x.txt           <-- ハードディスクをまたいだ移動はできない
 ./mymv: Cross-device link
-$ 
+% 
 \end{lstlisting}
 \newpage
 

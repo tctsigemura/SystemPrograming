@@ -278,11 +278,12 @@ time(), unlink(), wait(), write(), strcpy(), strcat(), ...}
 %==============================================================================
 \section{シグナルと合わせて使うシステムコール}
 
-プロセスを待ち状態にするシステムコール\footnote{
-本当はライブラリ関数であるが，
+プロセスを待ち状態にしたり，
+シグナルを予約したりするシステムコール\footnote{
+これらはライブラリ関数であるが，
 古いUNIXではシステムコールだったので，
-ここではシステムコールと呼ぶ．}と，
-シグナルを予約するシステムコールを紹介する．
+ここではシステムコールと呼ぶ．}
+を紹介する．
 
 \subsection{sleepシステムコール}
 自プロセスを指定された時間，またはシグナルを受信するまで，
@@ -391,24 +392,24 @@ time(), unlink(), wait(), write(), strcpy(), strcat(), ...}
 
 \end{description}
 
-\section*{課題 No.6}
-\begin{enumerate}
-\item リスト\ref{handler}のプログラムは，
-  Ctrl-Cが押された回数を\texttt{main()}関数側でカウントしている．
-  そのため，
-  \texttt{main()}関数の処理が忙しくて
-  \texttt{flg}変数を頻繁にチェックできない場合に，
-  Ctrl-Cの回数を正確にカウントできないかもしれない．
-  
-  \texttt{main()}関数の力を借りずにCtrl-Cの回数をカウントし，
-  三回目のCtrl-Cのとき\texttt{flg}変数を1にするようにプログラムを改良しなさい．
-  %\texttt{main()}関数は\texttt{flg}変数が1になったらすぐに終了するようにする．
-  シグナルハンドラ中ではグローバル変数のインクリメントはできないものとする．
-
-  \emph{ヒント：} シグナルハンドラ中で\texttt{signal()}を実行してもよい．
-
-\item sleepシステムコールを用いないで，
-  指定秒数プログラムを待ち状態にする関数
-  \texttt{mysleep(int seconds)}を作りなさい．
-
-\end{enumerate}
+%\section*{課題 No.6}
+%\begin{enumerate}
+%\item リスト\ref{handler}のプログラムは，
+%  Ctrl-Cが押された回数を\texttt{main()}関数側でカウントしている．
+%  そのため，
+%  \texttt{main()}関数の処理が忙しくて
+%  \texttt{flg}変数を頻繁にチェックできない場合に，
+%  Ctrl-Cの回数を正確にカウントできないかもしれない．
+%  
+%  \texttt{main()}関数の力を借りずにCtrl-Cの回数をカウントし，
+%  三回目のCtrl-Cのとき\texttt{flg}変数を1にするようにプログラムを改良しなさい．
+%  %\texttt{main()}関数は\texttt{flg}変数が1になったらすぐに終了するようにする．
+%  シグナルハンドラ中ではグローバル変数のインクリメントはできないものとする．
+%
+%  \emph{ヒント：} シグナルハンドラ中で\texttt{signal()}を実行してもよい．
+%
+%\item sleepシステムコールを用いないで，
+%  指定秒数プログラムを待ち状態にする関数
+%  \texttt{mysleep(int seconds)}を作りなさい．
+%
+%\end{enumerate}
