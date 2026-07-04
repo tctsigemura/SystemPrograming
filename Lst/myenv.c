@@ -9,8 +9,8 @@ int main(int argc, char *argv[], char *envp[])  {
     if (putenv(argv[i])!=0) {            //   "X=Y" 形式は putenv で処理できる
       execvp(argv[i], &argv[i]);         //     エラーなら残りはコマンド
       perror(argv[i]);                   //     ここが実行されるならexecエラー
-      return 1;                          //     main の retrun は exit と同じ
-    }
+      return 127;                        //     main の retrun は exit と同じ
+    }                                    //     本物に似せて127でエラー終了
   }
   for (int i=0; environ[i]!=NULL; i++) { // ここが実行されるならenvの別の機能
     printf("%s\n", environ[i]);          //   全ての環境変数を印刷
