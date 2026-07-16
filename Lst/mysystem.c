@@ -20,12 +20,10 @@ int mysystem(char *command) {                    // 課題の関数 mysystem()
   if (pid==0) {                                  // 子プロセスは
     execl("/bin/sh", "sh", "-c", command, NULL); //   /bin/shへ変身
     exit(127);                                   //   失敗したら127で終了
-  } else {
-    int r;                                       // 親プロセスは
-    while((r=wait(&status))!=pid) {              //   /bin/shの終了を待つ
-      if (r<0) return -1;                        //     waitのエラー
-    }
-  }
+  } else {                                       // 親プロセスは
+    while(wait(&status)!=pid) {                  //   /bin/shの終了を待つ
+    }                                            //     signalをcatchした場合は
+  }                                              //      再度waitする
   return status;                                 // 親プロセスは/bin/shの
 }                                                //   終了ステータスを返す
 
